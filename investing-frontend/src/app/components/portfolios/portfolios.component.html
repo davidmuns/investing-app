@@ -17,9 +17,8 @@
             <!-- Modo normal -->
             <ng-container *ngIf="editingIndex !== i; else editMode">
                 <span class="tabLabel">{{ p.name }}</span>
-
-                <button *ngIf="i === selectedIndex" class="editBtn" type="button"
-                    (click)="startEdit(i); $event.stopPropagation()">
+                <button class="editBtn" type="button" (click)="startEdit(i); $event.stopPropagation()"
+                    aria-label="Renombrar" title="Renombrar">
                     ✏️
                 </button>
             </ng-container>

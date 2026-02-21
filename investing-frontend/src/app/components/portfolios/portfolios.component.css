@@ -70,6 +70,23 @@
     background: #fff;
 }
 
+.tabWrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+}
+
+.tabWrapper:hover .editBtn {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.tabWrapper.active:hover .editBtn {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 .tabWrapper.active {
     font-weight: 700;
 }
@@ -78,11 +95,22 @@
     white-space: nowrap;
 }
 
-.editBtn {
+/* .editBtn {
     border: none;
     background: transparent;
     cursor: pointer;
     font-size: 14px;
+} */
+.editBtn {
+    opacity: 0;
+    pointer-events: none;
+    /* para que no “robe” hover cuando está oculto */
+    transition: opacity 0.15s ease;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
 }
 
 .editInput {
