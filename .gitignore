@@ -1,0 +1,17 @@
+### BACKEND (Spring Boot)
+target/
+*.log
+.idea/
+
+### H2 database files ###
+*.mv.db
+*.trace.db
+/data/
+
+### FRONTEND (Angular)
+node_modules/
+dist/
+
+### OS
+.DS_Store
+Thumbs.db
