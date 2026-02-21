@@ -32,6 +32,12 @@ public class PortfolioController {
         return toResponse(created);
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
+    }
+
     private static PortfolioResponse toResponse(Portfolio p) {
         return new PortfolioResponse(p.getId(), p.getName(), p.getType());
     }

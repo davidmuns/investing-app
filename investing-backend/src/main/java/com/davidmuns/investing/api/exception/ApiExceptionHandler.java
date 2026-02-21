@@ -1,6 +1,7 @@
 package com.davidmuns.investing.api.exception;
 
 import com.davidmuns.investing.service.DuplicatePortfolioException;
+import com.davidmuns.investing.service.PortfolioNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -26,4 +27,11 @@ public class ApiExceptionHandler {
                 "message", "Datos inválidos"
         ));
     }
+
+    @ExceptionHandler(PortfolioNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleNotFound(PortfolioNotFoundException ex) {
+        return Map.of("error", "PORTFOLIO_NOT_FOUND", "message", ex.getMessage());
+    }
+
 }

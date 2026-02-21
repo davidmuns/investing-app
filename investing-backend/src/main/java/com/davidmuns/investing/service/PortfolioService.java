@@ -31,4 +31,11 @@ public class PortfolioService {
 
         return repository.save(new Portfolio(name, req.type()));
     }
+
+    public void delete(Long id) {
+        if (!repository.existsById(id)) {
+            throw new PortfolioNotFoundException(id);
+        }
+        repository.deleteById(id);
+    }
 }
