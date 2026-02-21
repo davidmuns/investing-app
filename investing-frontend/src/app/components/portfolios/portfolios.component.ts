@@ -112,4 +112,21 @@ export class PortfoliosComponent implements OnInit {
       },
     });
   }
+
+  deleteSelected(): void {
+    const selected = this.portfolios[this.selectedIndex];
+    if (!selected) return;
+
+    const ok = confirm(`¿Eliminar la cartera "${selected.name}"?`);
+    if (!ok) return;
+
+    this.portfolioService.delete(selected.id).subscribe({
+      next: () => {
+        this.reload();
+      },
+      error: () => {
+        this.errorMsg = 'No se pudo eliminar la cartera.';
+      },
+    });
+  }
 }

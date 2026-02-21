@@ -19,9 +19,22 @@
     </div>
 
     <div *ngIf="!loading && portfolios.length" class="panel">
-        <div class="row"><b>ID:</b> {{ portfolios[selectedIndex].id }}</div>
-        <div class="row"><b>Tipo:</b> {{ portfolios[selectedIndex].type }}</div>
-        <div class="hint">Siguiente paso: “Añadir símbolo” + tabla.</div>
+
+        <div class="panelHeader">
+            <div>
+                <div class="row"><b>ID:</b> {{ portfolios[selectedIndex].id }}</div>
+                <div class="row"><b>Tipo:</b> {{ portfolios[selectedIndex].type }}</div>
+            </div>
+
+            <button class="dangerBtn" type="button" (click)="deleteSelected()">
+                Eliminar cartera
+            </button>
+        </div>
+
+        <div class="hint">
+            Siguiente paso: “Añadir símbolo” + tabla.
+        </div>
+
     </div>
 
     <div *ngIf="!loading && !portfolios.length" class="hint">

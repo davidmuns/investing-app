@@ -24,4 +24,7 @@ export class PortfolioService {
   create(req: CreatePortfolioRequest): Observable<PortfolioResponse> {
     return this.http.post<PortfolioResponse>('/api/portfolios', req);
   }
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`/api/portfolios/${id}`);
+  }
 }
