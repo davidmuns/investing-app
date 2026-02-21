@@ -10,6 +10,26 @@
     gap: 12px;
 }
 
+.panelHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 20px;
+}
+
+.dangerBtn {
+    background: #d93025;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.dangerBtn:hover {
+    background: #b1271b;
+}
+
 .error {
     color: #d93025;
     font-weight: 600;
@@ -37,6 +57,39 @@
     border-bottom-color: #fff;
     box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.02);
     font-weight: 700;
+}
+
+.tabWrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    background: #fff;
+}
+
+.tabWrapper.active {
+    font-weight: 700;
+}
+
+.tabLabel {
+    white-space: nowrap;
+}
+
+.editBtn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.editInput {
+    width: 120px;
+    padding: 4px 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
 }
 
 .panel {

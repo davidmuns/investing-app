@@ -27,4 +27,10 @@ export class PortfolioService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`/api/portfolios/${id}`);
   }
+  rename(id: number, name: string) {
+    return this.http.patch<PortfolioResponse>(
+      `/api/portfolios/${id}/name`,
+      { name }
+    );
+  }
 }

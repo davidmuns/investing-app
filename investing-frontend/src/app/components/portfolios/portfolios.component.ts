@@ -17,9 +17,10 @@ type ApiError = { error?: string; message?: string };
 export class PortfoliosComponent implements OnInit {
   portfolios: PortfolioResponse[] = [];
   selectedIndex = 0;
-
   loading = false;
   errorMsg = '';
+  editingIndex: number | null = null;
+  editName = '';
 
   // modal state
   modalOpen = false;
@@ -113,6 +114,23 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
+  // deleteSelected(): void {
+  //   const selected = this.portfolios[this.selectedIndex];
+  //   if (!selected) return;
+
+  //   const ok = confirm(`¿Eliminar la cartera "${selected.name}"?`);
+  //   if (!ok) return;
+
+  //   this.portfolioService.delete(selected.id).subscribe({
+  //     next: () => {
+  //       this.reload();
+  //     },
+  //     error: () => {
+  //       this.errorMsg = 'No se pudo eliminar la cartera.';
+  //     },
+  //   });
+  // }
+
   deleteSelected(): void {
     const selected = this.portfolios[this.selectedIndex];
     if (!selected) return;
@@ -120,12 +138,62 @@ export class PortfoliosComponent implements OnInit {
     const ok = confirm(`¿Eliminar la cartera "${selected.name}"?`);
     if (!ok) return;
 
-    this.portfolioService.delete(selected.id).subscribe({
+    const deletingId = selected.id;
+
+    this.portfolioService.delete(deletingId).subscribe({
       next: () => {
-        this.reload();
+        const deletedIndex = this.portfolios.findIndex(p => p.id === deletingId);
+        this.portfolios = this.portfolios.filter(p => p.id !== deletingId);
+
+        if (this.portfolios.length === 0) {
+          this.selectedIndex = 0;
+          return;
+        }
+
+        // Mantener “posición” si existe; si borraste la última, selecciona la nueva última
+        this.selectedIndex = Math.min(
+          this.selectedIndex,
+          this.portfolios.length - 1
+        );
+
+        // Si borraste una tab anterior a la seleccionada, desplaza el índice
+        if (deletedIndex >= 0 && deletedIndex < this.selectedIndex) {
+          this.selectedIndex = this.selectedIndex - 1;
+        }
       },
       error: () => {
         this.errorMsg = 'No se pudo eliminar la cartera.';
+      },
+    });
+  }
+
+  startEdit(index: number) {
+    this.editingIndex = index;
+    this.editName = this.portfolios[index].name;
+  }
+
+  cancelEdit() {
+    this.editingIndex = null;
+    this.editName = '';
+  }
+
+  saveEdit(index: number) {
+    const portfolio = this.portfolios[index];
+    const newName = this.editName.trim();
+
+    if (!newName || newName === portfolio.name) {
+      this.cancelEdit();
+      return;
+    }
+
+    this.portfolioService.rename(portfolio.id, newName).subscribe({
+      next: (updated) => {
+        this.portfolios[index] = updated;
+        this.cancelEdit();
+      },
+      error: () => {
+        alert('No se pudo renombrar la cartera.');
+        this.cancelEdit();
       },
     });
   }
