@@ -30,8 +30,4 @@ public class Portfolio {
         this.name = name;
         this.type = type;
     }
-
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public PortfolioType getType() { return type; }
 }
