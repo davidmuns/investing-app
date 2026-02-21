@@ -9,6 +9,24 @@
       ],
       "@env/*": [
         "src/environments/*"
+      ],
+      "@core/*": [
+        "src/app/core/*"
+      ],
+      "@shared/*": [
+        "src/app/shared/*"
+      ],
+      "@layout/*": [
+        "src/app/layout/*"
+      ],
+      "@features/*": [
+        "src/app/features/*"
+      ],
+      "@models/*": [
+        "src/app/models/*"
+      ],
+      "@api/*": [
+        "src/app/api/*"
       ]
     },
     "outDir": "./out-tsc/spec",

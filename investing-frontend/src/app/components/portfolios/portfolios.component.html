@@ -1,0 +1,65 @@
+<div class="page">
+    <div class="header">
+        <h1>Todas las carteras</h1>
+
+        <div class="headerActions">
+            <button class="iconBtn" type="button" (click)="openCreateModal()" title="Nueva cartera">+</button>
+            <button type="button" (click)="reload()">Recargar</button>
+        </div>
+    </div>
+
+    <p *ngIf="loading">Cargando…</p>
+    <p *ngIf="errorMsg" class="error">{{ errorMsg }}</p>
+
+    <div *ngIf="!loading && portfolios.length" class="tabs">
+        <button *ngFor="let p of portfolios; let i = index" class="tab" [class.active]="i === selectedIndex"
+            (click)="selectedIndex = i" type="button">
+            {{ p.name }}
+        </button>
+    </div>
+
+    <div *ngIf="!loading && portfolios.length" class="panel">
+        <div class="row"><b>ID:</b> {{ portfolios[selectedIndex].id }}</div>
+        <div class="row"><b>Tipo:</b> {{ portfolios[selectedIndex].type }}</div>
+        <div class="hint">Siguiente paso: “Añadir símbolo” + tabla.</div>
+    </div>
+
+    <div *ngIf="!loading && !portfolios.length" class="hint">
+        No hay carteras. Crea una con el botón “+”.
+    </div>
+
+    <!-- Modal -->
+    <div *ngIf="modalOpen" class="modalBackdrop" (click)="closeCreateModal()">
+        <div class="modal" (click)="$event.stopPropagation()">
+            <div class="modalHeader">
+                <div class="modalTitle">Seleccione tipo de cartera</div>
+                <button class="iconBtn" type="button" (click)="closeCreateModal()">×</button>
+            </div>
+
+            <div class="typePicker">
+                <button type="button" class="typeBtn" [class.active]="form.type === 'WATCHLIST'"
+                    (click)="setType('WATCHLIST')">
+                    Lista de seguimiento
+                </button>
+                <button type="button" class="typeBtn" [class.active]="form.type === 'POSITIONS'"
+                    (click)="setType('POSITIONS')">
+                    Posiciones
+                </button>
+            </div>
+
+            <label class="label">Nombre</label>
+            <input class="input" type="text" placeholder="Introducir nombre de la cartera" [(ngModel)]="form.name"
+                [disabled]="formLoading" (keydown.enter)="createPortfolio()" />
+
+            <div *ngIf="formError" class="error formError">{{ formError }}</div>
+
+            <div class="modalActions">
+                <button type="button" (click)="closeCreateModal()" [disabled]="formLoading">Cancelar</button>
+                <button type="button" (click)="createPortfolio()" [disabled]="formLoading || !form.name.trim()">
+
+                    {{ formLoading ? 'Creando…' : 'Crear' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
