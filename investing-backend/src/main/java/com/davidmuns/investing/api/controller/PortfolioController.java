@@ -5,6 +5,8 @@ import com.davidmuns.investing.service.PortfolioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
+
 import com.davidmuns.investing.api.dto.CreatePortfolioRequest;
 import com.davidmuns.investing.api.dto.PortfolioResponse;
 import jakarta.validation.Valid;
@@ -36,6 +38,15 @@ public class PortfolioController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(id);
+    }
+
+    @PatchMapping("/{id}/name")
+    public PortfolioResponse rename(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body
+    ) {
+        Portfolio updated = service.rename(id, body.get("name"));
+        return PortfolioResponse.from(updated); // o new PortfolioResponse(...)
     }
 
     private static PortfolioResponse toResponse(Portfolio p) {

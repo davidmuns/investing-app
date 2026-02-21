@@ -1,6 +1,7 @@
 package com.davidmuns.investing.domain;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
 @Table(
@@ -9,6 +10,7 @@ import jakarta.persistence.*;
                 @UniqueConstraint(name = "uq_portfolio_name_type", columnNames = {"name", "type"})
         }
 )
+@Data
 public class Portfolio {
 
     @Id

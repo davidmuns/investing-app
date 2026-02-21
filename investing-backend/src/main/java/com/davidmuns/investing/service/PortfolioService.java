@@ -38,4 +38,11 @@ public class PortfolioService {
         }
         repository.deleteById(id);
     }
+
+    public Portfolio rename(Long id, String newName) {
+        Portfolio portfolio = repository.findById(id)
+                .orElseThrow(() -> new PortfolioNotFoundException(id));
+        portfolio.setName(newName.trim());
+        return repository.save(portfolio);
+    }
 }
