@@ -9,45 +9,84 @@
     </div>
 
     <p *ngIf="loading">Cargando…</p>
+
     <p *ngIf="errorMsg" class="error">{{ errorMsg }}</p>
-    <div *ngIf="!loading && portfolios.length" class="tabs">
-        <div *ngFor="let p of portfolios; let i = index" class="tabWrapper" [class.active]="i === selectedIndex"
-            (click)="selectedIndex = i">
 
-            <!-- Modo normal -->
-            <ng-container *ngIf="editingIndex !== i; else editMode">
-                <span class="tabLabel">{{ p.name }}</span>
-                <button class="editBtn" type="button" (click)="startEdit(i); $event.stopPropagation()"
-                    aria-label="Renombrar" title="Renombrar">
-                    ✏️
-                </button>
-            </ng-container>
+    <div *ngIf="!loading && portfolios.length" class="tabBar">
 
-            <!-- Modo edición -->
-            <ng-template #editMode>
-                <input class="editInput" [(ngModel)]="editName" (keydown.enter)="saveEdit(i)"
-                    (keydown.escape)="cancelEdit()" (click)="$event.stopPropagation()" autofocus />
-            </ng-template>
+        <div class="tabs">
+            <div *ngFor="let p of portfolios; let i = index" class="tabWrapper" [class.active]="i === selectedIndex"
+                (click)="selectedIndex = i">
+                <ng-container *ngIf="editingIndex !== i; else editMode">
+                    <span class="tabLabel">{{ p.name }}</span>
+                    <button class="editBtn" type="button" (click)="startEdit(i); $event.stopPropagation()"
+                        title="Renombrar">
+                        ✏️
+                    </button>
+                </ng-container>
 
+                <ng-template #editMode>
+                    <input class="editInput" [(ngModel)]="editName" (keydown.enter)="saveEdit(i)"
+                        (keydown.escape)="cancelEdit()" (click)="$event.stopPropagation()" autofocus />
+                </ng-template>
+            </div>
         </div>
+
+        <button class="tabPlus" type="button" (click)="openCreateModal()" title="Nueva cartera">
+            +
+        </button>
+
     </div>
-
     <div *ngIf="!loading && portfolios.length" class="panel">
+        <div class="panelTop">
+            <div class="addSymbol">
+                <label class="addSymbolLabel">Añadir posición</label>
 
-        <div class="panelHeader">
-            <div>
-                <div class="row"><b>ID:</b> {{ portfolios[selectedIndex].id }}</div>
-                <div class="row"><b>Tipo:</b> {{ portfolios[selectedIndex].type }}</div>
+                <form class="addSymbolForm" (submit)="submitSymbol(); $event.preventDefault()">
+                    <input class="addSymbolInput" type="text" placeholder="EUR/USD o BBVA" [(ngModel)]="symbolQuery"
+                        name="symbolQuery" autocomplete="off" />
+
+                    <button class="addSymbolBtn" type="submit" aria-label="Buscar">
+                        🔍
+                    </button>
+                </form>
             </div>
 
-            <button class="dangerBtn" type="button" (click)="deleteSelected()">
-                Eliminar cartera
-            </button>
+            <div class="actions" (click)="$event.stopPropagation()">
+                <button class="kebabBtn" type="button" (click)="toggleActions()" aria-label="Acciones">
+                    ⋮
+                </button>
+
+                <div *ngIf="actionsOpen" class="menu">
+                    <button type="button" class="menuItem" (click)="closeActions()">
+                        ⬇️ Descargar cartera
+                    </button>
+
+                    <div class="menuDivider"></div>
+
+                    <button type="button" class="menuItem danger" (click)="closeActions(); deleteSelected()">
+                        🗑️ Eliminar cartera
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <div class="hint">
-            Siguiente paso: “Añadir símbolo” + tabla.
+        <p *ngIf="symbolError" class="error">{{ symbolError }}</p>
+
+        <div class="panelHeader">
+            <!-- <div>
+                <div class="row"><b>ID:</b> {{ portfolios[selectedIndex].id }}</div>
+                <div class="row"><b>Tipo:</b> {{ portfolios[selectedIndex].type }}</div>
+            </div> -->
+            <!-- 
+            <button class="dangerBtn" type="button" (click)="deleteSelected()">
+                Eliminar cartera
+            </button> -->
         </div>
+
+        <!-- <div class="hint">
+            Siguiente paso: “Añadir símbolo” + tabla.
+        </div> -->
 
     </div>
 

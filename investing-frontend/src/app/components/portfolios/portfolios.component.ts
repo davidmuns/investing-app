@@ -21,6 +21,9 @@ export class PortfoliosComponent implements OnInit {
   errorMsg = '';
   editingIndex: number | null = null;
   editName = '';
+  symbolQuery = '';
+  symbolError = '';
+  actionsOpen = false;
 
   // modal state
   modalOpen = false;
@@ -28,6 +31,20 @@ export class PortfoliosComponent implements OnInit {
   formLoading = false;
   formError = '';
   @ViewChild('nameInput') nameInput?: ElementRef<HTMLInputElement>;
+
+  toggleActions(): void {
+    this.actionsOpen = !this.actionsOpen;
+  }
+
+  closeActions(): void {
+    this.actionsOpen = false;
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.closeActions();
+    if (this.actionsOpen) this.closeActions();
+  }
 
   @HostListener('document:keydown.escape')
   onEsc(): void {
@@ -196,5 +213,21 @@ export class PortfoliosComponent implements OnInit {
         this.cancelEdit();
       },
     });
+  }
+
+  submitSymbol(): void {
+    const q = this.symbolQuery.trim();
+    if (!q) {
+      this.symbolError = 'Introduce un símbolo o búsqueda.';
+      return;
+    }
+    this.symbolError = '';
+    console.log('ADD SYMBOL =>', {
+      portfolioId: this.portfolios[this.selectedIndex]?.id,
+      query: q,
+    });
+
+    // Por ahora solo limpiamos el input
+    this.symbolQuery = '';
   }
 }

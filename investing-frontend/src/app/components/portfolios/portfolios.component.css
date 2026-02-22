@@ -10,6 +10,12 @@
     gap: 12px;
 }
 
+.headerActions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
 .panelHeader {
     display: flex;
     justify-content: space-between;
@@ -17,7 +23,7 @@
     gap: 20px;
 }
 
-.dangerBtn {
+/* .dangerBtn {
     background: #d93025;
     color: white;
     border: none;
@@ -28,35 +34,35 @@
 
 .dangerBtn:hover {
     background: #b1271b;
-}
+} */
 
 .error {
     color: #d93025;
     font-weight: 600;
 }
 
+
+.tabBar {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+/* Tabs ocupan todo el espacio disponible */
 .tabs {
     display: flex;
-    gap: 6px;
-    margin: 12px 0;
-    padding-bottom: 6px;
+    gap: 1px;
+    /* flex: 1; */
     overflow-x: auto;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    /* scroll horizontal si hay muchas */
+    scrollbar-width: thin;
+    /* Firefox */
 }
 
-.tab {
-    border: 1px solid rgba(0, 0, 0, 0.18);
-    background: #fff;
-    padding: 8px 10px;
-    border-radius: 8px 8px 0 0;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.tab.active {
-    border-bottom-color: #fff;
-    box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.02);
-    font-weight: 700;
+/* Evita que las tabs bajen de línea */
+.tabs>* {
+    flex: 0 0 auto;
 }
 
 .tabWrapper {
@@ -68,13 +74,6 @@
     border-radius: 8px 8px 0 0;
     cursor: pointer;
     background: #fff;
-}
-
-.tabWrapper {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    position: relative;
 }
 
 .tabWrapper:hover .editBtn {
@@ -95,12 +94,22 @@
     white-space: nowrap;
 }
 
-/* .editBtn {
-    border: none;
-    background: transparent;
+/* Botón + siempre fijo a la derecha */
+.tabPlus {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    background: #fff;
     cursor: pointer;
-    font-size: 14px;
-} */
+    font-size: 18px;
+}
+
+.tabPlus:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
 .editBtn {
     opacity: 0;
     pointer-events: none;
@@ -127,6 +136,87 @@
     background: rgba(0, 0, 0, 0.02);
 }
 
+.panelTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.actions {
+    position: relative;
+}
+
+.kebabBtn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    background: #fff;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.menu {
+    position: absolute;
+    top: 45px;
+    /* top: calc(100% + 80px); */
+    right: 0;
+    width: 220px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+    padding: 6px;
+    z-index: 50;
+}
+
+.menuItem {
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: transparent;
+    padding: 10px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.menuItem:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.menuDivider {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.12);
+    margin: 6px 4px;
+}
+
+.menuItem.danger {
+    color: #d93025;
+    font-weight: 600;
+}
+
+.menu::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    right: 14px;
+    border-width: 0 8px 8px 8px;
+    border-style: solid;
+    border-color: transparent transparent rgba(0, 0, 0, 0.15) transparent;
+}
+
+.menu::after {
+    content: "";
+    position: absolute;
+    top: -7px;
+    right: 14px;
+    border-width: 0 8px 8px 8px;
+    border-style: solid;
+    border-color: transparent transparent #fff transparent;
+}
+
 .row {
     margin: 6px 0;
 }
@@ -134,12 +224,6 @@
 .hint {
     margin-top: 10px;
     color: rgba(0, 0, 0, 0.65);
-}
-
-.headerActions {
-    display: flex;
-    gap: 10px;
-    align-items: center;
 }
 
 .iconBtn {
@@ -228,4 +312,53 @@
     justify-content: flex-end;
     gap: 10px;
     margin-top: 14px;
+}
+
+.addSymbol {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.addSymbolLabel {
+    min-width: 120px;
+    font-weight: 600;
+}
+
+.addSymbolForm {
+    position: relative;
+    width: 420px;
+    max-width: 100%;
+}
+
+.addSymbolInput {
+    width: 100%;
+    height: 34px;
+    padding: 0 38px 0 10px;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    border-radius: 3px;
+    outline: none;
+}
+
+.addSymbolInput:focus {
+    border-color: rgba(26, 115, 232, 0.8);
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.12);
+}
+
+.addSymbolBtn {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    opacity: 0.75;
+}
+
+.addSymbolBtn:hover {
+    opacity: 1;
 }
