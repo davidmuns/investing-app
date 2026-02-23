@@ -53,7 +53,7 @@
 .tabs {
     display: flex;
     gap: 1px;
-    /* flex: 1; */
+    flex: 1;
     overflow-x: auto;
     /* scroll horizontal si hay muchas */
     scrollbar-width: thin;
