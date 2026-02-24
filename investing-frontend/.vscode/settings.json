@@ -1,7 +1,17 @@
 {
     "typescript.tsdk": "node_modules\\typescript\\lib",
+
     "editor.formatOnSave": true,
+
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "explicit"
+    },
+
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     }
 }

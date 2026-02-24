@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { HostListener } from '@angular/core';
 import {
   CreatePortfolioRequest,
@@ -31,6 +31,7 @@ export class PortfoliosComponent implements OnInit {
   formLoading = false;
   formError = '';
   @ViewChild('nameInput') nameInput?: ElementRef<HTMLInputElement>;
+  @ViewChildren('editInput') editInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
   toggleActions(): void {
     this.actionsOpen = !this.actionsOpen;
@@ -51,7 +52,7 @@ export class PortfoliosComponent implements OnInit {
     if (this.modalOpen) this.closeCreateModal();
   }
 
-  constructor(private portfolioService: PortfolioService) { }
+  constructor(private portfolioService: PortfolioService) {}
 
   ngOnInit(): void {
     this.reload();
@@ -131,23 +132,6 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
-  // deleteSelected(): void {
-  //   const selected = this.portfolios[this.selectedIndex];
-  //   if (!selected) return;
-
-  //   const ok = confirm(`¿Eliminar la cartera "${selected.name}"?`);
-  //   if (!ok) return;
-
-  //   this.portfolioService.delete(selected.id).subscribe({
-  //     next: () => {
-  //       this.reload();
-  //     },
-  //     error: () => {
-  //       this.errorMsg = 'No se pudo eliminar la cartera.';
-  //     },
-  //   });
-  // }
-
   deleteSelected(): void {
     const selected = this.portfolios[this.selectedIndex];
     if (!selected) return;
@@ -159,8 +143,8 @@ export class PortfoliosComponent implements OnInit {
 
     this.portfolioService.delete(deletingId).subscribe({
       next: () => {
-        const deletedIndex = this.portfolios.findIndex(p => p.id === deletingId);
-        this.portfolios = this.portfolios.filter(p => p.id !== deletingId);
+        const deletedIndex = this.portfolios.findIndex((p) => p.id === deletingId);
+        this.portfolios = this.portfolios.filter((p) => p.id !== deletingId);
 
         if (this.portfolios.length === 0) {
           this.selectedIndex = 0;
@@ -168,10 +152,7 @@ export class PortfoliosComponent implements OnInit {
         }
 
         // Mantener “posición” si existe; si borraste la última, selecciona la nueva última
-        this.selectedIndex = Math.min(
-          this.selectedIndex,
-          this.portfolios.length - 1
-        );
+        this.selectedIndex = Math.min(this.selectedIndex, this.portfolios.length - 1);
 
         // Si borraste una tab anterior a la seleccionada, desplaza el índice
         if (deletedIndex >= 0 && deletedIndex < this.selectedIndex) {
@@ -184,9 +165,30 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
-  startEdit(index: number) {
-    this.editingIndex = index;
-    this.editName = this.portfolios[index].name;
+  closeEditIfOpen() {
+    if (this.editingIndex !== null) {
+      this.saveEdit(this.editingIndex);
+    }
+  }
+
+  selectTab(i: number) {
+    // si estás editando otra pestaña, guarda (o cancela) antes
+    if (this.editingIndex !== null && this.editingIndex !== i) {
+      this.saveEdit(this.editingIndex);
+    }
+    this.selectedIndex = i;
+  }
+
+  startEdit(i: number) {
+    this.editingIndex = i;
+    this.editName = this.portfolios[i].name;
+
+    setTimeout(() => {
+      // Como solo habrá 1 input visible, cogemos el primero
+      const el = this.editInputs.first?.nativeElement;
+      el?.focus();
+      el?.select();
+    });
   }
 
   cancelEdit() {

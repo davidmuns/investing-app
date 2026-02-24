@@ -1,131 +1,123 @@
-<div class="page">
-    <div class="header">
-        <h1>Todas las carteras</h1>
+<div class="page" (click)="closeEditIfOpen()">
+  <div class="header">
+    <h1>Todas las carteras</h1>
 
-        <div class="headerActions">
-            <!-- <button class="iconBtn" type="button" (click)="openCreateModal()" title="Nueva cartera">+</button> -->
-            <button type="button" (click)="reload()">Recargar</button>
-        </div>
+    <div class="headerActions">
+      <button type="button" (click)="reload()">Recargar</button>
+    </div>
+  </div>
+
+  <p *ngIf="loading">Cargando…</p>
+
+  <p *ngIf="errorMsg" class="error">{{ errorMsg }}</p>
+
+  <div *ngIf="!loading" class="tabBar">
+    <div class="tabs">
+      <div
+        *ngFor="let p of portfolios; let i = index"
+        class="tabWrapper"
+        [class.active]="i === selectedIndex"
+        (click)="selectTab(i)"
+      >
+        <ng-container *ngIf="editingIndex !== i; else editMode">
+          <span class="tabLabel">{{ p.name }}</span>
+          <button class="editBtn" type="button" (click)="startEdit(i); $event.stopPropagation()" title="Renombrar">
+            ✏️
+          </button>
+        </ng-container>
+
+        <ng-template #editMode>
+          <input
+            #editInput
+            class="editInput"
+            [(ngModel)]="editName"
+            (keydown.enter)="saveEdit(i)"
+            (keydown.escape)="cancelEdit()"
+            (blur)="saveEdit(i)"
+            (click)="$event.stopPropagation()"
+          />
+        </ng-template>
+      </div>
     </div>
 
-    <p *ngIf="loading">Cargando…</p>
+    <button class="tabPlus" type="button" (click)="openCreateModal()" title="Nueva cartera">+</button>
+  </div>
+  <div *ngIf="!loading && portfolios.length" class="panel">
+    <div class="panelTop">
+      <div class="addSymbol">
+        <label class="addSymbolLabel">Añadir posición</label>
 
-    <p *ngIf="errorMsg" class="error">{{ errorMsg }}</p>
+        <form class="addSymbolForm" (submit)="submitSymbol(); $event.preventDefault()">
+          <input
+            class="addSymbolInput"
+            type="text"
+            placeholder="EUR/USD o BBVA"
+            [(ngModel)]="symbolQuery"
+            name="symbolQuery"
+            autocomplete="off"
+          />
 
-    <div *ngIf="!loading" class="tabBar">
+          <button class="addSymbolBtn" type="submit" aria-label="Buscar">🔍</button>
+        </form>
+      </div>
 
-        <div class="tabs">
-            <div *ngFor="let p of portfolios; let i = index" class="tabWrapper" [class.active]="i === selectedIndex"
-                (click)="selectedIndex = i">
-                <ng-container *ngIf="editingIndex !== i; else editMode">
-                    <span class="tabLabel">{{ p.name }}</span>
-                    <button class="editBtn" type="button" (click)="startEdit(i); $event.stopPropagation()"
-                        title="Renombrar">
-                        ✏️
-                    </button>
-                </ng-container>
+      <div class="actions" (click)="$event.stopPropagation()">
+        <button class="kebabBtn" type="button" (click)="toggleActions()" aria-label="Acciones">⋮</button>
 
-                <ng-template #editMode>
-                    <input class="editInput" [(ngModel)]="editName" (keydown.enter)="saveEdit(i)"
-                        (keydown.escape)="cancelEdit()" (click)="$event.stopPropagation()" autofocus />
-                </ng-template>
-            </div>
+        <div *ngIf="actionsOpen" class="menu">
+          <button type="button" class="menuItem" (click)="closeActions()">⬇️ Descargar cartera</button>
+
+          <div class="menuDivider"></div>
+
+          <button type="button" class="menuItem danger" (click)="closeActions(); deleteSelected()">
+            🗑️ Eliminar cartera
+          </button>
         </div>
+      </div>
+    </div>
 
-        <button class="tabPlus" type="button" (click)="openCreateModal()" title="Nueva cartera">
-            +
+    <p *ngIf="symbolError" class="error">{{ symbolError }}</p>
+
+    <div class="panelHeader"></div>
+  </div>
+
+  <div *ngIf="!loading && !portfolios.length" class="hint">No hay carteras. Crea una con el botón “+”.</div>
+
+  <!-- Modal -->
+  <div *ngIf="modalOpen" class="modalBackdrop" (click)="closeCreateModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modalHeader">
+        <div class="modalTitle">Seleccione tipo de cartera</div>
+        <button class="iconBtn" type="button" (click)="closeCreateModal()">×</button>
+      </div>
+
+      <div class="typePicker">
+        <button type="button" class="typeBtn" [class.active]="form.type === 'WATCHLIST'" (click)="setType('WATCHLIST')">
+          Lista de seguimiento
         </button>
+        <button type="button" class="typeBtn" [class.active]="form.type === 'POSITIONS'" (click)="setType('POSITIONS')">
+          Posiciones
+        </button>
+      </div>
 
+      <label class="label">Nombre</label>
+      <input
+        class="input"
+        type="text"
+        placeholder="Introducir nombre de la cartera"
+        [(ngModel)]="form.name"
+        [disabled]="formLoading"
+        (keydown.enter)="createPortfolio()"
+      />
+
+      <div *ngIf="formError" class="error formError">{{ formError }}</div>
+
+      <div class="modalActions">
+        <button type="button" (click)="closeCreateModal()" [disabled]="formLoading">Cancelar</button>
+        <button type="button" (click)="createPortfolio()" [disabled]="formLoading || !form.name.trim()">
+          {{ formLoading ? 'Creando…' : 'Crear' }}
+        </button>
+      </div>
     </div>
-    <div *ngIf="!loading && portfolios.length" class="panel">
-        <div class="panelTop">
-            <div class="addSymbol">
-                <label class="addSymbolLabel">Añadir posición</label>
-
-                <form class="addSymbolForm" (submit)="submitSymbol(); $event.preventDefault()">
-                    <input class="addSymbolInput" type="text" placeholder="EUR/USD o BBVA" [(ngModel)]="symbolQuery"
-                        name="symbolQuery" autocomplete="off" />
-
-                    <button class="addSymbolBtn" type="submit" aria-label="Buscar">
-                        🔍
-                    </button>
-                </form>
-            </div>
-
-            <div class="actions" (click)="$event.stopPropagation()">
-                <button class="kebabBtn" type="button" (click)="toggleActions()" aria-label="Acciones">
-                    ⋮
-                </button>
-
-                <div *ngIf="actionsOpen" class="menu">
-                    <button type="button" class="menuItem" (click)="closeActions()">
-                        ⬇️ Descargar cartera
-                    </button>
-
-                    <div class="menuDivider"></div>
-
-                    <button type="button" class="menuItem danger" (click)="closeActions(); deleteSelected()">
-                        🗑️ Eliminar cartera
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <p *ngIf="symbolError" class="error">{{ symbolError }}</p>
-
-        <div class="panelHeader">
-            <!-- <div>
-                <div class="row"><b>ID:</b> {{ portfolios[selectedIndex].id }}</div>
-                <div class="row"><b>Tipo:</b> {{ portfolios[selectedIndex].type }}</div>
-            </div> -->
-            <!-- 
-            <button class="dangerBtn" type="button" (click)="deleteSelected()">
-                Eliminar cartera
-            </button> -->
-        </div>
-
-        <!-- <div class="hint">
-            Siguiente paso: “Añadir símbolo” + tabla.
-        </div> -->
-
-    </div>
-
-    <div *ngIf="!loading && !portfolios.length" class="hint">
-        No hay carteras. Crea una con el botón “+”.
-    </div>
-
-    <!-- Modal -->
-    <div *ngIf="modalOpen" class="modalBackdrop" (click)="closeCreateModal()">
-        <div class="modal" (click)="$event.stopPropagation()">
-            <div class="modalHeader">
-                <div class="modalTitle">Seleccione tipo de cartera</div>
-                <button class="iconBtn" type="button" (click)="closeCreateModal()">×</button>
-            </div>
-
-            <div class="typePicker">
-                <button type="button" class="typeBtn" [class.active]="form.type === 'WATCHLIST'"
-                    (click)="setType('WATCHLIST')">
-                    Lista de seguimiento
-                </button>
-                <button type="button" class="typeBtn" [class.active]="form.type === 'POSITIONS'"
-                    (click)="setType('POSITIONS')">
-                    Posiciones
-                </button>
-            </div>
-
-            <label class="label">Nombre</label>
-            <input class="input" type="text" placeholder="Introducir nombre de la cartera" [(ngModel)]="form.name"
-                [disabled]="formLoading" (keydown.enter)="createPortfolio()" />
-
-            <div *ngIf="formError" class="error formError">{{ formError }}</div>
-
-            <div class="modalActions">
-                <button type="button" (click)="closeCreateModal()" [disabled]="formLoading">Cancelar</button>
-                <button type="button" (click)="createPortfolio()" [disabled]="formLoading || !form.name.trim()">
-
-                    {{ formLoading ? 'Creando…' : 'Crear' }}
-                </button>
-            </div>
-        </div>
-    </div>
+  </div>
 </div>
