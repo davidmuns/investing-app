@@ -23,19 +23,6 @@
     gap: 20px;
 }
 
-/* .dangerBtn {
-    background: #d93025;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.dangerBtn:hover {
-    background: #b1271b;
-} */
-
 .error {
     color: #d93025;
     font-weight: 600;
@@ -57,41 +44,31 @@
     overflow-x: auto;
     /* scroll horizontal si hay muchas */
     scrollbar-width: thin;
-    /* Firefox */
 }
 
-/* Evita que las tabs bajen de línea */
-.tabs>* {
-    flex: 0 0 auto;
+.tabLabelContainer {
+  display: flex;
+  align-items: center;
+  gap: 30px;              /* separación texto-icono */
+  min-width: 120px;
 }
 
-.tabWrapper {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
-    border: 1px solid rgba(0, 0, 0, 0.18);
-    border-radius: 8px 8px 0 0;
-    cursor: pointer;
-    background: #fff;
+/* SOLO si está seleccionada Y en hover */
+.tabLabelContainer.selected:hover .editButton {
+  opacity: 0.5;
+  transform: translateX(0);
 }
 
-.tabWrapper:hover .editBtn {
-    opacity: 0;
-    pointer-events: none;
+.tabLabelText {
+  flex: 1;                /* empuja el icono hacia la derecha */
+  white-space: nowrap;
 }
 
-.tabWrapper.active:hover .editBtn {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.tabWrapper.active {
-    font-weight: 700;
-}
-
-.tabLabel {
-    white-space: nowrap;
+/* Estado base: invisible */
+.editButton {
+  opacity: 0;
+  transform: translateX(4px);
+  transition: opacity 150ms ease, transform 150ms ease;
 }
 
 /* Botón + siempre fijo a la derecha */
@@ -108,25 +85,6 @@
 
 .tabPlus:hover {
     background: rgba(0, 0, 0, 0.05);
-}
-
-.editBtn {
-    opacity: 0;
-    pointer-events: none;
-    /* para que no “robe” hover cuando está oculto */
-    transition: opacity 0.15s ease;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    font-size: 14px;
-    line-height: 1;
-}
-
-.editInput {
-    width: 120px;
-    padding: 4px 6px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
 }
 
 .panel {
