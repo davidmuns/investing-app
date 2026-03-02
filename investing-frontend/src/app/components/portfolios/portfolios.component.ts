@@ -6,7 +6,7 @@ import {
   PortfolioService,
   PortfolioType,
 } from '../../services/portfolio.service';
-
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 type ApiError = { error?: string; message?: string };
 
 @Component({
@@ -24,6 +24,7 @@ export class PortfoliosComponent implements OnInit {
   symbolQuery = '';
   symbolError = '';
   actionsOpen = false;
+  trackByPortfolio = (_: number, p: any) => p.id ?? p.name;
 
   // modal state
   modalOpen = false;
@@ -231,5 +232,23 @@ export class PortfoliosComponent implements OnInit {
 
     // Por ahora solo limpiamos el input
     this.symbolQuery = '';
+  }
+
+  dropTab(event: CdkDragDrop<any>) {
+    if (event.previousIndex === event.currentIndex) return;
+
+    moveItemInArray(this.portfolios, event.previousIndex, event.currentIndex);
+
+    // Ajuste del selectedIndex para que no “salte” a otra pestaña
+    if (this.selectedIndex === event.previousIndex) {
+      this.selectedIndex = event.currentIndex;
+    } else if (this.selectedIndex > event.previousIndex && this.selectedIndex <= event.currentIndex) {
+      this.selectedIndex--;
+    } else if (this.selectedIndex < event.previousIndex && this.selectedIndex >= event.currentIndex) {
+      this.selectedIndex++;
+    }
+
+    // (Opcional) Persistir orden:
+    // this.saveOrder(this.portfolios.map(p => p.id));
   }
 }

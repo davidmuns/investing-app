@@ -12,18 +12,27 @@
   <p *ngIf="errorMsg" class="error">{{ errorMsg }}</p>
 
   <div *ngIf="!loading" class="tabBar">
-    <div class="tabs">
+    <!-- ✅ DropList en el contenedor de tabs -->
+    <div class="tabs" cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="dropTab($event)">
       <mat-tab-group
         mat-align-tabs="center"
         animationDuration="500ms"
         [selectedIndex]="selectedIndex"
         (selectedIndexChange)="selectTab($event)"
       >
-        <mat-tab *ngFor="let p of portfolios; let i = index">
-          <!-- AQUÍ defines el contenido del "label" del tab -->
+        <mat-tab *ngFor="let p of portfolios; let i = index; trackBy: trackByPortfolio">
           <ng-template mat-tab-label>
-            <div class="tabLabelContainer" [class.selected]="i === selectedIndex">
+            <!-- ✅ Drag SOLO en el label -->
+            <div
+              class="tabLabelContainer"
+              [class.selected]="i === selectedIndex"
+              cdkDrag
+              cdkDragLockAxis="x"
+              matTooltip="Arrstra para ordenar"
+              [matTooltipDisabled]="i !== selectedIndex"
+            >
               <ng-container *ngIf="editingIndex !== i; else editMode">
+                <mat-icon class="dragHint" aria-hidden="true">drag_indicator</mat-icon>
                 <span class="tabLabelText">
                   {{ p.name }}
                 </span>
@@ -40,6 +49,7 @@
               </ng-container>
 
               <ng-template #editMode>
+                <!-- ✅ mientras editas, mejor no arrastrar -->
                 <input
                   #editInput
                   class="editInput"
@@ -48,6 +58,7 @@
                   (keydown.escape)="cancelEdit()"
                   (click)="$event.stopPropagation()"
                   (blur)="saveEdit(i)"
+                  (mousedown)="$event.stopPropagation()"
                 />
               </ng-template>
             </div>

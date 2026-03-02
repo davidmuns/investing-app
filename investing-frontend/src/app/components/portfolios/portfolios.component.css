@@ -53,10 +53,41 @@
   min-width: 120px;
 }
 
+/* Señal general: cursor de arrastre */
+.tabLabelContainer.selected {
+  cursor: grab;
+}
+.tabLabelContainer.selected:active {
+  cursor: grabbing;
+}
+
 /* SOLO si está seleccionada Y en hover */
 .tabLabelContainer.selected:hover .editButton {
   opacity: 0.5;
   transform: translateX(0);
+}
+
+/* Icono indicador (drag) */
+.dragHint {
+  opacity: 0;
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  margin-right: 4px;
+
+  transition: opacity 160ms ease, transform 160ms ease;
+  transform: translateX(-2px);
+}
+
+/* Solo visible si está seleccionada + hover */
+.tabLabelContainer.selected:hover .dragHint {
+  opacity: 0.6;
+  transform: translateX(0);
+}
+
+/* Si estás editando, no muestres la pista */
+.tabLabelContainer .editInput ~ .dragHint {
+  display: none;
 }
 
 .tabLabelText {

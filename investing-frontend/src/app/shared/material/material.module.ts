@@ -7,6 +7,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   exports: [
@@ -17,6 +18,7 @@ import { MatTabsModule } from '@angular/material/tabs';
     MatDividerModule,
     MatTooltipModule,
     MatTabsModule,
+    DragDropModule,
   ],
 })
 export class MaterialModule {}
