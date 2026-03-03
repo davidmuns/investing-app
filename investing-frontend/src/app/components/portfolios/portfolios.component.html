@@ -1,16 +1,22 @@
 <div class="page" (click)="closeEditIfOpen()">
   <div class="header">
-    <h1>Todas las carteras</h1>
-
+    <div class="actions">
+      <button mat-button aria-label="" [matMenuTriggerFor]="portfolio">
+        <h2>
+          Todas las carteras
+          <span class="dropDownArrowBlackBig middle"></span>
+          <!-- <mat-icon>keyboard_arrow_down</mat-icon> -->
+        </h2>
+      </button>
+    </div>
     <div class="headerActions">
-      <button type="button" (click)="reload()">Recargar</button>
+      <button mat-raised-button color="primary" (click)="reload()">Recargar</button>
     </div>
   </div>
-
+  <p></p>
+  <hr />
   <p *ngIf="loading">Cargando…</p>
-
   <p *ngIf="errorMsg" class="error">{{ errorMsg }}</p>
-
   <div *ngIf="!loading" class="tabBar">
     <!-- ✅ DropList en el contenedor de tabs -->
     <div class="tabs" cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="dropTab($event)">
@@ -66,8 +72,8 @@
         </mat-tab>
       </mat-tab-group>
     </div>
-
-    <button class="tabPlus" type="button" (click)="openCreateModal()" title="Nueva cartera">+</button>
+    <!-- <button class="tabPlus" type="button" (click)="openCreateModal()" title="Nueva cartera">+</button> -->
+    <button mat-button (click)="openCreateModal()"><mat-icon>add</mat-icon></button>
   </div>
 
   <div *ngIf="!loading && portfolios.length" class="panel">
@@ -89,9 +95,8 @@
         </form>
       </div>
 
-      <div class="actions" (click)="$event.stopPropagation()">
+      <!-- <div class="actions" (click)="$event.stopPropagation()">
         <button class="kebabBtn" type="button" (click)="toggleActions()" aria-label="Acciones">⋮</button>
-
         <div *ngIf="actionsOpen" class="menu">
           <button type="button" class="menuItem" (click)="closeActions()">⬇️ Descargar cartera</button>
 
@@ -101,6 +106,15 @@
             🗑️ Eliminar cartera
           </button>
         </div>
+      </div> -->
+      <div>
+        <button
+          mat-icon-button
+          aria-label="Example icon button with a vertical three dot icon"
+          [matMenuTriggerFor]="delete_portfolio"
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button>
       </div>
     </div>
 
@@ -149,3 +163,29 @@
     </div>
   </div>
 </div>
+
+<!-- PORTFOLIO MENU -->
+<mat-menu #portfolio>
+  <ng-container *ngFor="let p of portfolios; index as i">
+    <button mat-menu-item (click)="selectTab(i)">
+      <mat-icon>work</mat-icon>
+      {{ p.name }}
+    </button>
+    <mat-divider *ngIf="i < portfolios.length - 1"></mat-divider>
+  </ng-container>
+</mat-menu>
+
+<!-- DELETE PORTFOLIO -->
+<mat-menu #delete_portfolio>
+  <ng-container>
+    <button mat-menu-item>
+      <mat-icon>get_app</mat-icon>
+      Descargar cartera
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="deleteSelected()">
+      <mat-icon>delete</mat-icon>
+      Eliminar cartera
+    </button>
+  </ng-container>
+</mat-menu>

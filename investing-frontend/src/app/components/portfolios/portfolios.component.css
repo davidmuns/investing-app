@@ -28,6 +28,19 @@
     font-weight: 600;
 }
 
+.dropDownArrowBlackBig {
+    background-image: URL("https://i-invdn-com.investing.com/newSiteIconsSprite_v42j.png");
+    background-position: -139px -286px;
+    display: inline-block;
+    width: 9px;
+    height: 6px;
+    margin-left: 6px;
+}
+
+.middle {
+    vertical-align: middle !important;
+}
+
 
 .tabBar {
     display: flex;
