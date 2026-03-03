@@ -7,7 +7,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: 120px;
 }
 
 .headerActions {
@@ -335,7 +335,7 @@
 }
 
 .addSymbolInput {
-    width: 100%;
+    width: 70%;
     height: 34px;
     padding: 0 38px 0 10px;
     border: 1px solid rgba(0, 0, 0, 0.25);
@@ -350,7 +350,7 @@
 
 .addSymbolBtn {
     position: absolute;
-    right: 6px;
+    right: 86px;
     top: 50%;
     transform: translateY(-50%);
     width: 28px;
@@ -358,7 +358,7 @@
     border: none;
     background: transparent;
     cursor: pointer;
-    opacity: 0.75;
+    opacity: 1;
 }
 
 .addSymbolBtn:hover {

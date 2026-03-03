@@ -4,13 +4,13 @@
       <button mat-button aria-label="" [matMenuTriggerFor]="portfolio">
         <h2>
           Todas las carteras
-          <span class="dropDownArrowBlackBig middle"></span>
-          <!-- <mat-icon>keyboard_arrow_down</mat-icon> -->
+          <!-- <span class="dropDownArrowBlackBig middle"></span> -->
+          <mat-icon>arrow_drop_down</mat-icon>
         </h2>
       </button>
     </div>
     <div class="headerActions">
-      <button mat-raised-button color="primary" (click)="reload()">Recargar</button>
+      <button mat-button (click)="reload()"><mat-icon>refresh</mat-icon></button>
     </div>
   </div>
   <p></p>
@@ -91,7 +91,10 @@
             autocomplete="off"
           />
 
-          <button class="addSymbolBtn" type="submit" aria-label="Buscar">🔍</button>
+          <!-- <button class="addSymbolBtn" type="submit" aria-label="Buscar">🔍</button> -->
+          <button class="addSymbolBtn" type="submit" aria-label="Buscar">
+            <mat-icon>search</mat-icon>
+          </button>
         </form>
       </div>
 
