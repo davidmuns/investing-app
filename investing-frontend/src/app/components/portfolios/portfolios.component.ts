@@ -1,12 +1,9 @@
 import { Component, ElementRef, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { HostListener } from '@angular/core';
-import {
-  CreatePortfolioRequest,
-  PortfolioResponse,
-  PortfolioService,
-  PortfolioType,
-} from '../../services/portfolio.service';
+import { PortfolioService } from '../../services/portfolio.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { PortfolioResponse } from '@app/shared/models/portfolios-response';
+import { PortfolioRequest, PortfolioType } from '@app/shared/models/portfolios-request';
 type ApiError = { error?: string; message?: string };
 
 @Component({
@@ -28,7 +25,7 @@ export class PortfoliosComponent implements OnInit {
 
   // modal state
   modalOpen = false;
-  form: CreatePortfolioRequest = { name: '', type: 'WATCHLIST' };
+  form: PortfolioRequest = { name: '', type: 'WATCHLIST' };
   formLoading = false;
   formError = '';
   @ViewChild('nameInput') nameInput?: ElementRef<HTMLInputElement>;

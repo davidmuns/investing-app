@@ -10,12 +10,8 @@ import { FormsModule } from '@angular/forms';
 import { LayoutModule } from './layout/layout.module';
 import { SharedModule } from './shared/shared.module';
 
-
 @NgModule({
-  declarations: [
-    AppComponent,
-    PortfoliosComponent
-  ],
+  declarations: [AppComponent, PortfoliosComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -23,9 +19,9 @@ import { SharedModule } from './shared/shared.module';
     HttpClientModule,
     FormsModule,
     LayoutModule,
-    SharedModule
+    SharedModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

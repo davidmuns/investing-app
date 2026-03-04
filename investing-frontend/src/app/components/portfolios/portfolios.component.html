@@ -26,7 +26,7 @@
         [selectedIndex]="selectedIndex"
         (selectedIndexChange)="selectTab($event)"
       >
-        <mat-tab *ngFor="let p of portfolios; let i = index; trackBy: trackByPortfolio">
+        <mat-tab *ngFor="let p of portfolios | searchBar: this.symbolQuery; let i = index; trackBy: trackByPortfolio">
           <ng-template mat-tab-label>
             <!-- ✅ Drag SOLO en el label -->
             <div
