@@ -9,9 +9,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { LayoutModule } from './layout/layout.module';
 import { SharedModule } from './shared/shared.module';
+import { AuthComponent } from './components/auth/auth.component';
+import { AuthModule } from './components/auth/auth.module';
 
 @NgModule({
-  declarations: [AppComponent, PortfoliosComponent],
+  declarations: [AppComponent, PortfoliosComponent, AuthComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -20,6 +22,7 @@ import { SharedModule } from './shared/shared.module';
     FormsModule,
     LayoutModule,
     SharedModule,
+    AuthModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
