@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+  styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit {
-  isMobile = false
-  isSolid = false
+  isMobile = false;
+  isSolid = false;
 
   contexts = [
     {
@@ -17,15 +18,16 @@ export class HeaderComponent implements OnInit {
       title: 'Català',
       label: 'Català',
       width: '20',
-      height: '20'
+      height: '20',
     },
     {
       lang: 'es',
-      flagUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Bandera_de_Espa%C3%B1a.svg/1200px-Bandera_de_Espa%C3%B1a.svg.png',
+      flagUrl:
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Bandera_de_Espa%C3%B1a.svg/1200px-Bandera_de_Espa%C3%B1a.svg.png',
       title: 'Español',
       label: 'Español',
       width: '20',
-      height: '20'
+      height: '20',
     },
     {
       lang: 'en',
@@ -33,7 +35,7 @@ export class HeaderComponent implements OnInit {
       title: 'English',
       label: 'English',
       width: '20',
-      height: '20'
+      height: '20',
     },
     {
       lang: 'ru',
@@ -41,16 +43,14 @@ export class HeaderComponent implements OnInit {
       title: 'Русский',
       label: 'Русский',
       width: '20',
-      height: '20'
+      height: '20',
     },
-  ]
-  constructor() { }
+  ];
+  constructor() {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   openMenu(menuTrigger: MatMenuTrigger) {
     // menuTrigger.openMenu();
   }
-
 }
