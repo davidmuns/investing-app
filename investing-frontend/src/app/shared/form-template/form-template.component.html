@@ -1,0 +1,108 @@
+<!-- FORM -->
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <!-- <img src="../../../../assets/img/user.png" alt="user-image" style="margin-top: 20px" /> -->
+  <!-- <br /> -->
+  <!-- <br /> -->
+  <h3>{{ formType }}</h3>
+  <!-- EMAIL OR USERNAME INPUT -->
+  <mat-form-field class="input-witdh" appearance="outline">
+    <mat-label>Username</mat-label>
+    <input matInput placeholder="Username" formControlName="nombreUsuario" />
+    <button
+      *ngIf="form.get('nombreUsuario')?.value"
+      matSuffix
+      mat-icon-button
+      class="clear-btn"
+      aria-label="Clear"
+      (click)="form.get('nombreUsuario')?.reset()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+    <!-- <div class="error" *ngIf="form.get('nombreUsuario')?.touched && form.get('nombreUsuario')?.hasError('required')">
+      {{ 'Required' }}
+    </div>
+    <div *ngIf="form.get('nombreUsuario')?.touched && form.get('nombreUsuario')?.errors?.['maxlength']" class="error">
+      {{ 'TitleLength' }}
+    </div> -->
+    <mat-error *ngIf="form.get('nombreUsuario')?.touched && form.get('nombreUsuario')?.hasError('required')">
+      Required
+    </mat-error>
+    <mat-error *ngIf="form.get('nombreUsuario')?.touched && form.get('nombreUsuario')?.hasError('maxlength')">
+      TitleLength
+    </mat-error>
+  </mat-form-field>
+  <!-- EMAIL INPUT -->
+  <mat-form-field class="input-witdh" appearance="outline">
+    <mat-label>Email</mat-label>
+    <input matInput placeholder="Email" formControlName="email" />
+    <button
+      *ngIf="form.get('email')?.value"
+      matSuffix
+      mat-icon-button
+      class="clear-btn"
+      aria-label="Clear"
+      (click)="form.get('email')?.reset()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+    <!-- <div *ngIf="form.get('email')?.touched && form.get('email')?.hasError('email')" class="error">
+      {{ 'auth.signup.invalid-email' }}
+    </div>
+    <div *ngIf="form.get('email')?.touched && form.get('email')?.hasError('required')" class="error">
+      {{ 'Required' }}
+    </div>
+    <div *ngIf="form.get('email')?.touched && form.get('email')?.errors?.['maxlength']" class="error">
+      {{ 'TitleLength' }}
+    </div> -->
+    <mat-error *ngIf="form.get('email')?.touched && form.get('email')?.hasError('email')" class="error">
+      Invalid email
+    </mat-error>
+    <mat-error *ngIf="form.get('email')?.touched && form.get('email')?.hasError('required')" class="error">
+      Required
+    </mat-error>
+    <mat-error *ngIf="form.get('email')?.touched && form.get('email')?.errors?.['maxlength']" class="error">
+      Tittle lenght
+    </mat-error>
+  </mat-form-field>
+  <!-- PASSWORD INPUT -->
+  <mat-form-field class="input-witdh" appearance="outline">
+    <mat-label>Password</mat-label>
+    <input matInput [type]="hide ? 'password' : 'text'" placeholder="Password" formControlName="password" />
+    <div
+      mat-icon-button
+      matSuffix
+      (click)="hide = !hide"
+      [attr.aria-label]="'Hide password'"
+      [attr.aria-pressed]="hide"
+    >
+      <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+    </div>
+    <!-- <button
+      type="button"
+      mat-icon-button
+      matSuffix
+      (click)="hide = !hide"
+      [attr.aria-label]="'Hide password'"
+      [attr.aria-pressed]="hide"
+    >
+      <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+    </button> -->
+    <!-- <div class="error" *ngIf="form.get('password')?.touched && form.get('password')?.hasError('required')">
+      {{ 'Required' }}
+    </div>
+    <div *ngIf="form.get('password')?.touched && form.get('password')?.hasError('pattern')" class="error">
+      {{ 'auth.signup.pass-length' }}
+    </div> -->
+    <mat-error class="error" *ngIf="form.get('password')?.touched && form.get('password')?.hasError('required')">
+      {{ 'Required' }}
+    </mat-error>
+    <mat-error *ngIf="form.get('password')?.touched && form.get('password')?.hasError('pattern')" class="error">
+      {{ 'auth.signup.pass-length' }}
+    </mat-error>
+  </mat-form-field>
+  <br />
+  <!-- SUBMIT BUTTON -->
+  <button type="submit" class="input-width button" mat-raised-button [disabled]="form.invalid">
+    {{ formType }}
+  </button>
+</form>

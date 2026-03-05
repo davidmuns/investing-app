@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
+import { LoginComponent } from '@app/components/auth/login/login.component';
 
 @Component({
   selector: 'app-header',
@@ -46,11 +47,18 @@ export class HeaderComponent implements OnInit {
       height: '20',
     },
   ];
-  constructor() {}
+  constructor(public dialog: MatDialog) {}
 
   ngOnInit(): void {}
 
   openMenu(menuTrigger: MatMenuTrigger) {
     // menuTrigger.openMenu();
+  }
+
+  openLogin() {
+    this.dialog.open(LoginComponent, {
+      enterAnimationDuration: '500ms',
+      exitAnimationDuration: '500ms',
+    });
   }
 }

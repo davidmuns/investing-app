@@ -1,40 +1,38 @@
 <mat-toolbar color="primary" class="toolbar">
+  <span class="logo">Investing</span>
 
-    <span class="logo">Investing</span>
+  <span class="spacer"></span>
 
-    <span class="spacer"></span>
+  <button mat-icon-button [matMenuTriggerFor]="user">
+    <mat-icon>account_circle</mat-icon>
+  </button>
 
-    <button mat-icon-button [matMenuTriggerFor]="user">
-        <mat-icon>account_circle</mat-icon>
-    </button>
+  <button mat-button routerLink="/portfolios">Portfolios</button>
 
-    <button mat-button routerLink="/portfolios">Portfolios</button>
+  <button mat-icon-button>
+    <mat-icon>notifications</mat-icon>
+  </button>
 
-    <button mat-icon-button>
-        <mat-icon>notifications</mat-icon>
-    </button>
-
-    <button mat-icon-button [matMenuTriggerFor]="language">
+  <!-- <button mat-icon-button [matMenuTriggerFor]="language">
         <mat-icon>language</mat-icon>
-    </button>
-
+    </button> -->
 </mat-toolbar>
 
 <mat-menu #user="matMenu">
-    <button mat-menu-item>
-        <mat-icon>settings</mat-icon>
-        <span>Settings</span>
-    </button>
+  <button mat-menu-item>
+    <mat-icon>settings</mat-icon>
+    <span>Settings</span>
+  </button>
 
-    <button mat-menu-item>
-        <mat-icon>logout</mat-icon>
-        <span>Logout</span>
-    </button>
+  <button mat-menu-item (click)="openLogin()">
+    <mat-icon>logout</mat-icon>
+    <span>Signup</span>
+  </button>
 </mat-menu>
 
 <!-- LANGUAGE MENU -->
-<mat-menu #language>
-    <!-- LANGUAGE BUTTONS -->
+<!-- <mat-menu #language>
+
     <ng-container *ngFor="let context of contexts; index as i">
         <ng-template *ngTemplateOutlet="languageButtonTemplate; 
     context: { 
@@ -49,7 +47,7 @@
     </ng-container>
 </mat-menu>
 
-<!-- LANGUAGE BUTTON TEMPLATE -->
+
 <ng-template #languageButtonTemplate let-lang="lang" let-flag="flag" let-title="title" let-label="label"
     let-width="width" let-height="height">
     <button mat-menu-item>
@@ -58,4 +56,4 @@
         {{ label }}
     </button>
     <mat-divider *ngIf="isMobile"></mat-divider>
-</ng-template>
+</ng-template> -->

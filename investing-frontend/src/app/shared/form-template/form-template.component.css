@@ -1,0 +1,103 @@
+img {
+    width: 40%;
+}
+
+.input-witdh {
+    width: 100%;
+}
+
+span {
+    color: var(--accent);
+    cursor: pointer;
+}
+
+form span:hover {
+    text-decoration: underline;
+}
+
+.goto-login {
+    padding: 10px 20px 0px 20px;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+h3 {
+    color: var(--accent);
+    font-weight: bold;
+    text-align: center;
+    font-size: 1.6rem;
+}
+
+button {
+    background: var(--accent);
+    color: var(--lemon);
+    width: 100%;
+    height: 45px;
+    box-shadow: 1px 1px 6px rgba(60, 60, 60, 1);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+button:hover {
+    box-shadow: 3px 3px 6px rgba(60, 60, 60, 1);
+}
+
+.link-signup {
+    padding-top: 10px;
+    font-size: 0.9rem;
+    text-align: center;
+    color: var(--accent);
+    cursor: pointer;
+}
+
+.link-signup:hover {
+    text-decoration: underline;
+}
+
+.forgot-pass {
+    font-size: 0.8rem;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.send-email {
+    text-align: center;
+    margin: 0px;
+    padding: 0px;
+    font-size: 0.8rem;
+    color: var(--accent);
+    cursor: pointer;
+}
+
+.send-email:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 450px) {
+    h3 {
+        font-size: 1.3rem;
+    }
+}
+
+.clear-btn {
+    background: none;
+    color: black;
+    box-shadow: none;
+}
+
+.clear-btn:hover {
+    background: none;
+    color: var(--lemon);
+    box-shadow: none;
+}
+
+
+::ng-deep .mat-tab-label-content {
+    font-size: 14px;
+  }
+
+.error {
+    color: black;
+    font-size: .8rem;
+  }
