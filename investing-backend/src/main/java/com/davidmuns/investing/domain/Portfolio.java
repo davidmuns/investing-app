@@ -2,6 +2,9 @@ package com.davidmuns.investing.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(
@@ -23,6 +26,9 @@ public class Portfolio {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PortfolioType type;
+
+    @CreationTimestamp // This annotation generates current local date and time
+    private LocalDateTime date;
 
     protected Portfolio() {}
 
