@@ -11,9 +11,10 @@ import { LayoutModule } from './layout/layout.module';
 import { SharedModule } from './shared/shared.module';
 import { AuthComponent } from './components/auth/auth.component';
 import { AuthModule } from './components/auth/auth.module';
+import { TableComponent } from './components/table/table.component';
 
 @NgModule({
-  declarations: [AppComponent, PortfoliosComponent, AuthComponent],
+  declarations: [AppComponent, PortfoliosComponent, AuthComponent, TableComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

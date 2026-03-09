@@ -127,6 +127,19 @@
 
   <div *ngIf="!loading && !portfolios.length" class="hint">No hay carteras. Crea una con el botón “+”.</div>
 
+  <div class="body">
+    <div class="login">
+      <mat-tab-group mat-align-tabs="start" animationDuration="500ms">
+        <!-- RESUMEN TAB -->
+        <mat-tab class="custom-tab-label" label="Resumen">
+          <app-table></app-table>
+        </mat-tab>
+        <!-- GRAFICOS TAB -->
+        <mat-tab class="custom-tab-label" label="Gráficos"></mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+
   <!-- Modal -->
   <div *ngIf="modalOpen" class="modalBackdrop" (click)="closeCreateModal()">
     <div class="modal" (click)="$event.stopPropagation()">
