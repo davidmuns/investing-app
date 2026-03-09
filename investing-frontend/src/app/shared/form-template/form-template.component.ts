@@ -28,7 +28,20 @@ export class FormTemplateComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.initFormSignup();
+    if (this.formType === 'login') {
+      this.initFormLogin();
+    } else if (this.formType === 'signup') {
+      this.initFormSignup();
+    } else {
+      alert('option: ' + this.formType + 'does not exist');
+    }
+  }
+
+  private initFormLogin() {
+    this.form = this.fb.group({
+      nombreUsuario: ['', [Validators.required, Validators.maxLength(30)]],
+      password: ['', Validators.required],
+    });
   }
 
   private initFormSignup() {
@@ -40,7 +53,46 @@ export class FormTemplateComponent implements OnInit {
   }
 
   onSubmit() {
-    this.signup();
+    switch (this.formType) {
+      case 'login': {
+        this.login();
+        break;
+      }
+      case 'signup': {
+        this.signup();
+        break;
+      }
+      default: {
+        alert('form type: ' + this.formType + ' does not exist');
+        break;
+      }
+    }
+  }
+
+  private login() {
+    if (this.form.valid) {
+      this.authSvc.loginUser(this.form.value).subscribe({
+        next: (data) => {
+          this.tokenSvc.setToken(data.token);
+          this.dialog.closeAll();
+          const msg = `${'Welcome '} ${this.form.value.nombreUsuario}!`;
+
+          // this.router.navigate(['group-form']);
+          setTimeout(() => {
+            this.utilsSvc.showSnackBar(msg, 5000);
+            // this.router.navigate(['articles']);
+          }, 600);
+        },
+        error: (err) => {
+          const msg = 'auth.login.wrong-data';
+          this.utilsSvc.showSnackBar(msg, 10000);
+          this.form.reset();
+        },
+      });
+    } else {
+      const msg = 'auth.login.fill-blanks';
+      this.utilsSvc.showSnackBar(msg, 5000);
+    }
   }
 
   private signup() {
@@ -48,7 +100,7 @@ export class FormTemplateComponent implements OnInit {
     if (this.form.valid) {
       this.authSvc.signupUser(this.form.value).subscribe({
         next: (data) => {
-          // this.dialog.closeAll();
+          this.dialog.closeAll();
           this.dialog.open(LoginComponent);
           msg = 'user-saved';
           this.utilsSvc.showSnackBar(msg, 10000);
@@ -69,7 +121,7 @@ export class FormTemplateComponent implements OnInit {
   }
 
   signupOpen() {
-    // this.dialog.closeAll();
+    this.dialog.closeAll();
     this.dialog.open(LoginComponent, {
       enterAnimationDuration: '1000ms',
     });

@@ -6,8 +6,13 @@
   <h3>{{ formType }}</h3>
   <!-- EMAIL OR USERNAME INPUT -->
   <mat-form-field class="input-witdh" appearance="outline">
-    <mat-label>Username</mat-label>
-    <input matInput placeholder="Username" formControlName="nombreUsuario" />
+    <!-- <mat-label>Username</mat-label> -->
+    <mat-label>{{ formType === 'login' ? 'UsernameOrEmail' : 'Username' }}</mat-label>
+    <input
+      matInput
+      placeholder="{{ formType === 'login' ? 'UsernameOrEmail' : 'Username' }}"
+      formControlName="nombreUsuario"
+    />
     <button
       *ngIf="form.get('nombreUsuario')?.value"
       matSuffix
@@ -18,12 +23,6 @@
     >
       <mat-icon>close</mat-icon>
     </button>
-    <!-- <div class="error" *ngIf="form.get('nombreUsuario')?.touched && form.get('nombreUsuario')?.hasError('required')">
-      {{ 'Required' }}
-    </div>
-    <div *ngIf="form.get('nombreUsuario')?.touched && form.get('nombreUsuario')?.errors?.['maxlength']" class="error">
-      {{ 'TitleLength' }}
-    </div> -->
     <mat-error *ngIf="form.get('nombreUsuario')?.touched && form.get('nombreUsuario')?.hasError('required')">
       Required
     </mat-error>
@@ -32,7 +31,7 @@
     </mat-error>
   </mat-form-field>
   <!-- EMAIL INPUT -->
-  <mat-form-field class="input-witdh" appearance="outline">
+  <mat-form-field *ngIf="this.formType === 'signup'" class="input-witdh" appearance="outline">
     <mat-label>Email</mat-label>
     <input matInput placeholder="Email" formControlName="email" />
     <button
@@ -45,15 +44,6 @@
     >
       <mat-icon>close</mat-icon>
     </button>
-    <!-- <div *ngIf="form.get('email')?.touched && form.get('email')?.hasError('email')" class="error">
-      {{ 'auth.signup.invalid-email' }}
-    </div>
-    <div *ngIf="form.get('email')?.touched && form.get('email')?.hasError('required')" class="error">
-      {{ 'Required' }}
-    </div>
-    <div *ngIf="form.get('email')?.touched && form.get('email')?.errors?.['maxlength']" class="error">
-      {{ 'TitleLength' }}
-    </div> -->
     <mat-error *ngIf="form.get('email')?.touched && form.get('email')?.hasError('email')" class="error">
       Invalid email
     </mat-error>
@@ -77,22 +67,6 @@
     >
       <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
     </div>
-    <!-- <button
-      type="button"
-      mat-icon-button
-      matSuffix
-      (click)="hide = !hide"
-      [attr.aria-label]="'Hide password'"
-      [attr.aria-pressed]="hide"
-    >
-      <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
-    </button> -->
-    <!-- <div class="error" *ngIf="form.get('password')?.touched && form.get('password')?.hasError('required')">
-      {{ 'Required' }}
-    </div>
-    <div *ngIf="form.get('password')?.touched && form.get('password')?.hasError('pattern')" class="error">
-      {{ 'auth.signup.pass-length' }}
-    </div> -->
     <mat-error class="error" *ngIf="form.get('password')?.touched && form.get('password')?.hasError('required')">
       {{ 'Required' }}
     </mat-error>
@@ -101,8 +75,13 @@
     </mat-error>
   </mat-form-field>
   <br />
-  <!-- SUBMIT BUTTON -->
   <button type="submit" class="input-width button" mat-raised-button [disabled]="form.invalid">
-    {{ formType }}
+    {{ formType === 'login' ? 'Login' : 'Signup' }}
   </button>
+  <div *ngIf="this.formType === 'login'" class="forgot-pass">{{ 'Forgot' }}</div>
+  <div *ngIf="this.formType === 'login'" class="send-email">{{ 'SendEmail' }}</div>
+  <div *ngIf="this.formType === 'signup'" class="goto-login">
+    {{ 'AlreadyAndAccount' }}
+    <span (click)="signupOpen()">&nbsp;{{ 'Login' }}</span>
+  </div>
 </form>
