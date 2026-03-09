@@ -23,11 +23,22 @@
     <mat-icon>settings</mat-icon>
     <span>Settings</span>
   </button>
-
-  <button mat-menu-item (click)="openLogin()">
-    <mat-icon>login</mat-icon>
-    <span>login</span>
-  </button>
+  <ng-container *ngIf="!tokenService.isLogged(); else loggedButton">
+    <button mat-menu-item (click)="openLogin()">
+      <mat-icon>login</mat-icon>
+      <span>login</span>
+    </button>
+  </ng-container>
+  <ng-template #loggedButton>
+    <!-- <button class="logout" matTooltip="{{ tokenService.getUsername() }}" [matMenuTriggerFor]="user_menu"
+          #menuTrigger="matMenuTrigger" (mouseover)="openMenu(menuTrigger)">
+          {{ tokenService.getUsername()?.charAt(0)?.toUpperCase() }}
+        </button> -->
+    <button mat-menu-item (click)="onLogout()">
+      <mat-icon>logout</mat-icon>
+      <span>logout</span>
+    </button>
+  </ng-template>
 </mat-menu>
 
 <!-- LANGUAGE MENU -->

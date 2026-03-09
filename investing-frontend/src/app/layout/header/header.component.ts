@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { LoginComponent } from '@app/components/auth/login/login.component';
+import { TokenService } from '@app/services/token.service';
+import { UtilsService } from '@app/services/utils.service';
 
 @Component({
   selector: 'app-header',
@@ -47,7 +49,11 @@ export class HeaderComponent implements OnInit {
       height: '20',
     },
   ];
-  constructor(public dialog: MatDialog) {}
+  constructor(
+    public dialog: MatDialog,
+    public tokenService: TokenService,
+    public utilsSvc: UtilsService,
+  ) {}
 
   ngOnInit(): void {}
 
@@ -60,5 +66,11 @@ export class HeaderComponent implements OnInit {
       enterAnimationDuration: '500ms',
       exitAnimationDuration: '500ms',
     });
+  }
+
+  onLogout() {
+    const msg = `${'See you '} ${this.tokenService.getUsername()}!!`;
+    this.utilsSvc.showSnackBar(msg, 5000);
+    this.tokenService.logOut();
   }
 }
