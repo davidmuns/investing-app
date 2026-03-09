@@ -1,7 +1,14 @@
 <div class="container">
-  <table mat-table [dataSource]="data" class="mat-elevation-z8">
+  <!-- <table
+    mat-table
+    [dataSource]="dataSource"
+    class="mat-elevation-z8"
+    matSort
+    (matSortChange)="announceSortChange($event)"
+  > -->
+  <table mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)">
     <ng-container *ngFor="let column of columns" [matColumnDef]="column.def">
-      <th mat-header-cell *matHeaderCellDef>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
         {{ column.label }}
       </th>
 
