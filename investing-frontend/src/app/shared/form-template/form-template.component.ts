@@ -1,12 +1,16 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-// import { EmailPasswordComponent } from 'src/app/components/auth/email-password/email-password.component';
 import { Router } from '@angular/router';
 import { AuthService } from '@app/services/auth.service';
+import { PortfolioService } from '@app/services/portfolio.service';
 import { TokenService } from '@app/services/token.service';
 import { UtilsService } from '@app/services/utils.service';
 import { LoginComponent } from 'src/app/components/auth/login/login.component';
+
+type ApiError = { error?: string; message?: string };
+type FormType = 'login' | 'signup' | 'Seguimiento' | 'Posiciones';
+type PortfolioKind = 'WATCHLIST' | 'POSITIONS';
 
 @Component({
   selector: 'app-form-template',
@@ -14,9 +18,11 @@ import { LoginComponent } from 'src/app/components/auth/login/login.component';
   styleUrls: ['./form-template.component.css'],
 })
 export class FormTemplateComponent implements OnInit {
-  @Input() formType: string = '';
+  @Input() formType!: FormType;
+  @Output() portfolioCreated = new EventEmitter<any>();
   protected form!: FormGroup;
   protected hide: boolean = true;
+  formError = '';
 
   constructor(
     private readonly fb: FormBuilder,
@@ -24,17 +30,60 @@ export class FormTemplateComponent implements OnInit {
     private readonly authSvc: AuthService,
     private readonly tokenSvc: TokenService,
     private readonly utilsSvc: UtilsService,
-    private readonly router: Router,
+    private readonly portfolioService: PortfolioService,
   ) {}
 
   ngOnInit(): void {
-    if (this.formType === 'login') {
-      this.initFormLogin();
-    } else if (this.formType === 'signup') {
-      this.initFormSignup();
-    } else {
-      alert('option: ' + this.formType + 'does not exist');
+    this.initFormByType();
+  }
+
+  onSubmit() {
+    switch (this.formType) {
+      case 'login': {
+        this.login();
+        break;
+      }
+      case 'signup': {
+        this.signup();
+        break;
+      }
+      case 'Seguimiento':
+      case 'Posiciones': {
+        this.createPortfolio();
+        break;
+      }
+      default: {
+        alert('form type: ' + this.formType + ' does not exist');
+        break;
+      }
     }
+  }
+
+  private initFormByType(): void {
+    switch (this.formType) {
+      case 'login':
+        this.initFormLogin();
+        break;
+      case 'signup':
+        this.initFormSignup();
+        break;
+      case 'Seguimiento':
+      case 'Posiciones':
+        this.initFormAddPortfolio();
+        break;
+      default:
+        alert(`option: ${this.formType} does not exist`);
+    }
+  }
+
+  private initFormAddPortfolio() {
+    this.form = this.fb.group({
+      nombre: ['', [Validators.required, Validators.maxLength(10)]],
+    });
+  }
+
+  private getPortfolioType(): PortfolioKind {
+    return this.formType === 'Posiciones' ? 'POSITIONS' : 'WATCHLIST';
   }
 
   private initFormLogin() {
@@ -50,23 +99,6 @@ export class FormTemplateComponent implements OnInit {
       email: ['', [Validators.required, Validators.email, Validators.maxLength(30)]],
       password: ['', [Validators.required, Validators.pattern('^(?=.*[A-Za-z])(?=.*\\d).{8,}$')]],
     });
-  }
-
-  onSubmit() {
-    switch (this.formType) {
-      case 'login': {
-        this.login();
-        break;
-      }
-      case 'signup': {
-        this.signup();
-        break;
-      }
-      default: {
-        alert('form type: ' + this.formType + ' does not exist');
-        break;
-      }
-    }
   }
 
   private login() {
@@ -118,6 +150,29 @@ export class FormTemplateComponent implements OnInit {
       const msg = 'fill-blanks';
       this.utilsSvc.showSnackBar(msg, 3000);
     }
+  }
+
+  createPortfolio(): void {
+    const name = this.form.value.nombre.trim();
+    if (!name) {
+      this.formError = 'El nombre es obligatorio.';
+      return;
+    }
+    this.formError = '';
+
+    this.portfolioService.create({ name, type: this.getPortfolioType() }).subscribe({
+      next: (created) => {
+        this.portfolioCreated.emit(created);
+      },
+      error: (err) => {
+        if (err?.status === 409) {
+          const apiErr: ApiError = err?.error ?? {};
+          this.formError = apiErr.message || 'Cartera duplicada.';
+          return;
+        }
+        this.formError = 'No se pudo crear la cartera.';
+      },
+    });
   }
 
   signupOpen() {

@@ -12,9 +12,10 @@ import { SharedModule } from './shared/shared.module';
 import { AuthComponent } from './components/auth/auth.component';
 import { AuthModule } from './components/auth/auth.module';
 import { TableComponent } from './components/table/table.component';
+import { ModalPortfolioComponent } from './components/portfolios/modal-portfolio/modal-portfolio.component';
 
 @NgModule({
-  declarations: [AppComponent, PortfoliosComponent, AuthComponent, TableComponent],
+  declarations: [AppComponent, PortfoliosComponent, AuthComponent, TableComponent, ModalPortfolioComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

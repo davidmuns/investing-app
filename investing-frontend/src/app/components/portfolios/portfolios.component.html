@@ -71,10 +71,12 @@
         </mat-tab>
       </mat-tab-group>
     </div>
-    <!-- <button class="tabPlus" type="button" (click)="openCreateModal()" title="Nueva cartera">+</button> -->
-    <button mat-button (click)="openCreateModal()"><mat-icon>add</mat-icon></button>
+    <button mat-icon-button (click)="openCreatePortfolioDialog()">
+      <mat-icon>add</mat-icon>
+    </button>
   </div>
 
+  <!-- SEARCH BAR -->
   <div *ngIf="!loading && portfolios.length" class="panel">
     <div class="panelTop">
       <div class="addSymbol">
@@ -89,26 +91,11 @@
             name="symbolQuery"
             autocomplete="off"
           />
-
-          <!-- <button class="addSymbolBtn" type="submit" aria-label="Buscar">🔍</button> -->
           <button class="addSymbolBtn" type="submit" aria-label="Buscar">
             <mat-icon>search</mat-icon>
           </button>
         </form>
       </div>
-
-      <!-- <div class="actions" (click)="$event.stopPropagation()">
-        <button class="kebabBtn" type="button" (click)="toggleActions()" aria-label="Acciones">⋮</button>
-        <div *ngIf="actionsOpen" class="menu">
-          <button type="button" class="menuItem" (click)="closeActions()">⬇️ Descargar cartera</button>
-
-          <div class="menuDivider"></div>
-
-          <button type="button" class="menuItem danger" (click)="closeActions(); deleteSelected()">
-            🗑️ Eliminar cartera
-          </button>
-        </div>
-      </div> -->
       <div>
         <button
           mat-icon-button
@@ -137,44 +124,6 @@
         <!-- GRAFICOS TAB -->
         <mat-tab class="custom-tab-label" label="Gráficos"></mat-tab>
       </mat-tab-group>
-    </div>
-  </div>
-
-  <!-- Modal -->
-  <div *ngIf="modalOpen" class="modalBackdrop" (click)="closeCreateModal()">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <div class="modalHeader">
-        <div class="modalTitle">Seleccione tipo de cartera</div>
-        <button class="iconBtn" type="button" (click)="closeCreateModal()">×</button>
-      </div>
-
-      <div class="typePicker">
-        <button type="button" class="typeBtn" [class.active]="form.type === 'WATCHLIST'" (click)="setType('WATCHLIST')">
-          Lista de seguimiento
-        </button>
-        <button type="button" class="typeBtn" [class.active]="form.type === 'POSITIONS'" (click)="setType('POSITIONS')">
-          Posiciones
-        </button>
-      </div>
-
-      <label class="label">Nombre</label>
-      <input
-        class="input"
-        type="text"
-        placeholder="Introducir nombre de la cartera"
-        [(ngModel)]="form.name"
-        [disabled]="formLoading"
-        (keydown.enter)="createPortfolio()"
-      />
-
-      <div *ngIf="formError" class="error formError">{{ formError }}</div>
-
-      <div class="modalActions">
-        <button type="button" (click)="closeCreateModal()" [disabled]="formLoading">Cancelar</button>
-        <button type="button" (click)="createPortfolio()" [disabled]="formLoading || !form.name.trim()">
-          {{ formLoading ? 'Creando…' : 'Crear' }}
-        </button>
-      </div>
     </div>
   </div>
 </div>

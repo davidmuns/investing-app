@@ -4,7 +4,8 @@ import { PortfolioService } from '../../services/portfolio.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { PortfolioResponse } from '@app/shared/models/portfolios-response';
 import { PortfolioRequest, PortfolioType } from '@app/shared/models/portfolios-request';
-type ApiError = { error?: string; message?: string };
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { ModalPortfolioComponent } from './modal-portfolio/modal-portfolio.component';
 
 @Component({
   selector: 'app-portfolios',
@@ -22,10 +23,6 @@ export class PortfoliosComponent implements OnInit {
   symbolError = '';
   actionsOpen = false;
   trackByPortfolio = (_: number, p: any) => p.id ?? p.name;
-
-  // modal state
-  modalOpen = false;
-  form: PortfolioRequest = { name: '', type: 'WATCHLIST' };
   formLoading = false;
   formError = '';
   @ViewChild('nameInput') nameInput?: ElementRef<HTMLInputElement>;
@@ -45,87 +42,45 @@ export class PortfoliosComponent implements OnInit {
     if (this.actionsOpen) this.closeActions();
   }
 
-  @HostListener('document:keydown.escape')
-  onEsc(): void {
-    if (this.modalOpen) this.closeCreateModal();
-  }
-
-  constructor(private portfolioService: PortfolioService) {}
+  constructor(
+    private portfolioService: PortfolioService,
+    public dialog: MatDialog,
+  ) {}
 
   ngOnInit(): void {
     this.reload();
   }
 
-  reload(): void {
+  openCreatePortfolioDialog(): void {
+    const dialogRef = this.dialog.open(ModalPortfolioComponent, {
+      width: '450px',
+    });
+
+    dialogRef.afterClosed().subscribe((created) => {
+      if (!created) return;
+
+      this.reload(created.id);
+    });
+  }
+
+  reload(createdId?: number): void {
     this.loading = true;
     this.errorMsg = '';
 
     this.portfolioService.list().subscribe({
       next: (data) => {
         this.portfolios = data;
-        this.selectedIndex = Math.min(this.selectedIndex, Math.max(0, this.portfolios.length - 1));
+
+        if (createdId != null) {
+          const idx = this.portfolios.findIndex((p) => p.id === createdId);
+          this.selectedIndex = idx >= 0 ? idx : 0;
+        }
+
         this.loading = false;
       },
       error: () => {
-        this.errorMsg = 'No se pudieron cargar las carteras.';
+        this.errorMsg = 'No se pudo cargar la lista de carteras.';
         this.loading = false;
-      },
-    });
-  }
-
-  openCreateModal(): void {
-    this.form = { name: '', type: 'WATCHLIST' };
-    this.formError = '';
-    this.modalOpen = true;
-    setTimeout(() => this.nameInput?.nativeElement.focus(), 0);
-  }
-
-  closeCreateModal(): void {
-    if (this.formLoading) return;
-    this.modalOpen = false;
-  }
-
-  setType(type: PortfolioType): void {
-    this.form.type = type;
-  }
-
-  createPortfolio(): void {
-    const name = this.form.name.trim();
-    if (!name) {
-      this.formError = 'El nombre es obligatorio.';
-      return;
-    }
-
-    this.formLoading = true;
-    this.formError = '';
-
-    this.portfolioService.create({ name, type: this.form.type }).subscribe({
-      next: (created) => {
-        this.formLoading = false;
-        this.modalOpen = false;
-
-        // recargar y seleccionar la creada
-        this.portfolioService.list().subscribe({
-          next: (data) => {
-            this.portfolios = data;
-            const idx = this.portfolios.findIndex((p) => p.id === created.id);
-            this.selectedIndex = idx >= 0 ? idx : 0;
-          },
-          error: () => {
-            this.errorMsg = 'Cartera creada, pero no se pudo recargar la lista.';
-          },
-        });
-      },
-      error: (err) => {
-        this.formLoading = false;
-
-        if (err?.status === 409) {
-          const apiErr: ApiError = err?.error ?? {};
-          this.formError = apiErr.message || 'Cartera duplicada.';
-          return;
-        }
-
-        this.formError = 'No se pudo crear la cartera.';
       },
     });
   }

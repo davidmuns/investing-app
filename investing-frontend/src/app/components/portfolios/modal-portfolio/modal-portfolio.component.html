@@ -1,0 +1,11 @@
+<h3>Seleccione tipo de cartera</h3>
+
+<mat-tab-group mat-align-tabs="center" animationDuration="500ms">
+  <mat-tab class="custom-tab-label" label="Seguimiento">
+    <app-form-template [formType]="'Seguimiento'" (portfolioCreated)="onPortfolioCreated($event)"></app-form-template>
+  </mat-tab>
+
+  <mat-tab class="custom-tab-label" label="Posiciones">
+    <app-form-template [formType]="'Posiciones'" (portfolioCreated)="onPortfolioCreated($event)"></app-form-template>
+  </mat-tab>
+</mat-tab-group>

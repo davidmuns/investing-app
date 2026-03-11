@@ -5,8 +5,7 @@
   <!-- <br /> -->
   <h3>{{ formType }}</h3>
   <!-- EMAIL OR USERNAME INPUT -->
-  <mat-form-field class="input-witdh" appearance="outline">
-    <!-- <mat-label>Username</mat-label> -->
+  <mat-form-field *ngIf="formType === 'login' || formType === 'signup'" class="input-witdh" appearance="outline">
     <mat-label>{{ formType === 'login' ? 'UsernameOrEmail' : 'Username' }}</mat-label>
     <input
       matInput
@@ -55,7 +54,7 @@
     </mat-error>
   </mat-form-field>
   <!-- PASSWORD INPUT -->
-  <mat-form-field class="input-witdh" appearance="outline">
+  <mat-form-field *ngIf="formType === 'login' || formType === 'signup'" class="input-witdh" appearance="outline">
     <mat-label>Password</mat-label>
     <input matInput [type]="hide ? 'password' : 'text'" placeholder="Password" formControlName="password" />
     <div
@@ -74,9 +73,59 @@
       {{ 'auth.signup.pass-length' }}
     </mat-error>
   </mat-form-field>
+  <!-- ADD PORTFOLIO INPUT -->
+  <mat-form-field
+    *ngIf="formType === 'Seguimiento' || formType === 'Posiciones'"
+    class="input-witdh"
+    appearance="outline"
+  >
+    <!-- <mat-label>Seguimiento</mat-label> -->
+    <input matInput placeholder="Introduce nombre cartera" formControlName="nombre" />
+    <button
+      *ngIf="form.get('nombre')?.value"
+      matSuffix
+      mat-icon-button
+      class="clear-btn"
+      aria-label="Clear"
+      (click)="form.get('nombre')?.reset()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+    <mat-error *ngIf="form.get('nombre')?.touched && form.get('nombre')?.hasError('required')" class="error">
+      Required
+    </mat-error>
+    <mat-error *ngIf="form.get('nombre')?.touched && form.get('nombre')?.errors?.['maxlength']" class="error">
+      Tittle lenght
+    </mat-error>
+  </mat-form-field>
+
   <br />
-  <button type="submit" class="input-width button" mat-raised-button [disabled]="form.invalid">
-    {{ formType === 'login' ? 'Login' : 'Signup' }}
+  <button
+    *ngIf="this.formType === 'login'"
+    type="submit"
+    class="input-width button"
+    mat-raised-button
+    [disabled]="form.invalid"
+  >
+    {{ formType }}
+  </button>
+  <button
+    *ngIf="this.formType === 'signup'"
+    type="submit"
+    class="input-width button"
+    mat-raised-button
+    [disabled]="form.invalid"
+  >
+    {{ formType }}
+  </button>
+  <button
+    *ngIf="this.formType === 'Seguimiento' || formType === 'Posiciones'"
+    type="submit"
+    class="input-width button"
+    mat-raised-button
+    [disabled]="form.invalid"
+  >
+    Crear
   </button>
   <div *ngIf="this.formType === 'login'" class="forgot-pass">{{ 'Forgot' }}</div>
   <div *ngIf="this.formType === 'login'" class="send-email">{{ 'SendEmail' }}</div>
