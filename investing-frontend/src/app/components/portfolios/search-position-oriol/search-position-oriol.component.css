@@ -1,107 +1,3 @@
-/* .example-form{
-    margin: 10px auto;
-    width: 300px;
-    @media(max-width: 470px){
-        width: 140px;
-    }
-}
-.example1{
-    width: 260px;
-    padding: 0px;
-    @media(max-width:1200px){
-        margin: 10px 34%;
-    }
-    @media(max-width:1000px){
-        margin: 10px 20% 10px 6%;
-        width: 230px;
-    }
-}
-input{
-    width:96%;
-    height: 35px;
-    padding: 0px .5rem;
-    font-size: 1rem;
-    border: 0px;
-    border-radius: 5px;
-    box-shadow:0px 0px 0px 2px inset var(--lemon);
-    color: black;
-    font-weight: 400;
-    background-color: white;
-    transition: all .2s;
-    margin-left: 2%;
-    vertical-align: middle;
-}
-
-input:focus{
-    background-color: #fbfdf1;
-    outline: 3px solid var(--lemon);
-    box-shadow: none;
-}
-#searchButton, #searchHideButton{
-    margin-left: 6px;
-    @media(max-width: 470px){
-        display:none;
-    }
-}
-#searchHideButton, .responsive-form{
-    display: none;
-}
-.responsive-form{
-    position: relative;
-    margin: 10px auto;
-    width: 90%;
-}
-@media(max-width: 470px){
-    #searchHideButton, .responsive-form{
-        display: block;
-    }
-    #searchHideButton{
-        position: relative;
-        top: 0px;
-        cursor: pointer;
-        width: 100px;
-        border: 1px solid var(--lemon);
-        @media(max-width: 300px){
-            width:60px;
-        }
-    }
-    #searchHideButton:hover{
-        color: rgb(113, 255, 0);
-        background-color: #5a7684;
-    }
-    .responsive-div{
-        position: absolute;
-        top: 24px;
-        left: 0px;
-        width:100%;
-        height: 80px;
-        border-radius: 4px;
-        background-color:rgb(96, 125, 139, .9);
-    }
-    .responsive-form{
-        position: absolute;
-        top: 20px;
-        left: 5%;
-        height:0px;
-        margin: 0px;
-        display:none;
-    }
-    input{
-        position: responsive;
-        top: 12px;
-        left: 21%;
-        width: 45%;
-    }
-}
-@media(min-width: 600px){
-    .responsive-form{
-        display: none;
-        input{
-            display: none;
-        }
-    }
-} */
-
 mat-form-field {
     margin-top: 20px;
     font-size: 15px;
@@ -112,7 +8,7 @@ mat-form-field {
 }
 
 :host ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
-    background-color: rgb(232, 228, 228);
+    background-color: rgb(250, 246, 246);
     border-radius: 5px;
     border-color: var(--accent); 
 }

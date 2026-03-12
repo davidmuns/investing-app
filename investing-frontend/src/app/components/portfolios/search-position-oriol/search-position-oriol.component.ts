@@ -48,17 +48,17 @@ const ELEMENT_DATA: Position[] = [
   styleUrls: ['./search-position-oriol.component.css'],
 })
 export class SearchPositionOriolComponent implements OnInit {
-  myControl = this.fb.control('', [Validators.minLength(1), Validators.required]);
+  // form = this.fb.control('', [Validators.minLength(1), Validators.required]);
+  form = this.fb.control('', [Validators.minLength(1)]);
   positions: Position[] = [];
   options: string[] = [];
   filteredOptions!: Observable<string[]>;
-  private uniqueChars: string[] = [];
 
   constructor(private readonly fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.getPositions();
-    this.filteredOptions = this.myControl.valueChanges.pipe(
+    this.filteredOptions = this.form.valueChanges.pipe(
       debounceTime(400),
       startWith(''),
       map((value) => this._filter(value || '')),
@@ -66,7 +66,7 @@ export class SearchPositionOriolComponent implements OnInit {
   }
 
   clearInput(): void {
-    this.myControl.reset(); // O también puedes usar this.myControl.setValue('') para borrar el contenido.
+    this.form.reset(); // O también puedes usar this.form.setValue('') para borrar el contenido.
   }
 
   private getPositions() {
@@ -75,7 +75,7 @@ export class SearchPositionOriolComponent implements OnInit {
 
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
-    // if (this.myControl.valid) {
+    // if (this.form.valid) {
     //   this.positions = ELEMENT_DATA;
     //   this.options = [];
     //   this.positions.forEach((x) => {
@@ -91,7 +91,7 @@ export class SearchPositionOriolComponent implements OnInit {
 
   submitArticle() {
     for (const option of this.positions) {
-      if (option.nombre === this.myControl.value) {
+      if (option.nombre === this.form.value) {
         // this.articleId = option.id;
         // this.router.navigate(['article', this.articleId]);
         // this.router.routeReuseStrategy.shouldReuseRoute = () => false;
