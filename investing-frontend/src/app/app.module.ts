@@ -13,9 +13,10 @@ import { AuthComponent } from './components/auth/auth.component';
 import { AuthModule } from './components/auth/auth.module';
 import { TableComponent } from './components/table/table.component';
 import { ModalPortfolioComponent } from './components/portfolios/modal-portfolio/modal-portfolio.component';
+import { PortfoliosModule } from './components/portfolios/portfolios.module';
 
 @NgModule({
-  declarations: [AppComponent, PortfoliosComponent, AuthComponent, TableComponent, ModalPortfolioComponent],
+  declarations: [AppComponent, AuthComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -25,6 +26,7 @@ import { ModalPortfolioComponent } from './components/portfolios/modal-portfolio
     LayoutModule,
     SharedModule,
     AuthModule,
+    PortfoliosModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -1,0 +1,50 @@
+<!-- <form class="example-form" (submit)="submitArticle()">
+  <div class="example1" appearance="fill">
+    <input
+      type="text"
+      placeholder="{{ 'SearchArticle' }}"
+      aria-label="Number"
+      matInput
+      id="myControl"
+      [formControl]="myControl"
+      [matAutocomplete]="auto"
+      fontIcon="search"
+    />
+    <button *ngIf="myControl.value" mat-icon-button class="clear-button" aria-label="Clear" (click)="clearInput()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+      <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+        <p (click)="selectArticle(option)">{{ option }}</p>
+      </mat-option>
+    </mat-autocomplete>
+  </div>
+</form> -->
+
+<form>
+  <mat-form-field appearance="outline">
+    <mat-icon matPrefix>search</mat-icon>
+    <input
+      matInput
+      type="search"
+      placeholder="{{ 'EUR/USD o BBVA' }}"
+      [formControl]="myControl"
+      [matAutocomplete]="auto"
+    />
+    <button
+      *ngIf="myControl.value"
+      matSuffix
+      mat-icon-button
+      class="clear-button"
+      aria-label="Clear"
+      (click)="clearInput()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+    <mat-autocomplete autoActiveFirstOption #auto>
+      <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+        <p (click)="selectArticle(option)">{{ option }}</p>
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+</form>

@@ -83,8 +83,9 @@
     <div class="panelTop">
       <div class="addSymbol">
         <label class="addSymbolLabel">Añadir posición</label>
-
-        <form class="addSymbolForm" (submit)="submitSymbol(); $event.preventDefault()">
+        <!-- <app-search-position-gpt></app-search-position-gpt> -->
+        <app-search-position-oriol></app-search-position-oriol>
+        <!-- <form class="addSymbolForm" (submit)="submitSymbol(); $event.preventDefault()">
           <input
             class="addSymbolInput"
             type="text"
@@ -96,7 +97,7 @@
           <button class="addSymbolBtn" type="submit" aria-label="Buscar">
             <mat-icon>search</mat-icon>
           </button>
-        </form>
+        </form> -->
       </div>
       <div>
         <button

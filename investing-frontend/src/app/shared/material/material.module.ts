@@ -15,6 +15,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 const myModule = [
   MatToolbarModule,
@@ -32,6 +33,7 @@ const myModule = [
   MatSnackBarModule,
   MatTableModule,
   MatSortModule,
+  MatAutocompleteModule,
 ];
 
 @NgModule({

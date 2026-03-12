@@ -1,0 +1,32 @@
+.addSymbolForm {
+    position: relative;
+    width: 420px;
+    max-width: 100%;
+}
+.addSymbolInput {
+    width: 70%;
+    height: 34px;
+    padding: 0 38px 0 10px;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    border-radius: 3px;
+    outline: none;
+}
+.addSymbolInput:focus {
+    border-color: rgba(26, 115, 232, 0.8);
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.12);
+}
+.addSymbolBtn {
+    position: absolute;
+    right: 86px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    opacity: 1;
+}
+.addSymbolBtn:hover {
+    opacity: 1;
+}

@@ -1,0 +1,35 @@
+<!-- GPT SEARCH BAR -->
+<div class="panel">
+  <div class="panelTop">
+    <div class="addSymbol">
+      <!-- <label class="addSymbolLabel">Añadir posición</label> -->
+
+      <form class="addSymbolForm" (submit)="submitSymbol(); $event.preventDefault()">
+        <input
+          class="addSymbolInput"
+          type="text"
+          placeholder="EUR/USD o BBVA"
+          [(ngModel)]="symbolQuery"
+          name="symbolQuery"
+          autocomplete="off"
+        />
+        <button class="addSymbolBtn" type="submit" aria-label="Buscar">
+          <mat-icon>search</mat-icon>
+        </button>
+      </form>
+    </div>
+    <div>
+      <!-- <button
+          mat-icon-button
+          aria-label="Example icon button with a vertical three dot icon"
+          [matMenuTriggerFor]="delete_portfolio"
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button> -->
+    </div>
+  </div>
+
+  <p *ngIf="symbolError" class="error">{{ symbolError }}</p>
+
+  <div class="panelHeader"></div>
+</div>
