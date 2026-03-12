@@ -38,6 +38,8 @@
             >
               <ng-container *ngIf="editingIndex !== i; else editMode">
                 <mat-icon class="dragHint" aria-hidden="true">drag_indicator</mat-icon>
+                <mat-icon *ngIf="p.type.endsWith('T')">remove_red_eye</mat-icon>
+                <mat-icon *ngIf="p.type.endsWith('S')">business_center</mat-icon>
                 <span class="tabLabelText">
                   {{ p.name }}
                 </span>
@@ -132,7 +134,8 @@
 <mat-menu #portfolio>
   <ng-container *ngFor="let p of portfolios; index as i">
     <button mat-menu-item (click)="selectTab(i)">
-      <mat-icon>work</mat-icon>
+      <mat-icon *ngIf="p.type.endsWith('T')">remove_red_eye</mat-icon>
+      <mat-icon *ngIf="p.type.endsWith('S')">business_center</mat-icon>
       {{ p.name }}
     </button>
     <mat-divider *ngIf="i < portfolios.length - 1"></mat-divider>

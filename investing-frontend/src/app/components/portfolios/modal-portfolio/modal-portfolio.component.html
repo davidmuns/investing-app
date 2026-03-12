@@ -1,11 +1,37 @@
-<h3>Seleccione tipo de cartera</h3>
+<!-- <h3>Seleccione tipo de cartera</h3>
 
 <mat-tab-group mat-align-tabs="center" animationDuration="500ms">
   <mat-tab class="custom-tab-label" label="Seguimiento">
+    <mat-icon>work</mat-icon>
     <app-form-template [formType]="'Seguimiento'" (portfolioCreated)="onPortfolioCreated($event)"></app-form-template>
   </mat-tab>
 
   <mat-tab class="custom-tab-label" label="Posiciones">
+    <app-form-template [formType]="'Posiciones'" (portfolioCreated)="onPortfolioCreated($event)"></app-form-template>
+  </mat-tab>
+</mat-tab-group> -->
+
+<h3>Seleccione tipo de cartera</h3>
+
+<mat-tab-group mat-align-tabs="center" animationDuration="500ms">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <div class="labelName">
+        <!-- <mat-icon>local_see</mat-icon> -->
+        <mat-icon>remove_red_eye</mat-icon>
+        <p>Seguimiento</p>
+      </div>
+    </ng-template>
+    <app-form-template [formType]="'Seguimiento'" (portfolioCreated)="onPortfolioCreated($event)"></app-form-template>
+  </mat-tab>
+
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <div class="labelName">
+        <mat-icon>business_center</mat-icon>
+        <p>Posiciones</p>
+      </div>
+    </ng-template>
     <app-form-template [formType]="'Posiciones'" (portfolioCreated)="onPortfolioCreated($event)"></app-form-template>
   </mat-tab>
 </mat-tab-group>

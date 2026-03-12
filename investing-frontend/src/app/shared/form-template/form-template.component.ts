@@ -78,7 +78,7 @@ export class FormTemplateComponent implements OnInit {
 
   private initFormAddPortfolio() {
     this.form = this.fb.group({
-      nombre: ['', [Validators.required, Validators.maxLength(10)]],
+      nombre: ['', [Validators.required, Validators.maxLength(20)]],
     });
   }
 

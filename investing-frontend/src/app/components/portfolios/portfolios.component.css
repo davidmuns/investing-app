@@ -62,7 +62,8 @@
 .tabLabelContainer {
   display: flex;
   align-items: center;
-  gap: 30px;              /* separación texto-icono */
+  /* separación texto-icono */
+  gap: 15px;             
   min-width: 120px;
 }
 
