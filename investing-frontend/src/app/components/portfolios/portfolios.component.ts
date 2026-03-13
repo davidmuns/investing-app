@@ -69,6 +69,7 @@ export class PortfoliosComponent implements OnInit {
 
     this.portfolioService.list().subscribe({
       next: (data) => {
+        console.log(data);
         this.portfolios = data;
 
         if (createdId != null) {

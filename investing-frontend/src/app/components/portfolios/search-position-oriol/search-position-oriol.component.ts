@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { InstrumentService } from '@app/services/instrument.service';
+import { Instrument } from '@app/shared/models/instrument';
 import { Position } from '@app/shared/models/position';
-import { debounceTime, map, Observable, startWith } from 'rxjs';
+import { SearchResponse } from '@app/shared/models/search-response';
+import { debounceTime, map, Observable, of, startWith, switchMap } from 'rxjs';
 
 const ELEMENT_DATA: Position[] = [
   {
@@ -50,65 +53,51 @@ const ELEMENT_DATA: Position[] = [
 export class SearchPositionOriolComponent implements OnInit {
   // form = this.fb.control('', [Validators.minLength(1), Validators.required]);
   form = this.fb.control('', [Validators.minLength(1)]);
-  positions: Position[] = [];
-  options: string[] = [];
+
+  instruments: Instrument[] = [];
+
   filteredOptions!: Observable<string[]>;
 
-  constructor(private readonly fb: FormBuilder) {}
+  constructor(
+    private readonly fb: FormBuilder,
+    private instrumentSvc: InstrumentService,
+  ) {}
 
   ngOnInit(): void {
-    this.getPositions();
+    // console.log('inside ' + SearchPositionOriolComponent.toString());
+    this.initFilteredOptions();
+  }
+
+  private initFilteredOptions(): void {
     this.filteredOptions = this.form.valueChanges.pipe(
-      debounceTime(400),
-      startWith(''),
-      map((value) => this._filter(value || '')),
+      // startWith(''),
+      debounceTime(200),
+      map((value) => this.normalizeQuery(value)),
+      switchMap((value) => this.searchInstruments(value)),
     );
   }
 
+  private normalizeQuery(value: string | null): string {
+    return (value || '').trim();
+  }
+
+  private searchInstruments(value: string): Observable<string[]> {
+    if (!value) {
+      this.instruments = [];
+      return of([]);
+    }
+
+    return this.instrumentSvc.search(value).pipe(map((response) => this.handleSearchResults(response)));
+  }
+
+  private handleSearchResults(response: SearchResponse<Instrument>): string[] {
+    this.instruments = response.items;
+    console.log(response);
+    return response.items.map((instrument) => instrument.name);
+  }
+
   clearInput(): void {
-    this.form.reset(); // O también puedes usar this.form.setValue('') para borrar el contenido.
-  }
-
-  private getPositions() {
-    this.positions = ELEMENT_DATA;
-  }
-
-  private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    // if (this.form.valid) {
-    //   this.positions = ELEMENT_DATA;
-    //   this.options = [];
-    //   this.positions.forEach((x) => {
-    //     this.options.push(x.nombre);
-    //   });
-    //   this.uniqueChars = [...new Set(this.options)];
-    // }
-    // return this.uniqueChars.filter((option) => option.toLowerCase().includes(filterValue));
-    return this.positions
-      .map((position) => position.nombre)
-      .filter((nombre) => nombre.toLowerCase().includes(filterValue));
-  }
-
-  submitArticle() {
-    for (const option of this.positions) {
-      if (option.nombre === this.form.value) {
-        // this.articleId = option.id;
-        // this.router.navigate(['article', this.articleId]);
-        // this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-        // this.router.onSameUrlNavigation = 'reload';
-      }
-    }
-  }
-
-  selectArticle(value: string) {
-    for (const option of this.positions) {
-      if (option.nombre === value) {
-        // this.articleId = option.id;
-        // this.router.navigate(['article', this.articleId]);
-        // this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-        // this.router.onSameUrlNavigation = 'reload';
-        break;
-      }
-    }
+    // O también this.form.setValue('') para borrar el contenido.
+    this.form.reset();
   }
 }

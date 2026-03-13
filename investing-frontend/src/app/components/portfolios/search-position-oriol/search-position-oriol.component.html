@@ -7,7 +7,8 @@
     </button>
     <mat-autocomplete autoActiveFirstOption #auto>
       <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-        <p (click)="selectArticle(option)">{{ option }}</p>
+        <p>{{ option }}</p>
+        <!-- <p (click)="selectArticle(option)">{{ option }}</p> -->
       </mat-option>
     </mat-autocomplete>
   </mat-form-field>
