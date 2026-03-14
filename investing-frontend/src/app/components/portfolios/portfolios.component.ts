@@ -3,7 +3,6 @@ import { HostListener } from '@angular/core';
 import { PortfolioService } from '../../services/portfolio.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { PortfolioResponse } from '@app/shared/models/portfolios-response';
-import { PortfolioRequest, PortfolioType } from '@app/shared/models/portfolios-request';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ModalPortfolioComponent } from './modal-portfolio/modal-portfolio.component';
 
@@ -53,12 +52,11 @@ export class PortfoliosComponent implements OnInit {
 
   openCreatePortfolioDialog(): void {
     const dialogRef = this.dialog.open(ModalPortfolioComponent, {
-      width: '450px',
+      width: '380px',
     });
 
     dialogRef.afterClosed().subscribe((created) => {
       if (!created) return;
-
       this.reload(created.id);
     });
   }
@@ -69,14 +67,11 @@ export class PortfoliosComponent implements OnInit {
 
     this.portfolioService.list().subscribe({
       next: (data) => {
-        console.log(data);
-        this.portfolios = data;
-
+        this.portfolios = data.items;
         if (createdId != null) {
           const idx = this.portfolios.findIndex((p) => p.id === createdId);
           this.selectedIndex = idx >= 0 ? idx : 0;
         }
-
         this.loading = false;
       },
       error: () => {
