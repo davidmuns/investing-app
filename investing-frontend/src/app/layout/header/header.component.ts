@@ -12,7 +12,7 @@ import { UtilsService } from '@app/services/utils.service';
 })
 export class HeaderComponent implements OnInit {
   isMobile = false;
-  isSolid = false;
+  isSolid = true;
 
   contexts = [
     {

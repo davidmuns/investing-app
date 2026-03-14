@@ -74,7 +74,7 @@
       </mat-tab-group>
     </div>
     <button mat-icon-button (click)="openCreatePortfolioDialog()">
-      <mat-icon>add</mat-icon>
+      <mat-icon matTooltip="Crear nueva cartera">add</mat-icon>
     </button>
   </div>
 
@@ -83,21 +83,8 @@
     <div class="panelTop">
       <div class="addSymbol">
         <label class="addSymbolLabel">Añadir posición</label>
-        <!-- <app-search-position-gpt></app-search-position-gpt> -->
-        <app-search-position-oriol></app-search-position-oriol>
-        <!-- <form class="addSymbolForm" (submit)="submitSymbol(); $event.preventDefault()">
-          <input
-            class="addSymbolInput"
-            type="text"
-            placeholder="EUR/USD o BBVA"
-            [(ngModel)]="symbolQuery"
-            name="symbolQuery"
-            autocomplete="off"
-          />
-          <button class="addSymbolBtn" type="submit" aria-label="Buscar">
-            <mat-icon>search</mat-icon>
-          </button>
-        </form> -->
+        <app-search-position-gpt></app-search-position-gpt>
+        <!-- <app-search-position-oriol></app-search-position-oriol> -->
       </div>
       <div>
         <button
@@ -105,7 +92,7 @@
           aria-label="Example icon button with a vertical three dot icon"
           [matMenuTriggerFor]="delete_portfolio"
         >
-          <mat-icon>more_vert</mat-icon>
+          <mat-icon matTooltip="Eliminar/descargar cartera">more_vert</mat-icon>
         </button>
       </div>
     </div>
@@ -117,15 +104,15 @@
 
   <div *ngIf="!loading && !portfolios.length" class="hint">No hay carteras. Crea una con el botón “+”.</div>
 
-  <div class="body">
-    <div class="login">
+  <div>
+    <div>
       <mat-tab-group mat-align-tabs="start" animationDuration="500ms">
         <!-- RESUMEN TAB -->
-        <mat-tab class="custom-tab-label" label="Resumen">
+        <mat-tab label="Resumen">
           <app-table></app-table>
         </mat-tab>
         <!-- GRAFICOS TAB -->
-        <mat-tab class="custom-tab-label" label="Gráficos"></mat-tab>
+        <mat-tab label="Gráficos"></mat-tab>
       </mat-tab-group>
     </div>
   </div>

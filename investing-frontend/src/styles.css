@@ -14,3 +14,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     --pistachio: #aad777;
     --greenCake: #69F0AE;
 }
+.mat-tooltip {
+  background-color: black;
+  font-size: 12px;
+}

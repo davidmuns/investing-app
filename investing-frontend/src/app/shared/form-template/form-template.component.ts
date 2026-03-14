@@ -78,7 +78,7 @@ export class FormTemplateComponent implements OnInit {
 
   private initFormAddPortfolio() {
     this.form = this.fb.group({
-      nombre: ['', [Validators.required, Validators.maxLength(20)]],
+      nombre: ['', [Validators.maxLength(20)]],
     });
   }
 
@@ -169,12 +169,15 @@ export class FormTemplateComponent implements OnInit {
         if (err?.status === 409) {
           const apiErr: ApiError = err?.error ?? {};
           this.formError = apiErr.message || 'Cartera duplicada.';
-          this.utilsSvc.showSnackBar(this.formError, 200);
           return;
         }
         this.formError = 'No se pudo crear la cartera.';
       },
     });
+  }
+
+  removeErr() {
+    this.formError = '';
   }
 
   signupOpen() {

@@ -79,7 +79,6 @@
     class="input-witdh"
     appearance="outline"
   >
-    <!-- <mat-label>Seguimiento</mat-label> -->
     <input matInput placeholder="Introduce nombre cartera" formControlName="nombre" />
     <button
       *ngIf="form.get('nombre')?.value"
@@ -88,9 +87,11 @@
       class="clear-btn"
       aria-label="Clear"
       (click)="form.get('nombre')?.reset()"
+      (click)="removeErr()"
     >
       <mat-icon>close</mat-icon>
     </button>
+
     <mat-error *ngIf="form.get('nombre')?.touched && form.get('nombre')?.hasError('required')" class="error">
       Required
     </mat-error>
@@ -98,7 +99,7 @@
       Tittle lenght
     </mat-error>
   </mat-form-field>
-
+  <p style="color: red" *ngIf="formError">{{ formError }}</p>
   <br />
   <button
     *ngIf="this.formType === 'login'"
