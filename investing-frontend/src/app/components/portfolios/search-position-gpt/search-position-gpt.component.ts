@@ -52,12 +52,15 @@ export class SearchPositionGptComponent implements OnInit {
 
   private handleSearchResults(response: SearchResponse<Instrument>): string[] {
     this.instruments = response.items;
-    console.log(response);
     return response.items.map((instrument) => instrument.name);
   }
 
   clearInput(): void {
     // O también this.form.setValue('') para borrar el contenido.
     this.form.reset();
+  }
+
+  addSymbol(symbol: any) {
+    console.log(symbol);
   }
 }

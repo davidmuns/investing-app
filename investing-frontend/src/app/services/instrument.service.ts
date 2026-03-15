@@ -13,6 +13,10 @@ export class InstrumentService {
 
   constructor(private http: HttpClient) {}
 
+  list(): Observable<SearchResponse<Instrument>> {
+    return this.http.get<SearchResponse<Instrument>>(this.apiUrl);
+  }
+
   search(query: string): Observable<SearchResponse<Instrument>> {
     return this.http.get<SearchResponse<Instrument>>(`${this.apiUrl}/search?q=${query}`);
   }

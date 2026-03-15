@@ -7,7 +7,8 @@
     (matSortChange)="announceSortChange($event)"
   > -->
   <table mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)">
-    <ng-container *ngFor="let column of columns" [matColumnDef]="column.def">
+    <ng-container *ngFor="let column of instrumentColumns" [matColumnDef]="column.def">
+      <!-- <ng-container *ngFor="let column of columns" [matColumnDef]="column.def"> -->
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
         {{ column.label }}
       </th>

@@ -10,8 +10,7 @@
   />
   <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
     <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-      <p>{{ option }}</p>
-      <!-- <p (click)="selectArticle(option)">{{ option }}</p> -->
+      <p (click)="addSymbol(option)">{{ option }}</p>
     </mat-option>
   </mat-autocomplete>
   <button class="addSymbolBtn" type="submit" aria-label="Buscar">

@@ -44,6 +44,7 @@
 
 .tabBar {
     display: flex;
+    justify-content: flex-start;
     align-items: flex-end;
     gap: 8px;
     margin-bottom: 10px;
@@ -52,8 +53,9 @@
 /* Tabs ocupan todo el espacio disponible */
 .tabs {
     display: flex;
+    flex-direction: row;
     gap: 1px;
-    flex: 1;
+    /* flex: 1; */
     overflow-x: auto;
     /* scroll horizontal si hay muchas */
     scrollbar-width: thin;
@@ -134,7 +136,7 @@
 
 .panel {
     border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 10px;
+    /* border-radius: 10px; */
     padding: 15px;
     background: rgba(0, 0, 0, 0.02);
 }

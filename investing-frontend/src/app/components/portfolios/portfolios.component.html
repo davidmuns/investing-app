@@ -73,7 +73,7 @@
         </mat-tab>
       </mat-tab-group>
     </div>
-    <button mat-icon-button (click)="openCreatePortfolioDialog()">
+    <button mat-button color="primary" (click)="openCreatePortfolioDialog()">
       <mat-icon matTooltip="Crear nueva cartera">add</mat-icon>
     </button>
   </div>
@@ -109,11 +109,16 @@
       <mat-tab-group mat-align-tabs="start" animationDuration="500ms">
         <!-- RESUMEN TAB -->
         <mat-tab label="Resumen">
-          <app-table></app-table>
+          <app-table *ngIf="portfolios.length > 1"></app-table>
         </mat-tab>
         <!-- GRAFICOS TAB -->
         <mat-tab label="Gráficos"></mat-tab>
       </mat-tab-group>
+    </div>
+    <div *ngIf="portfolios.length <= 1" class="panel" style="text-align: center; font-size: 17px">
+      <p style="color: rgb(114, 118, 118)">
+        Gestione su cartera aquí añadiendo acciones, bonos, materias primas, índices o monedas.
+      </p>
     </div>
   </div>
 </div>
