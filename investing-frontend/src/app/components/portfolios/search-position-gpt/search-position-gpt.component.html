@@ -1,29 +1,20 @@
 <!-- GPT SEARCH BAR -->
-<div class="panel">
-  <div class="panelTop">
-    <div class="addSymbol">
-      <form class="addSymbolForm">
-        <input
-          class="addSymbolInput"
-          type="text"
-          placeholder="EUR/USD o BBVA"
-          [formControl]="form"
-          name="symbolQuery"
-          [matAutocomplete]="auto"
-        />
-        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-          <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-            <p>{{ option }}</p>
-            <!-- <p (click)="selectArticle(option)">{{ option }}</p> -->
-          </mat-option>
-        </mat-autocomplete>
-        <button class="addSymbolBtn" type="submit" aria-label="Buscar">
-          <mat-icon>search</mat-icon>
-        </button>
-      </form>
-    </div>
-    <!-- <div></div> -->
-  </div>
-  <!-- <p *ngIf="symbolError" class="error">{{ symbolError }}</p> -->
-  <div class="panelHeader"></div>
-</div>
+<form class="addSymbolForm">
+  <input
+    class="addSymbolInput"
+    type="text"
+    placeholder="EUR/USD o BBVA"
+    [formControl]="form"
+    name="symbolQuery"
+    [matAutocomplete]="auto"
+  />
+  <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+    <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+      <p>{{ option }}</p>
+      <!-- <p (click)="selectArticle(option)">{{ option }}</p> -->
+    </mat-option>
+  </mat-autocomplete>
+  <button class="addSymbolBtn" type="submit" aria-label="Buscar">
+    <mat-icon>search</mat-icon>
+  </button>
+</form>
