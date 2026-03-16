@@ -83,7 +83,7 @@
     <div class="panelTop">
       <div class="addSymbol">
         <label class="addSymbolLabel">Añadir posición</label>
-        <app-search-position-gpt></app-search-position-gpt>
+        <app-search-position-gpt (instrumentCreated)="reloadInstruments()"></app-search-position-gpt>
         <!-- <app-search-position-oriol></app-search-position-oriol> -->
       </div>
       <div>
@@ -109,13 +109,13 @@
       <mat-tab-group mat-align-tabs="start" animationDuration="500ms">
         <!-- RESUMEN TAB -->
         <mat-tab label="Resumen">
-          <app-table *ngIf="portfolios.length > 1"></app-table>
+          <app-table *ngIf="instruments.length" [instruments]="instruments"></app-table>
         </mat-tab>
         <!-- GRAFICOS TAB -->
         <mat-tab label="Gráficos"></mat-tab>
       </mat-tab-group>
     </div>
-    <div *ngIf="portfolios.length <= 1" class="panel" style="text-align: center; font-size: 17px">
+    <div *ngIf="!instruments.length" class="panel" style="text-align: center; font-size: 17px">
       <p style="color: rgb(114, 118, 118)">
         Gestione su cartera aquí añadiendo acciones, bonos, materias primas, índices o monedas.
       </p>

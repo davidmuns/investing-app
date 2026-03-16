@@ -5,6 +5,9 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { PortfolioResponse } from '@app/shared/models/portfolios-response';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ModalPortfolioComponent } from './modal-portfolio/modal-portfolio.component';
+import { MatTableDataSource } from '@angular/material/table';
+import { Instrument } from '@app/shared/models/instrument';
+import { InstrumentService } from '@app/services/instrument.service';
 
 @Component({
   selector: 'app-portfolios',
@@ -26,6 +29,7 @@ export class PortfoliosComponent implements OnInit {
   formError = '';
   @ViewChild('nameInput') nameInput?: ElementRef<HTMLInputElement>;
   @ViewChildren('editInput') editInputs!: QueryList<ElementRef<HTMLInputElement>>;
+  instruments: Instrument[] = [];
 
   toggleActions(): void {
     this.actionsOpen = !this.actionsOpen;
@@ -44,10 +48,12 @@ export class PortfoliosComponent implements OnInit {
   constructor(
     private portfolioService: PortfolioService,
     public dialog: MatDialog,
+    private instrumentSvc: InstrumentService,
   ) {}
 
   ngOnInit(): void {
     this.reload();
+    this.reloadInstruments();
   }
 
   openCreatePortfolioDialog(): void {
@@ -58,6 +64,17 @@ export class PortfoliosComponent implements OnInit {
     dialogRef.afterClosed().subscribe((created) => {
       if (!created) return;
       this.reload(created.id);
+    });
+  }
+
+  reloadInstruments(): void {
+    this.instrumentSvc.list().subscribe({
+      next: (data) => {
+        this.instruments = data.data;
+      },
+      error: (err) => {
+        console.log(err);
+      },
     });
   }
 

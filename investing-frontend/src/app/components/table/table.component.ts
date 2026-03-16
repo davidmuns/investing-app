@@ -1,5 +1,5 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { InstrumentService } from '@app/services/instrument.service';
@@ -50,7 +50,7 @@ const ELEMENT_DATA: Position[] = [
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.css'],
 })
-export class TableComponent implements OnInit, AfterViewInit {
+export class TableComponent implements OnInit, AfterViewInit, OnChanges {
   columns = [
     { def: 'nombre', label: 'Nombre' },
     { def: 'simbolo', label: 'Símbolo' },
@@ -69,11 +69,13 @@ export class TableComponent implements OnInit, AfterViewInit {
     { def: 'name', label: 'Nombre' },
     { def: 'symbol', label: 'Símbolo' },
     { def: 'type', label: 'Tipo' },
+    { def: 'exchange', label: 'Exchange' },
   ];
   displayedColumns = this.instrumentColumns.map((c) => c.def);
   // displayedColumns = this.columns.map((c) => c.def);
   // dataSource = new MatTableDataSource<Position>(ELEMENT_DATA);
   // dataSource!: MatTableDataSource<Instrument>;
+  @Input() instruments: Instrument[] = [];
   dataSource = new MatTableDataSource<Instrument>([]);
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -83,22 +85,18 @@ export class TableComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    this.getInstruments();
+    this.dataSource.data = this.instruments;
   }
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
   }
 
-  getInstruments() {
-    this.instrumentSvc.list().subscribe({
-      next: (data) => {
-        this.dataSource.data = data.data;
-      },
-      error: () => {},
-    });
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['instruments']) {
+      this.dataSource.data = this.instruments;
+    }
   }
-
   /** Announce the change in sort state for assistive technology. */
   announceSortChange(sortState: Sort) {
     if (sortState.direction) {

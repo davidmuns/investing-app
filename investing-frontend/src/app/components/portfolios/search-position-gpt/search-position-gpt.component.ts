@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { InstrumentService } from '@app/services/instrument.service';
 import { Instrument } from '@app/shared/models/instrument';
@@ -14,6 +14,7 @@ import { InstrumentRequest } from '@app/shared/models/instrument-request';
 })
 export class SearchPositionGptComponent implements OnInit {
   form = this.fb.control<string | InstrumentRequest>('', [Validators.minLength(1)]);
+  @Output() instrumentCreated = new EventEmitter<void>();
 
   instruments: InstrumentRequest[] = [];
 
@@ -80,6 +81,7 @@ export class SearchPositionGptComponent implements OnInit {
     this.instrumentSvc.create(instrument).subscribe({
       next: (data) => {
         console.log(data);
+        this.instrumentCreated.emit();
       },
       error: (err) => {
         // this.errorMsg = 'No se pudo cargar la lista de carteras.';
