@@ -1,5 +1,5 @@
 <!-- GPT SEARCH BAR -->
-<form class="addSymbolForm">
+<!-- <form class="addSymbolForm">
   <input
     class="addSymbolInput"
     type="text"
@@ -8,12 +8,44 @@
     name="symbolQuery"
     [matAutocomplete]="auto"
   />
-  <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+  <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayInstrument">
     <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-      <p (click)="addSymbol(option)">{{ option }}</p>
+      <p (click)="addSymbol(option)">{{ option.instrument_name }}</p>
     </mat-option>
   </mat-autocomplete>
   <button class="addSymbolBtn" type="submit" aria-label="Buscar">
+    <mat-icon>search</mat-icon>
+  </button>
+</form> -->
+<form class="addSymbolForm">
+  <input
+    class="addSymbolInput"
+    type="text"
+    placeholder="Eur/USD o BBVA"
+    [formControl]="form"
+    name="symbolQuery"
+    [matAutocomplete]="auto"
+  />
+
+  <mat-autocomplete
+    autoActiveFirstOption
+    #auto="matAutocomplete"
+    [displayWith]="displayInstrument"
+    (optionSelected)="onOptionSelected($event)"
+  >
+    <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+      <p
+        matTooltip="{{
+          option.symbol + ' | ' + option.instrument_name + ' | ' + option.instrument_type + ' - ' + option.exchange
+        }}"
+        [matTooltipPosition]="'above'"
+      >
+        {{ option.symbol }} | {{ option.instrument_name }} | {{ option.instrument_type }}-{{ option.exchange }}
+      </p>
+    </mat-option>
+  </mat-autocomplete>
+
+  <button class="addSymbolBtn" type="button" aria-label="Buscar">
     <mat-icon>search</mat-icon>
   </button>
 </form>

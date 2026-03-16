@@ -91,9 +91,9 @@ export class SearchPositionOriolComponent implements OnInit {
   }
 
   private handleSearchResults(response: SearchResponse<Instrument>): string[] {
-    this.instruments = response.items;
+    this.instruments = response.data;
     console.log(response);
-    return response.items.map((instrument) => instrument.name);
+    return response.data.map((instrument) => instrument.instrument_name);
   }
 
   clearInput(): void {

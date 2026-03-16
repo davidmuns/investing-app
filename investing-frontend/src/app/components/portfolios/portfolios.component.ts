@@ -67,7 +67,7 @@ export class PortfoliosComponent implements OnInit {
 
     this.portfolioService.list().subscribe({
       next: (data) => {
-        this.portfolios = data.items;
+        this.portfolios = data.data;
         if (createdId != null) {
           const idx = this.portfolios.findIndex((p) => p.id === createdId);
           this.selectedIndex = idx >= 0 ? idx : 0;

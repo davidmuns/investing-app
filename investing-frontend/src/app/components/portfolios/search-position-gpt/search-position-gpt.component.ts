@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { InstrumentService } from '@app/services/instrument.service';
 import { Instrument } from '@app/shared/models/instrument';
-import { PortfolioResponse } from '@app/shared/models/portfolios-response';
 import { SearchResponse } from '@app/shared/models/search-response';
 import { debounceTime, map, Observable, of, switchMap } from 'rxjs';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { InstrumentRequest } from '@app/shared/models/instrument-request';
 
 @Component({
   selector: 'app-search-position-gpt',
@@ -12,11 +13,14 @@ import { debounceTime, map, Observable, of, switchMap } from 'rxjs';
   styleUrls: ['./search-position-gpt.component.css'],
 })
 export class SearchPositionGptComponent implements OnInit {
-  form = this.fb.control('', [Validators.minLength(1)]);
+  form = this.fb.control<string | InstrumentRequest>('', [Validators.minLength(1)]);
 
-  instruments: Instrument[] = [];
+  instruments: InstrumentRequest[] = [];
 
-  filteredOptions!: Observable<string[]>;
+  filteredOptions!: Observable<Instrument[]>;
+  displayInstrument = (instrument: InstrumentRequest | null): string => {
+    return instrument ? instrument.instrument_name : '';
+  };
 
   constructor(
     private readonly fb: FormBuilder,
@@ -24,24 +28,30 @@ export class SearchPositionGptComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // console.log('inside ' + SearchPositionOriolComponent.toString());
     this.initFilteredOptions();
   }
 
   private initFilteredOptions(): void {
     this.filteredOptions = this.form.valueChanges.pipe(
-      // startWith(''),
       debounceTime(200),
       map((value) => this.normalizeQuery(value)),
       switchMap((value) => this.searchInstruments(value)),
     );
   }
 
-  private normalizeQuery(value: string | null): string {
-    return (value || '').trim();
+  private normalizeQuery(value: string | InstrumentRequest | null): string {
+    if (typeof value === 'string') {
+      return value.trim();
+    }
+
+    if (value && typeof value === 'object') {
+      return value.instrument_name?.trim() || '';
+    }
+
+    return '';
   }
 
-  private searchInstruments(value: string): Observable<string[]> {
+  private searchInstruments(value: string): Observable<InstrumentRequest[]> {
     if (!value) {
       this.instruments = [];
       return of([]);
@@ -50,9 +60,10 @@ export class SearchPositionGptComponent implements OnInit {
     return this.instrumentSvc.search(value).pipe(map((response) => this.handleSearchResults(response)));
   }
 
-  private handleSearchResults(response: SearchResponse<Instrument>): string[] {
-    this.instruments = response.items;
-    return response.items.map((instrument) => instrument.name);
+  private handleSearchResults(response: SearchResponse<InstrumentRequest>): InstrumentRequest[] {
+    // console.log(response);
+    this.instruments = response.data;
+    return response.data.map((response) => response);
   }
 
   clearInput(): void {
@@ -60,7 +71,21 @@ export class SearchPositionGptComponent implements OnInit {
     this.form.reset();
   }
 
-  addSymbol(symbol: any) {
-    console.log(symbol);
+  onOptionSelected(event: MatAutocompleteSelectedEvent): void {
+    const instrument = event.option.value as InstrumentRequest;
+    this.addSymbol(instrument);
+  }
+
+  addSymbol(instrument: InstrumentRequest) {
+    this.instrumentSvc.create(instrument).subscribe({
+      next: (data) => {
+        console.log(data);
+      },
+      error: (err) => {
+        // this.errorMsg = 'No se pudo cargar la lista de carteras.';
+        // this.loading = false;
+        console.log(err.error.message);
+      },
+    });
   }
 }

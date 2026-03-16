@@ -93,7 +93,7 @@ export class TableComponent implements OnInit, AfterViewInit {
   getInstruments() {
     this.instrumentSvc.list().subscribe({
       next: (data) => {
-        this.dataSource.data = data.items;
+        this.dataSource.data = data.data;
       },
       error: () => {},
     });

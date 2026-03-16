@@ -1,4 +1,4 @@
 export interface SearchResponse<T> {
-  items: T[];
+  data: T[];
   count: number;
 }

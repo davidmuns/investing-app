@@ -1,4 +1,4 @@
-export interface Instrument {
+export interface InstrumentRequest {
   instrument_name: string;
   symbol: string;
   instrument_type: string;
