@@ -84,8 +84,6 @@ export class SearchPositionGptComponent implements OnInit {
         this.instrumentCreated.emit();
       },
       error: (err) => {
-        // this.errorMsg = 'No se pudo cargar la lista de carteras.';
-        // this.loading = false;
         console.log(err.error.message);
       },
     });

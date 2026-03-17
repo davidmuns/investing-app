@@ -24,6 +24,10 @@ export class InstrumentService {
     return this.http.post<InstrumentResponse>(this.apiUrl, req);
   }
 
+  deleteById(id: number): Observable<void> {
+    return this.http.delete<void>(this.apiUrl + '/' + id);
+  }
+
   search(query: string): Observable<SearchResponse<Instrument>> {
     return this.http.get<SearchResponse<Instrument>>(`${this.externalApiUrl}/search?q=${query}`);
   }

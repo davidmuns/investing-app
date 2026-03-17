@@ -78,6 +78,10 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
+  onInstrumentDeleted(id: number): void {
+    this.instruments = this.instruments.filter((i) => i.id !== id);
+  }
+
   reload(createdId?: number): void {
     this.loading = true;
     this.errorMsg = '';

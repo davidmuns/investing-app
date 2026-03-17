@@ -109,7 +109,11 @@
       <mat-tab-group mat-align-tabs="start" animationDuration="500ms">
         <!-- RESUMEN TAB -->
         <mat-tab label="Resumen">
-          <app-table *ngIf="instruments.length" [instruments]="instruments"></app-table>
+          <app-table
+            *ngIf="instruments.length"
+            [instruments]="instruments"
+            (instrumentDeleted)="onInstrumentDeleted($event)"
+          ></app-table>
         </mat-tab>
         <!-- GRAFICOS TAB -->
         <mat-tab label="Gráficos"></mat-tab>

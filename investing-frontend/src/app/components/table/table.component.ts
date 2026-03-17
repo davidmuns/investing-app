@@ -1,9 +1,21 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
-import { AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { InstrumentService } from '@app/services/instrument.service';
+import { UtilsService } from '@app/services/utils.service';
 import { Instrument } from '@app/shared/models/instrument';
+import { InstrumentResponse } from '@app/shared/models/instrument-response';
 import { Position } from '@app/shared/models/position';
 
 const ELEMENT_DATA: Position[] = [
@@ -76,12 +88,14 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
   // dataSource = new MatTableDataSource<Position>(ELEMENT_DATA);
   // dataSource!: MatTableDataSource<Instrument>;
   @Input() instruments: Instrument[] = [];
+  @Output() instrumentDeleted = new EventEmitter<number>();
   dataSource = new MatTableDataSource<Instrument>([]);
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private _liveAnnouncer: LiveAnnouncer,
     private instrumentSvc: InstrumentService,
+    private utilsSvc: UtilsService,
   ) {}
 
   ngOnInit(): void {
@@ -104,5 +118,21 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
     } else {
       this._liveAnnouncer.announce('Sorting cleared');
     }
+  }
+
+  delete(instrument: InstrumentResponse): void {
+    const { id, name } = instrument;
+    console.log(instrument);
+
+    this.instrumentSvc.deleteById(id).subscribe({
+      next: () => {
+        this.utilsSvc.showSnackBar(`Instrument ${name} deleted`, 3000);
+        this.instrumentDeleted.emit(id);
+      },
+      error: (err) => {
+        console.error('Error deleting instrument', err);
+        this.utilsSvc.showSnackBar(`Could not delete instrument ${name}`, 3000);
+      },
+    });
   }
 }
