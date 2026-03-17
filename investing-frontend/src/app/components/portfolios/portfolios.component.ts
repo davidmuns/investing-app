@@ -5,7 +5,6 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { PortfolioResponse } from '@app/shared/models/portfolios-response';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ModalPortfolioComponent } from './modal-portfolio/modal-portfolio.component';
-import { MatTableDataSource } from '@angular/material/table';
 import { Instrument } from '@app/shared/models/instrument';
 import { InstrumentService } from '@app/services/instrument.service';
 
@@ -16,6 +15,7 @@ import { InstrumentService } from '@app/services/instrument.service';
 })
 export class PortfoliosComponent implements OnInit {
   portfolios: PortfolioResponse[] = [];
+  portfolioId: number = 0;
   selectedIndex = 0;
   loading = false;
   errorMsg = '';
@@ -93,6 +93,7 @@ export class PortfoliosComponent implements OnInit {
           const idx = this.portfolios.findIndex((p) => p.id === createdId);
           this.selectedIndex = idx >= 0 ? idx : 0;
         }
+        this.setPortfolioId();
         this.loading = false;
       },
       error: () => {
@@ -147,6 +148,11 @@ export class PortfoliosComponent implements OnInit {
       this.saveEdit(this.editingIndex);
     }
     this.selectedIndex = i;
+    this.setPortfolioId();
+  }
+
+  setPortfolioId() {
+    this.portfolioId = this.portfolios[this.selectedIndex].id;
   }
 
   startEdit(i: number) {

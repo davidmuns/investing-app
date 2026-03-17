@@ -83,7 +83,10 @@
     <div class="panelTop">
       <div class="addSymbol">
         <label class="addSymbolLabel">Añadir posición</label>
-        <app-search-position-gpt (instrumentCreated)="reloadInstruments()"></app-search-position-gpt>
+        <app-search-position-gpt
+          [portfolioId]="portfolioId"
+          (instrumentCreated)="reloadInstruments()"
+        ></app-search-position-gpt>
         <!-- <app-search-position-oriol></app-search-position-oriol> -->
       </div>
       <div>

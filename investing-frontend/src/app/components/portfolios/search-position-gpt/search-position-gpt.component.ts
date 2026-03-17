@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { InstrumentService } from '@app/services/instrument.service';
 import { Instrument } from '@app/shared/models/instrument';
@@ -15,6 +15,7 @@ import { InstrumentRequest } from '@app/shared/models/instrument-request';
 export class SearchPositionGptComponent implements OnInit {
   form = this.fb.control<string | InstrumentRequest>('', [Validators.minLength(1)]);
   @Output() instrumentCreated = new EventEmitter<void>();
+  @Input() portfolioId: number = 0;
   instruments: InstrumentRequest[] = [];
   filteredOptions!: Observable<Instrument[]>;
   displayInstrument = (instrument: Instrument | null): string => {
@@ -72,7 +73,7 @@ export class SearchPositionGptComponent implements OnInit {
   }
 
   addSymbol(instrument: InstrumentRequest) {
-    this.instrumentSvc.create(instrument).subscribe({
+    this.instrumentSvc.create(instrument, this.portfolioId).subscribe({
       next: (data) => {
         console.log(data);
         this.instrumentCreated.emit();
