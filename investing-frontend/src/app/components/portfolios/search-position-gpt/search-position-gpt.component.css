@@ -1,32 +1,85 @@
-.addSymbolForm {
-    position: relative;
-    width: 420px;
-    max-width: 100%;
+.instrument-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 460px;
+  height: 42px;
+  border: 1px solid #cfcfcf;
+  border-radius: 3px;
+  background: #fff;
+  overflow: hidden;
 }
-.addSymbolInput {
-    width: 70%;
-    height: 34px;
-    padding: 0 38px 0 10px;
-    border: 1px solid rgba(0, 0, 0, 0.25);
-    border-radius: 3px;
-    outline: none;
+
+.instrument-search-input {
+  flex: 1;
+  height: 100%;
+  border: none;
+  outline: none;
+  padding: 0 44px 0 12px;
+  font-size: 15px;
+  background: transparent;
 }
-.addSymbolInput:focus {
-    border-color: rgba(26, 115, 232, 0.8);
-    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.12);
+
+.instrument-search-input::placeholder {
+  color: #888;
 }
-.addSymbolBtn {
-    position: absolute;
-    right: 86px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 28px;
-    height: 28px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    opacity: 1;
+
+.search-btn {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
-.addSymbolBtn:hover {
-    opacity: 1;
+
+.autocomplete-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 44px;
+}
+
+.option-left {
+  width: 80px;
+  flex-shrink: 0;
+}
+
+.symbol {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.option-center {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.option-right {
+  width: 180px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.meta {
+  font-size: 13px;
+  color: #7a7a7a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

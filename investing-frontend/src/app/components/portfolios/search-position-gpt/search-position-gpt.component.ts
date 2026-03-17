@@ -15,12 +15,10 @@ import { InstrumentRequest } from '@app/shared/models/instrument-request';
 export class SearchPositionGptComponent implements OnInit {
   form = this.fb.control<string | InstrumentRequest>('', [Validators.minLength(1)]);
   @Output() instrumentCreated = new EventEmitter<void>();
-
   instruments: InstrumentRequest[] = [];
-
   filteredOptions!: Observable<Instrument[]>;
-  displayInstrument = (instrument: InstrumentRequest | null): string => {
-    return instrument ? instrument.instrument_name : '';
+  displayInstrument = (instrument: Instrument | null): string => {
+    return instrument ? instrument.symbol : '';
   };
 
   constructor(
@@ -67,14 +65,10 @@ export class SearchPositionGptComponent implements OnInit {
     return response.data.map((response) => response);
   }
 
-  clearInput(): void {
-    // O también this.form.setValue('') para borrar el contenido.
-    this.form.reset();
-  }
-
   onOptionSelected(event: MatAutocompleteSelectedEvent): void {
     const instrument = event.option.value as InstrumentRequest;
     this.addSymbol(instrument);
+    this.form.reset();
   }
 
   addSymbol(instrument: InstrumentRequest) {

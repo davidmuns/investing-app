@@ -77,13 +77,14 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
   ];
 
   instrumentColumns = [
-    { def: 'id', label: 'ID' },
+    // { def: 'id', label: 'ID' },
     { def: 'name', label: 'Nombre' },
     { def: 'symbol', label: 'Símbolo' },
     { def: 'type', label: 'Tipo' },
     { def: 'exchange', label: 'Exchange' },
   ];
-  displayedColumns = this.instrumentColumns.map((c) => c.def);
+  // displayedColumns = this.instrumentColumns.map((c) => c.def);
+  displayedColumns = [...this.instrumentColumns.map((c) => c.def), 'actions'];
   // displayedColumns = this.columns.map((c) => c.def);
   // dataSource = new MatTableDataSource<Position>(ELEMENT_DATA);
   // dataSource!: MatTableDataSource<Instrument>;
