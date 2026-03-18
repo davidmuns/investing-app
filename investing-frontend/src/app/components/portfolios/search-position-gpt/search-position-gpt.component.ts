@@ -75,7 +75,6 @@ export class SearchPositionGptComponent implements OnInit {
   addSymbol(instrument: InstrumentRequest) {
     this.instrumentSvc.create(instrument, this.portfolioId).subscribe({
       next: (data) => {
-        console.log(data);
         this.instrumentCreated.emit();
       },
       error: (err) => {

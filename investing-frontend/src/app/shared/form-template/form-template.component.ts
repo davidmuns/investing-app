@@ -162,7 +162,6 @@ export class FormTemplateComponent implements OnInit {
 
     this.portfolioService.create({ name, type: this.getPortfolioType() }).subscribe({
       next: (created) => {
-        console.log(created);
         this.portfolioCreated.emit(created);
       },
       error: (err) => {

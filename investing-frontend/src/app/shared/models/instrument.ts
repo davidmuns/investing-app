@@ -4,4 +4,5 @@ export interface Instrument {
   symbol: string;
   instrument_type: string;
   exchange: string;
+  portfolioId?: number;
 }

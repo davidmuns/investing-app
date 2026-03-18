@@ -62,15 +62,19 @@ export class PortfoliosComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((created) => {
+      console.log('Created = ', created);
       if (!created) return;
       this.reload(created.id);
+      this.reloadInstruments();
+      this.portfolioId = created.id;
+      console.log('Portfolio id => ', this.portfolioId);
     });
   }
 
   reloadInstruments(): void {
     this.instrumentSvc.list().subscribe({
       next: (data) => {
-        this.instruments = data.data;
+        this.instruments = data.data.filter((i) => i.portfolioId == this.portfolioId);
       },
       error: (err) => {
         console.log(err);
@@ -149,6 +153,7 @@ export class PortfoliosComponent implements OnInit {
     }
     this.selectedIndex = i;
     this.setPortfolioId();
+    this.reloadInstruments();
   }
 
   setPortfolioId() {

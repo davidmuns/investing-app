@@ -21,7 +21,6 @@ export class InstrumentService {
   }
 
   create(req: InstrumentRequest, portfolioId: number): Observable<InstrumentResponse> {
-    console.log('Portfolio id => ' + portfolioId);
     return this.http.post<InstrumentResponse>(this.apiUrl + '/' + portfolioId, req);
   }
 
