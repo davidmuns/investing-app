@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { InstrumentService } from '@app/services/instrument.service';
-import { Instrument } from '@app/shared/models/instrument';
+import { InstrumentResponse } from '@app/shared/models/instrument-response';
 import { Position } from '@app/shared/models/position';
 import { SearchResponse } from '@app/shared/models/search-response';
 import { debounceTime, map, Observable, of, startWith, switchMap } from 'rxjs';
@@ -54,7 +54,7 @@ export class SearchPositionOriolComponent implements OnInit {
   // form = this.fb.control('', [Validators.minLength(1), Validators.required]);
   form = this.fb.control('', [Validators.minLength(1)]);
 
-  instruments: Instrument[] = [];
+  instruments: InstrumentResponse[] = [];
 
   filteredOptions!: Observable<string[]>;
 
@@ -90,10 +90,10 @@ export class SearchPositionOriolComponent implements OnInit {
     return this.instrumentSvc.search(value).pipe(map((response) => this.handleSearchResults(response)));
   }
 
-  private handleSearchResults(response: SearchResponse<Instrument>): string[] {
+  private handleSearchResults(response: SearchResponse<InstrumentResponse>): string[] {
     this.instruments = response.data;
     console.log(response);
-    return response.data.map((instrument) => instrument.instrument_name);
+    return response.data.map((instrument) => instrument.name);
   }
 
   clearInput(): void {

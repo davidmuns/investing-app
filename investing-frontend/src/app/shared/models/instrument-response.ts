@@ -4,4 +4,5 @@ export interface InstrumentResponse {
   symbol: string;
   type: string;
   exchange: string;
+  portfolioId?: number;
 }

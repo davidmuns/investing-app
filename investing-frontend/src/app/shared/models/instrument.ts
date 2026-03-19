@@ -1,8 +1,8 @@
-export interface Instrument {
-  id: number;
-  instrument_name: string;
-  symbol: string;
-  instrument_type: string;
-  exchange: string;
-  portfolioId?: number;
-}
+// export interface Instrument {
+//   id: number;
+//   instrument_name: string;
+//   symbol: string;
+//   instrument_type: string;
+//   exchange: string;
+//   portfolioId?: number;
+// }

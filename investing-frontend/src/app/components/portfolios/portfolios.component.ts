@@ -5,8 +5,8 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { PortfolioResponse } from '@app/shared/models/portfolios-response';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ModalPortfolioComponent } from './modal-portfolio/modal-portfolio.component';
-import { Instrument } from '@app/shared/models/instrument';
 import { InstrumentService } from '@app/services/instrument.service';
+import { InstrumentResponse } from '@app/shared/models/instrument-response';
 
 @Component({
   selector: 'app-portfolios',
@@ -29,7 +29,7 @@ export class PortfoliosComponent implements OnInit {
   formError = '';
   @ViewChild('nameInput') nameInput?: ElementRef<HTMLInputElement>;
   @ViewChildren('editInput') editInputs!: QueryList<ElementRef<HTMLInputElement>>;
-  instruments: Instrument[] = [];
+  instruments: InstrumentResponse[] = [];
 
   toggleActions(): void {
     this.actionsOpen = !this.actionsOpen;
@@ -62,18 +62,17 @@ export class PortfoliosComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((created) => {
-      console.log('Created = ', created);
       if (!created) return;
       this.reload(created.id);
       this.reloadInstruments();
       this.portfolioId = created.id;
-      console.log('Portfolio id => ', this.portfolioId);
     });
   }
 
   reloadInstruments(): void {
     this.instrumentSvc.list().subscribe({
       next: (data) => {
+        // console.log(data);
         this.instruments = data.data.filter((i) => i.portfolioId == this.portfolioId);
       },
       error: (err) => {

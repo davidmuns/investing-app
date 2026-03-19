@@ -14,48 +14,8 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { InstrumentService } from '@app/services/instrument.service';
 import { UtilsService } from '@app/services/utils.service';
-import { Instrument } from '@app/shared/models/instrument';
 import { InstrumentResponse } from '@app/shared/models/instrument-response';
 import { Position } from '@app/shared/models/position';
-
-const ELEMENT_DATA: Position[] = [
-  {
-    nombre: 'Adobe',
-    simbolo: 'ADBE',
-    tipo: 'Compra',
-    cantidad: 2,
-    precioMedio: 252,
-    precioActual: 242.75,
-    valorMercado: 485.5,
-    bpDiario: 4.39,
-    procentajeBpDiario: -3.67,
-    bpNeto: -18.5,
-  },
-  {
-    nombre: 'Oracle',
-    simbolo: 'ORCL',
-    tipo: 'Compra',
-    cantidad: 5,
-    precioMedio: 125,
-    precioActual: 110,
-    valorMercado: 500,
-    bpDiario: 5,
-    procentajeBpDiario: 5,
-    bpNeto: 6,
-  },
-  {
-    nombre: 'PayPal',
-    simbolo: '2PP',
-    tipo: 'Compra',
-    cantidad: 5,
-    precioMedio: 125,
-    precioActual: 110,
-    valorMercado: 500,
-    bpDiario: 5,
-    procentajeBpDiario: 5,
-    bpNeto: 6,
-  },
-];
 
 @Component({
   selector: 'app-table',
@@ -63,19 +23,6 @@ const ELEMENT_DATA: Position[] = [
   styleUrls: ['./table.component.css'],
 })
 export class TableComponent implements OnInit, AfterViewInit, OnChanges {
-  columns = [
-    { def: 'nombre', label: 'Nombre' },
-    { def: 'simbolo', label: 'Símbolo' },
-    { def: 'tipo', label: 'Tipo' },
-    { def: 'cantidad', label: 'Cantidad' },
-    { def: 'precioMedio', label: 'Precio medio' },
-    { def: 'precioActual', label: 'Precio actual' },
-    { def: 'valorMercado', label: 'Valor mercado' },
-    { def: 'bpDiario', label: 'B/P diario' },
-    { def: 'procentajeBpDiario', label: '% B/P diario' },
-    { def: 'bpNeto', label: 'B/P neto' },
-  ];
-
   instrumentColumns = [
     // { def: 'id', label: 'ID' },
     { def: 'name', label: 'Nombre' },
@@ -83,14 +30,10 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
     { def: 'type', label: 'Tipo' },
     { def: 'exchange', label: 'Exchange' },
   ];
-  // displayedColumns = this.instrumentColumns.map((c) => c.def);
   displayedColumns = [...this.instrumentColumns.map((c) => c.def), 'actions'];
-  // displayedColumns = this.columns.map((c) => c.def);
-  // dataSource = new MatTableDataSource<Position>(ELEMENT_DATA);
-  // dataSource!: MatTableDataSource<Instrument>;
-  @Input() instruments: Instrument[] = [];
+  @Input() instruments: InstrumentResponse[] = [];
   @Output() instrumentDeleted = new EventEmitter<number>();
-  dataSource = new MatTableDataSource<Instrument>([]);
+  dataSource = new MatTableDataSource<InstrumentResponse>([]);
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
@@ -123,8 +66,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
 
   delete(instrument: InstrumentResponse): void {
     const { id, name } = instrument;
-    console.log(instrument);
-
     this.instrumentSvc.deleteById(id).subscribe({
       next: () => {
         this.utilsSvc.showSnackBar(`Instrument ${name} deleted`, 3000);

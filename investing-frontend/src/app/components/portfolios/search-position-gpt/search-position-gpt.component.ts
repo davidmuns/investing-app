@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { InstrumentService } from '@app/services/instrument.service';
-import { Instrument } from '@app/shared/models/instrument';
 import { SearchResponse } from '@app/shared/models/search-response';
 import { debounceTime, map, Observable, of, switchMap } from 'rxjs';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { InstrumentRequest } from '@app/shared/models/instrument-request';
+import { InstrumentResponse } from '@app/shared/models/instrument-response';
 
 @Component({
   selector: 'app-search-position-gpt',
@@ -13,12 +13,12 @@ import { InstrumentRequest } from '@app/shared/models/instrument-request';
   styleUrls: ['./search-position-gpt.component.css'],
 })
 export class SearchPositionGptComponent implements OnInit {
-  form = this.fb.control<string | InstrumentRequest>('', [Validators.minLength(1)]);
+  form = this.fb.control<string | InstrumentResponse>('', [Validators.minLength(1)]);
   @Output() instrumentCreated = new EventEmitter<void>();
   @Input() portfolioId: number = 0;
-  instruments: InstrumentRequest[] = [];
-  filteredOptions!: Observable<Instrument[]>;
-  displayInstrument = (instrument: Instrument | null): string => {
+  instruments: InstrumentResponse[] = [];
+  filteredOptions!: Observable<InstrumentResponse[]>;
+  displayInstrument = (instrument: InstrumentResponse | null): string => {
     return instrument ? instrument.symbol : '';
   };
 
@@ -39,19 +39,19 @@ export class SearchPositionGptComponent implements OnInit {
     );
   }
 
-  private normalizeQuery(value: string | InstrumentRequest | null): string {
+  private normalizeQuery(value: string | InstrumentResponse | null): string {
     if (typeof value === 'string') {
       return value.trim();
     }
 
     if (value && typeof value === 'object') {
-      return value.instrument_name?.trim() || '';
+      return value.name?.trim() || '';
     }
 
     return '';
   }
 
-  private searchInstruments(value: string): Observable<InstrumentRequest[]> {
+  private searchInstruments(value: string): Observable<InstrumentResponse[]> {
     if (!value) {
       this.instruments = [];
       return of([]);
@@ -60,9 +60,9 @@ export class SearchPositionGptComponent implements OnInit {
     return this.instrumentSvc.search(value).pipe(map((response) => this.handleSearchResults(response)));
   }
 
-  private handleSearchResults(response: SearchResponse<InstrumentRequest>): InstrumentRequest[] {
-    // console.log(response);
+  private handleSearchResults(response: SearchResponse<InstrumentResponse>): InstrumentResponse[] {
     this.instruments = response.data;
+    // console.log(this.instruments);
     return response.data.map((response) => response);
   }
 
