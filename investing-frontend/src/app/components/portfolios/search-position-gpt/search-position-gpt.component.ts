@@ -68,11 +68,11 @@ export class SearchPositionGptComponent implements OnInit {
 
   onOptionSelected(event: MatAutocompleteSelectedEvent): void {
     const instrument = event.option.value as InstrumentRequest;
-    this.addSymbol(instrument);
+    this.addInstrument(instrument);
     this.form.reset();
   }
 
-  addSymbol(instrument: InstrumentRequest) {
+  addInstrument(instrument: InstrumentRequest) {
     this.instrumentSvc.create(instrument, this.portfolioId).subscribe({
       next: (data) => {
         this.instrumentCreated.emit();

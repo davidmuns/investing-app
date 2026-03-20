@@ -1,7 +1,7 @@
 export interface InstrumentRequest {
   id: number;
-  instrument_name: string;
+  name: string;
   symbol: string;
-  instrument_type: string;
+  type: string;
   exchange: string;
 }

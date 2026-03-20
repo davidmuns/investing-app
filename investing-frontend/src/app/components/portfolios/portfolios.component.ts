@@ -72,7 +72,6 @@ export class PortfoliosComponent implements OnInit {
   reloadInstruments(): void {
     this.instrumentSvc.list().subscribe({
       next: (data) => {
-        // console.log(data);
         this.instruments = data.data.filter((i) => i.portfolioId == this.portfolioId);
       },
       error: (err) => {

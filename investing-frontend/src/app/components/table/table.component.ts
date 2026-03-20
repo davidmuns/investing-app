@@ -15,7 +15,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import { InstrumentService } from '@app/services/instrument.service';
 import { UtilsService } from '@app/services/utils.service';
 import { InstrumentResponse } from '@app/shared/models/instrument-response';
-import { Position } from '@app/shared/models/position';
 
 @Component({
   selector: 'app-table',
@@ -29,6 +28,12 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
     { def: 'symbol', label: 'Símbolo' },
     { def: 'type', label: 'Tipo' },
     { def: 'exchange', label: 'Exchange' },
+    { def: 'close', label: 'Último' },
+    { def: 'open', label: 'Apertura' },
+    { def: 'high', label: 'Máximo' },
+    { def: 'low', label: 'Mínimo' },
+    { def: 'change', label: 'Var.' },
+    { def: 'percentChange', label: '% var.' },
   ];
   displayedColumns = [...this.instrumentColumns.map((c) => c.def), 'actions'];
   @Input() instruments: InstrumentResponse[] = [];
@@ -76,5 +81,27 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
         this.utilsSvc.showSnackBar(`Could not delete instrument ${name}`, 3000);
       },
     });
+  }
+
+  getValueStyle(columnDef: string, element: InstrumentResponse): { [key: string]: string } {
+    if (columnDef !== 'change' && columnDef !== 'percentChange') {
+      return {};
+    }
+
+    const value = element[columnDef as keyof InstrumentResponse] as number | null | undefined;
+
+    if (value == null) {
+      return { 'font-weight': 'bold', color: 'black' };
+    }
+
+    if (value > 0) {
+      return { 'font-weight': 'bold', color: 'green' };
+    }
+
+    if (value < 0) {
+      return { 'font-weight': 'bold', color: 'red' };
+    }
+
+    return { 'font-weight': 'bold', color: 'black' };
   }
 }
