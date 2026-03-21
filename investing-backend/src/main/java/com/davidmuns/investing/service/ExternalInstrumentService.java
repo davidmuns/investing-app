@@ -1,0 +1,42 @@
+package com.davidmuns.investing.service;
+
+import com.davidmuns.investing.client.TwelveDataClient;
+import com.davidmuns.investing.dto.InstrumentResponse;
+import com.davidmuns.investing.dto.SearchResponse;
+import com.davidmuns.investing.dto.TwelveDataQuoteResponse;
+import com.davidmuns.investing.dto.TwelveDataSymbolSearchResponse;
+import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class ExternalInstrumentService {
+
+    private final TwelveDataClient twelveDataClient;
+
+    public ExternalInstrumentService(TwelveDataClient twelveDataClient) {
+        this.twelveDataClient = twelveDataClient;
+    }
+
+    public SearchResponse<InstrumentResponse> search(String query) {
+        TwelveDataSymbolSearchResponse response = twelveDataClient.searchSymbols(query);
+        List<InstrumentResponse> instruments = response.getData().stream()
+                .map(this::toInstrumentResponse)
+                .collect(Collectors.toList());
+
+        return new SearchResponse<InstrumentResponse>(instruments, instruments.size(), response.getStatus());
+    }
+    public TwelveDataQuoteResponse getQuote(String query) {
+        return twelveDataClient.getQuote(query);
+    }
+    private InstrumentResponse toInstrumentResponse(TwelveDataSymbolSearchResponse.Item item) {
+        return new InstrumentResponse(
+                null,
+                item.getInstrumentName(),
+                item.getSymbol(),
+                item.getInstrumentType(),
+                item.getExchange(),
+                null
+        );
+    }
+}

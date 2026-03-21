@@ -1,19 +1,21 @@
-package com.davidmuns.investing.api.controller;
+package com.davidmuns.investing.controller;
 
-import com.davidmuns.investing.domain.Portfolio;
+import com.davidmuns.investing.dto.CreatePortfolioRequest;
+import com.davidmuns.investing.dto.PortfolioResponse;
+import com.davidmuns.investing.dto.SearchResponse;
+import com.davidmuns.investing.entity.Portfolio;
 import com.davidmuns.investing.service.PortfolioService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.Map;
 
-import com.davidmuns.investing.api.dto.CreatePortfolioRequest;
-import com.davidmuns.investing.api.dto.PortfolioResponse;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/portfolios")
+@CrossOrigin
+@Slf4j
 public class PortfolioController {
 
     private final PortfolioService service;
@@ -23,15 +25,16 @@ public class PortfolioController {
     }
 
     @GetMapping
-    public List<PortfolioResponse> list() {
-        return service.findAll().stream().map(PortfolioController::toResponse).toList();
+    public SearchResponse<PortfolioResponse> list() {
+        return service.findAll();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public PortfolioResponse create(@Valid @RequestBody CreatePortfolioRequest req) {
-        Portfolio created = service.create(req);
-        return toResponse(created);
+//        public PortfolioResponse create(@RequestBody CreatePortfolioRequest req) {
+        log.debug("Create Portfolio Request: {}", req);
+        return toResponse(service.create(req));
     }
 
     @DeleteMapping("/{id}")

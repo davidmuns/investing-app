@@ -1,9 +1,9 @@
-package com.davidmuns.investing.domain;
-
+package com.davidmuns.investing.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
+//import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,7 +28,7 @@ public class Portfolio {
     private PortfolioType type;
 
     @CreationTimestamp // This annotation generates current local date and time
-    private LocalDateTime date;
+    private LocalDateTime createdAt;
 
     protected Portfolio() {}
 

@@ -1,4 +1,4 @@
-package com.davidmuns.investing.service;
+package com.davidmuns.investing.exception;
 
 public class DuplicatePortfolioException extends RuntimeException {
     public DuplicatePortfolioException(String message) {
