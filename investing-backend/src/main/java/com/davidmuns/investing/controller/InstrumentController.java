@@ -33,7 +33,6 @@ public class InstrumentController {
     @PostMapping("/{portfolioId}")
     @ResponseStatus(HttpStatus.CREATED)
     public InstrumentResponse create(@Valid @RequestBody InstrumentRequest req, @PathVariable Long portfolioId) {
-//    public InstrumentResponse create(@RequestBody InstrumentRequest req, @PathVariable Long portfolioId) {
         return instrumentService.create(req, portfolioId);
     }
 

@@ -20,22 +20,23 @@ public class ExternalInstrumentService {
 
     public SearchResponse<InstrumentResponse> search(String query) {
         TwelveDataSymbolSearchResponse response = twelveDataClient.searchSymbols(query);
-        List<InstrumentResponse> instruments = response.getData().stream()
-                .map(this::toInstrumentResponse)
+        List<InstrumentResponse> instruments = response.data().stream()
+                .map(this::toResponse)
                 .collect(Collectors.toList());
 
-        return new SearchResponse<InstrumentResponse>(instruments, instruments.size(), response.getStatus());
+        return new SearchResponse<InstrumentResponse>(instruments, instruments.size(), response.status());
     }
     public TwelveDataQuoteResponse getQuote(String query) {
         return twelveDataClient.getQuote(query);
     }
-    private InstrumentResponse toInstrumentResponse(TwelveDataSymbolSearchResponse.Item item) {
+
+    private InstrumentResponse toResponse(TwelveDataSymbolSearchResponse.Item item) {
         return new InstrumentResponse(
                 null,
-                item.getInstrumentName(),
-                item.getSymbol(),
-                item.getInstrumentType(),
-                item.getExchange(),
+                item.instrumentName(),
+                item.symbol(),
+                item.instrumentType(),
+                item.exchange(),
                 null
         );
     }

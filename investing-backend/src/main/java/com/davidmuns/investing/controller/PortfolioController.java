@@ -34,7 +34,7 @@ public class PortfolioController {
     public PortfolioResponse create(@Valid @RequestBody CreatePortfolioRequest req) {
 //        public PortfolioResponse create(@RequestBody CreatePortfolioRequest req) {
         log.debug("Create Portfolio Request: {}", req);
-        return toResponse(service.create(req));
+        return service.create(req);
     }
 
     @DeleteMapping("/{id}")
@@ -48,11 +48,7 @@ public class PortfolioController {
             @PathVariable Long id,
             @RequestBody Map<String, String> body
     ) {
-        Portfolio updated = service.rename(id, body.get("name"));
-        return PortfolioResponse.from(updated); // o new PortfolioResponse(...)
-    }
 
-    private static PortfolioResponse toResponse(Portfolio p) {
-        return new PortfolioResponse(p.getId(), p.getName(), p.getType());
+        return service.rename(id, body.get("name"));
     }
 }

@@ -33,10 +33,10 @@ public class InstrumentService {
     public InstrumentResponse create(InstrumentRequest req, Long portfolioId) {
         Portfolio portfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
-        String name = normalize(req.getName());
-        String symbol = normalize(req.getSymbol().toUpperCase());
-        String type = normalize(req.getType());
-        String exchange = normalize(req.getExchange().toUpperCase());
+        String name = normalize(req.name());
+        String symbol = normalize(req.symbol().toUpperCase());
+        String type = normalize(req.type());
+        String exchange = normalize(req.exchange().toUpperCase());
         return instrumentRepository.findBySymbolIgnoreCaseAndExchangeIgnoreCase(symbol, exchange)
                 .map(this::toResponse)
                 .orElseGet(() -> {
@@ -56,7 +56,7 @@ public class InstrumentService {
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
-        return new SearchResponse<InstrumentResponse>(dtoList, dtoList.size());
+        return new SearchResponse<>(dtoList, dtoList.size());
     }
 
     public SearchResponse<InstrumentResponse> search(String query) {
@@ -96,7 +96,6 @@ public class InstrumentService {
     }
 
     private InstrumentResponse toResponse(Instrument instrument) {
-        InstrumentResponse response = new InstrumentResponse();
         TwelveDataQuoteResponse quote = null;
 
         try {
@@ -105,20 +104,19 @@ public class InstrumentService {
             log.error(e.getMessage());
         }
 
-        response.setId(instrument.getId());
-        response.setName(instrument.getName());
-        response.setSymbol(instrument.getSymbol());
-        response.setType(instrument.getType());
-        response.setExchange(instrument.getExchange());
-        response.setPortfolioId(instrument.getPortfolio().getId());
-
-        response.setOpen(quote != null ? quote.getOpen() : null);
-        response.setClose(quote != null ? quote.getClose() : null);
-        response.setHigh(quote != null ? quote.getHigh() : null);
-        response.setLow(quote != null ? quote.getLow() : null);
-        response.setChange(quote != null ? quote.getChange() : null);
-        response.setPercentChange(quote != null ? quote.getPercentChange() : null);
-
-        return response;
+        return new InstrumentResponse(
+                instrument.getId(),
+                instrument.getName(),
+                instrument.getSymbol(),
+                instrument.getType(),
+                instrument.getExchange(),
+                instrument.getPortfolio().getId(),
+                quote != null ? quote.open() : null,
+                quote != null ? quote.close() : null,
+                quote != null ? quote.high() : null,
+                quote != null ? quote.low() : null,
+                quote != null ? quote.change() : null,
+                quote != null ? quote.percentChange() : null
+        );
     }
 }

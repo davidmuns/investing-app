@@ -37,14 +37,14 @@ public class PortfolioService {
     }
 
     @Transactional
-    public Portfolio create(CreatePortfolioRequest req) {
-        String name = req.getName().trim();
+    public PortfolioResponse create(CreatePortfolioRequest req) {
+        String name = req.name().trim();
 
-        if (repository.existsByNameIgnoreCaseAndType(name, req.getType())) {
-            throw new DuplicatePortfolioException("Ya existe una cartera '" + name + "' de tipo " + req.getType());
+        if (repository.existsByNameIgnoreCaseAndType(name, req.type())) {
+            throw new DuplicatePortfolioException("Ya existe una cartera '" + name + "' de tipo " + req.type());
         }
 
-        return repository.save(new Portfolio(name, req.getType()));
+        return toResponse(repository.save(new Portfolio(name, req.type())));
     }
 
     @Transactional
@@ -57,11 +57,15 @@ public class PortfolioService {
         repository.deleteById(id);
     }
 
-    public Portfolio rename(Long id, String newName) {
+    public PortfolioResponse rename(Long id, String newName) {
         String msg = "No existe portfolio con id:";
         Portfolio portfolio = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException(id, msg));
         portfolio.setName(newName.trim());
-        return repository.save(portfolio);
+        return toResponse(repository.save(portfolio));
+    }
+
+    private static PortfolioResponse toResponse(Portfolio p) {
+        return new PortfolioResponse(p.getId(), p.getName(), p.getType());
     }
 }

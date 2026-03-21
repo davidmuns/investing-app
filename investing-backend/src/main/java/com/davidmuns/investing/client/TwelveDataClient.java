@@ -33,8 +33,12 @@ public class TwelveDataClient {
                 .block();
 
         if (response != null) {
-            int count = response.getData() != null ? response.getData().size() : 0;
-            response.setCount(count);
+            int count = response.data() != null ? response.data().size() : 0;
+            response = new TwelveDataSymbolSearchResponse(
+                    response.data(),
+                    response.status(),
+                    count
+            );
         }
         return response;
     }
