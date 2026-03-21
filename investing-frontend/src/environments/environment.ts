@@ -8,6 +8,7 @@ export const environment = {
   FRONT_BASE_URL: 'http://localhost:4200/',
   BACKEND_BASE_URL: 'http://localhost:8080/',
   // BACKEND_BASE_URL: 'https://blogexapp-7d861950990b.herokuapp.com/',
+  HEROKU_BASE_URL: 'https://blogexapp-7d861950990b.herokuapp.com/',
   AUTHORIZATION: 'Authorization',
   BEARER: 'Bearer ',
   IMG_MAX_SIZE: 10000000, // 10 MB
