@@ -117,7 +117,7 @@
           <app-table
             *ngIf="instruments.length"
             [instruments]="instruments"
-            (instrumentDeleted)="onInstrumentDeleted($event)"
+            (instrumentDeleted)="onDeleteInstrument($event)"
           ></app-table>
         </mat-tab>
         <!-- GRAFICOS TAB -->

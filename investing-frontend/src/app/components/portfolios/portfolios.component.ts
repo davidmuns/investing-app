@@ -3,10 +3,12 @@ import { HostListener } from '@angular/core';
 import { PortfolioService } from '../../services/portfolio.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { PortfolioResponse } from '@app/shared/models/portfolios-response';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { ModalPortfolioComponent } from './modal-portfolio/modal-portfolio.component';
 import { InstrumentService } from '@app/services/instrument.service';
 import { InstrumentResponse } from '@app/shared/models/instrument-response';
+import { UtilsService } from '@app/services/utils.service';
+import { Instrument } from '@app/shared/models/instrument';
 
 @Component({
   selector: 'app-portfolios',
@@ -49,6 +51,7 @@ export class PortfoliosComponent implements OnInit {
     private portfolioService: PortfolioService,
     public dialog: MatDialog,
     private instrumentSvc: InstrumentService,
+    private utilsSvc: UtilsService,
   ) {}
 
   ngOnInit(): void {
@@ -80,8 +83,17 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
-  onInstrumentDeleted(id: number): void {
-    this.instruments = this.instruments.filter((i) => i.id !== id);
+  onDeleteInstrument(instrument: Instrument): void {
+    this.instrumentSvc.deleteById(instrument.id).subscribe({
+      next: () => {
+        this.utilsSvc.showSnackBar(`Instrument ${instrument.name} deleted`, 3000);
+        this.instruments = this.instruments.filter((i) => i.id !== instrument.id);
+      },
+      error: (err) => {
+        console.error('Error deleting instrument', err);
+        this.utilsSvc.showSnackBar(`Could not delete instrument ${name}`, 3000);
+      },
+    });
   }
 
   reload(createdId?: number): void {
