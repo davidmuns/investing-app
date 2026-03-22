@@ -7,8 +7,8 @@ import { PortfolioService } from '@app/services/portfolio.service';
 import { TokenService } from '@app/services/token.service';
 import { UtilsService } from '@app/services/utils.service';
 import { LoginComponent } from 'src/app/components/auth/login/login.component';
+import { PortfolioRequest } from '../models/portfolios-request';
 
-type ApiError = { error?: string; message?: string };
 type FormType = 'login' | 'signup' | 'Seguimiento' | 'Posiciones';
 type PortfolioKind = 'WATCHLIST' | 'POSITIONS';
 
@@ -19,7 +19,7 @@ type PortfolioKind = 'WATCHLIST' | 'POSITIONS';
 })
 export class FormTemplateComponent implements OnInit {
   @Input() formType!: FormType;
-  @Output() portfolioCreated = new EventEmitter<any>();
+  @Output() portfolioRequest = new EventEmitter<PortfolioRequest>();
   protected form!: FormGroup;
   protected hide: boolean = true;
   formError = '';
@@ -30,7 +30,6 @@ export class FormTemplateComponent implements OnInit {
     private readonly authSvc: AuthService,
     private readonly tokenSvc: TokenService,
     private readonly utilsSvc: UtilsService,
-    private readonly portfolioService: PortfolioService,
     private readonly router: Router,
   ) {}
 
@@ -50,7 +49,7 @@ export class FormTemplateComponent implements OnInit {
       }
       case 'Seguimiento':
       case 'Posiciones': {
-        this.createPortfolio();
+        this.emitPortfolio();
         break;
       }
       default: {
@@ -153,27 +152,15 @@ export class FormTemplateComponent implements OnInit {
     }
   }
 
-  createPortfolio(): void {
+  emitPortfolio(): void {
     const name = this.form.value.nombre.trim();
     if (!name) {
       this.formError = 'El nombre es obligatorio.';
       return;
     }
     this.formError = '';
-
-    this.portfolioService.create({ name, type: this.getPortfolioType() }).subscribe({
-      next: (created) => {
-        this.portfolioCreated.emit(created);
-      },
-      error: (err) => {
-        if (err?.status === 409) {
-          const apiErr: ApiError = err?.error ?? {};
-          this.formError = apiErr.message || 'Cartera duplicada.';
-          return;
-        }
-        this.formError = 'No se pudo crear la cartera.';
-      },
-    });
+    const newPortfolio = { name, type: this.getPortfolioType() } as PortfolioRequest;
+    this.portfolioRequest.emit(newPortfolio);
   }
 
   removeErr() {

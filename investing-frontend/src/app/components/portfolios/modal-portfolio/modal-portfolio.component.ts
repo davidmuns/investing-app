@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
+import { PortfolioRequest } from '@app/shared/models/portfolios-request';
 
 @Component({
   selector: 'app-modal-portfolio',
@@ -9,7 +10,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 export class ModalPortfolioComponent {
   constructor(private dialogRef: MatDialogRef<ModalPortfolioComponent>) {}
 
-  onPortfolioCreated(created: any): void {
-    this.dialogRef.close(created);
+  onPortfolioRequest(newPortfolio: PortfolioRequest): void {
+    this.dialogRef.close(newPortfolio);
   }
 }

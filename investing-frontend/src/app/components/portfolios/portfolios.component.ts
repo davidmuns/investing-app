@@ -9,6 +9,8 @@ import { InstrumentService } from '@app/services/instrument.service';
 import { InstrumentResponse } from '@app/shared/models/instrument-response';
 import { UtilsService } from '@app/services/utils.service';
 import { Instrument } from '@app/shared/models/instrument';
+import { PortfolioRequest } from '@app/shared/models/portfolios-request';
+type ApiError = { error?: string; message?: string };
 
 @Component({
   selector: 'app-portfolios',
@@ -59,16 +61,33 @@ export class PortfoliosComponent implements OnInit {
     this.reloadInstruments();
   }
 
-  openCreatePortfolioDialog(): void {
+  onAddPortfolioClicked(): void {
     const dialogRef = this.dialog.open(ModalPortfolioComponent, {
       width: '380px',
     });
 
-    dialogRef.afterClosed().subscribe((created) => {
-      if (!created) return;
-      this.reload(created.id);
-      this.reloadInstruments();
-      this.portfolioId = created.id;
+    dialogRef.afterClosed().subscribe((newPortfolio) => {
+      if (!newPortfolio) return;
+      this.createPortfolio(newPortfolio);
+    });
+  }
+
+  createPortfolio(newPortfolio: PortfolioRequest) {
+    this.portfolioService.create(newPortfolio).subscribe({
+      next: (p) => {
+        this.reload(p.id);
+        this.reloadInstruments();
+        this.portfolioId = p.id;
+      },
+      error: (err) => {
+        if (err?.status === 409) {
+          const apiErr: ApiError = err?.error ?? {};
+          this.formError = apiErr.message || 'Cartera duplicada.';
+          this.utilsSvc.showSnackBar(this.formError, 2500);
+          return;
+        }
+        this.formError = 'No se pudo crear la cartera.';
+      },
     });
   }
 
@@ -132,6 +151,8 @@ export class PortfoliosComponent implements OnInit {
         this.portfolios = this.portfolios.filter((p) => p.id !== deletingId);
 
         if (this.portfolios.length === 0) {
+          const defaultPortfolio = { name: 'Mi cartera', type: 'WATCHLIST' } as PortfolioRequest;
+          this.createPortfolio(defaultPortfolio);
           this.selectedIndex = 0;
           return;
         }
@@ -166,8 +187,9 @@ export class PortfoliosComponent implements OnInit {
     this.reloadInstruments();
   }
 
-  setPortfolioId() {
-    this.portfolioId = this.portfolios[this.selectedIndex].id;
+  private setPortfolioId(): void {
+    const selected = this.portfolios?.[this.selectedIndex];
+    this.portfolioId = selected?.id ?? 0;
   }
 
   startEdit(i: number) {
