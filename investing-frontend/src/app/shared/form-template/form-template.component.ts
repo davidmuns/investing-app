@@ -31,6 +31,7 @@ export class FormTemplateComponent implements OnInit {
     private readonly tokenSvc: TokenService,
     private readonly utilsSvc: UtilsService,
     private readonly portfolioService: PortfolioService,
+    private readonly router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -112,7 +113,7 @@ export class FormTemplateComponent implements OnInit {
           // this.router.navigate(['group-form']);
           setTimeout(() => {
             this.utilsSvc.showSnackBar(msg, 5000);
-            // this.router.navigate(['articles']);
+            this.router.navigate(['portfolios']);
           }, 600);
         },
         error: (err) => {

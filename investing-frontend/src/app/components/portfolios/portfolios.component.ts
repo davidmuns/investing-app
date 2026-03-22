@@ -117,7 +117,7 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
-  deleteSelected(): void {
+  onDeletePortfolio(): void {
     const selected = this.portfolios[this.selectedIndex];
     if (!selected) return;
 
