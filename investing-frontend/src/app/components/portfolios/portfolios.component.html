@@ -107,18 +107,27 @@
         </ng-template>
         <app-search-instrument
           [portfolioId]="portfolioId"
+          [portfolioType]="portfolioType"
+          (searchFocused)="onPositionSearchFocus()"
+          (instrumentSelected)="onInstrumentSelected($event)"
           (instrumentCreated)="reloadInstruments()"
         ></app-search-instrument>
-        <!-- <app-search-position-oriol></app-search-position-oriol> -->
       </div>
       <div>
-        <button
-          mat-icon-button
-          aria-label="Example icon button with a vertical three dot icon"
-          [matMenuTriggerFor]="delete_portfolio"
-        >
-          <mat-icon matTooltip="Eliminar/descargar cartera">more_vert</mat-icon>
-        </button>
+        <ng-container *ngIf="!positionFormVisible; else close">
+          <button
+            mat-icon-button
+            aria-label="Example icon button with a vertical three dot icon"
+            [matMenuTriggerFor]="delete_portfolio"
+          >
+            <mat-icon matTooltip="Eliminar/descargar cartera">more_vert</mat-icon>
+          </button>
+        </ng-container>
+        <ng-template #close>
+          <mat-icon style="cursor: pointer" (click)="onCloseFormClicked()" matTooltip="Cerrar formulario">
+            close
+          </mat-icon>
+        </ng-template>
       </div>
     </div>
 
@@ -127,12 +136,22 @@
     <div class="panelHeader"></div>
   </div>
   <!-- Position form -->
-  <div *ngIf="this.portfolioType.endsWith('S')" class="add-position is-open">
+  <div
+    *ngIf="portfolioType.endsWith('S') && positionFormVisible"
+    class="add-position is-open"
+    [class.is-disabled]="!positionFormEnabled"
+  >
     <div class="position-details">
-      <form class="add-position-form" name="addNewRow" data-type="none">
+      <form class="add-position-form" (ngSubmit)="submitPosition()" #positionNgForm="ngForm">
         <div class="field field-type">
           <label for="operation">Tipo:</label>
-          <select name="operation" id="operation" tabindex="2" class="new-input select-box">
+          <select
+            name="operation"
+            id="operation"
+            class="new-input select-box"
+            [(ngModel)]="positionForm.operation"
+            [disabled]="!positionFormEnabled"
+          >
             <option value="B">Compra</option>
             <option value="S">Venta</option>
           </select>
@@ -140,25 +159,14 @@
 
         <div class="field field-date">
           <label for="position-date">Fecha:</label>
-
           <div class="calendar-date-picker">
-            <div class="dates-input-wrapper">
-              <div class="date-field">
-                <span class="date-range">23/03/2026</span>
-              </div>
-            </div>
-
-            <div class="date-picker-icon-wrap" aria-hidden="true">
-              <span class="date-picker-icon"></span>
-            </div>
-
             <input
               type="date"
               id="position-date"
-              name="position-date"
+              name="positionDate"
               class="native-date-input"
-              value="2026-03-23"
-              tabindex="3"
+              [(ngModel)]="positionForm.date"
+              [disabled]="!positionFormEnabled"
             />
           </div>
         </div>
@@ -166,27 +174,24 @@
         <div class="field field-amount">
           <label for="amount">Cantidad:</label>
           <input
-            name="amount"
             id="amount"
-            tabindex="4"
+            name="quantity"
             type="text"
-            value=""
             class="new-input input-text-box amount"
-            maxlength="20"
+            [(ngModel)]="positionForm.quantity"
+            [disabled]="!positionFormEnabled"
           />
         </div>
 
         <div class="field field-price">
           <label for="price">Precio:</label>
           <input
-            name="price"
-            tabindex="5"
             id="price"
+            name="price"
             type="text"
-            value="248,82"
             class="new-input input-text-box"
-            placeholder="0,00"
-            maxlength="15"
+            [(ngModel)]="positionForm.price"
+            [disabled]="!positionFormEnabled"
           />
         </div>
 
@@ -194,24 +199,24 @@
           <label for="commission">Comisión:</label>
           <div class="input-group input-group-enabled">
             <input
+              id="commission"
               name="commission"
-              tabindex="7"
               type="text"
               class="form-control form-control-enabled"
-              id="commission"
-              maxlength="9"
+              [(ngModel)]="positionForm.commission"
+              [disabled]="!positionFormEnabled"
             />
-            <span class="cur-container">$</span>
+            <span class="cur-container">€</span>
           </div>
         </div>
 
-        <a
-          href="javascript:void(0);"
-          tabindex="8"
-          class="add-position-btn new-btn arrow light-gray align-bottom disabled"
+        <button
+          type="submit"
+          class="add-position-btn new-btn arrow light-gray align-bottom"
+          [disabled]="!canSubmitPosition()"
         >
           Añadir posición
-        </a>
+        </button>
       </form>
     </div>
   </div>

@@ -36,6 +36,18 @@ export class PortfoliosComponent implements OnInit {
   instruments: InstrumentResponse[] = [];
   portfolioType: string = '';
 
+  positionFormVisible = false;
+  positionFormEnabled = false;
+  selectedInstrument: InstrumentResponse | null = null;
+
+  positionForm = {
+    operation: 'B',
+    date: '',
+    quantity: '',
+    price: '',
+    commission: '',
+  };
+
   toggleActions(): void {
     this.actionsOpen = !this.actionsOpen;
   }
@@ -265,5 +277,79 @@ export class PortfoliosComponent implements OnInit {
 
     // (Opcional) Persistir orden:
     // this.saveOrder(this.portfolios.map(p => p.id));
+  }
+
+  onCloseFormClicked() {
+    this.positionFormVisible = false;
+  }
+
+  onPositionSearchFocus(): void {
+    if (!this.portfolioType.endsWith('S')) return;
+
+    this.positionFormVisible = true;
+    this.positionFormEnabled = false;
+    this.selectedInstrument = null;
+    this.positionForm.operation = 'B';
+    this.positionForm.date = '';
+    this.positionForm.quantity = '';
+    this.positionForm.price = '';
+    this.positionForm.commission = '';
+  }
+
+  onInstrumentSelected(instrument: InstrumentResponse): void {
+    console.log(instrument);
+    this.selectedInstrument = instrument;
+    this.positionFormVisible = true;
+    this.positionFormEnabled = true;
+
+    this.positionForm.date = this.getTodayForInput();
+    this.positionForm.price = this.toInputNumber(instrument.close);
+  }
+
+  private getTodayForInput(): string {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  private toInputNumber(value: number | string | null | undefined): string {
+    if (value === null || value === undefined) return '';
+    return String(value).replace('.', ',');
+  }
+
+  canSubmitPosition(): boolean {
+    return !!(
+      this.positionFormEnabled &&
+      this.selectedInstrument &&
+      this.positionForm.quantity.trim() &&
+      this.positionForm.price.trim() &&
+      this.positionForm.date.trim()
+    );
+  }
+
+  submitPosition(): void {
+    if (!this.canSubmitPosition() || !this.selectedInstrument) return;
+
+    const payload = {
+      portfolioId: this.portfolioId,
+      instrumentId: this.selectedInstrument.id,
+      operation: this.positionForm.operation,
+      date: this.positionForm.date,
+      quantity: this.parseLocalizedNumber(this.positionForm.quantity),
+      price: this.parseLocalizedNumber(this.positionForm.price),
+      commission: this.parseLocalizedNumber(this.positionForm.commission || '0'),
+    };
+
+    console.log('SUBMIT POSITION =>', payload);
+
+    // Sustituir por tu servicio real
+    // this.positionService.create(payload).subscribe(...)
+  }
+
+  private parseLocalizedNumber(value: string): number {
+    const normalized = (value || '').replace(/\./g, '').replace(',', '.').trim();
+    return normalized ? Number(normalized) : 0;
   }
 }

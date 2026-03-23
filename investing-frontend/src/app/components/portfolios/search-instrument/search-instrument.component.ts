@@ -15,7 +15,10 @@ import { InstrumentResponse } from '@app/shared/models/instrument-response';
 export class SearchInstrumentComponent implements OnInit {
   form = this.fb.control<string | InstrumentResponse>('', [Validators.minLength(1)]);
   @Output() instrumentCreated = new EventEmitter<void>();
+  @Output() searchFocused = new EventEmitter<void>();
+  @Output() instrumentSelected = new EventEmitter<InstrumentResponse>();
   @Input() portfolioId: number = 0;
+  @Input() portfolioType = '';
   instruments: InstrumentResponse[] = [];
   filteredOptions!: Observable<InstrumentResponse[]>;
   displayInstrument = (instrument: InstrumentResponse | null): string => {
@@ -66,10 +69,26 @@ export class SearchInstrumentComponent implements OnInit {
     return response.data.map((response) => response);
   }
 
+  // onOptionSelected(event: MatAutocompleteSelectedEvent): void {
+  //   const instrument = event.option.value as InstrumentRequest;
+  //   this.addInstrument(instrument);
+  //   this.form.reset();
+  // }
+
   onOptionSelected(event: MatAutocompleteSelectedEvent): void {
-    const instrument = event.option.value as InstrumentRequest;
+    const instrument = event.option.value as InstrumentResponse;
+
+    if (this.portfolioType.endsWith('S')) {
+      this.instrumentSelected.emit(instrument);
+      return;
+    }
+
     this.addInstrument(instrument);
     this.form.reset();
+  }
+
+  onFocusSearch(): void {
+    this.searchFocused.emit();
   }
 
   addInstrument(instrument: InstrumentRequest) {

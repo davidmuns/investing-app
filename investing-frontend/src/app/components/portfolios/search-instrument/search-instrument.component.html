@@ -6,6 +6,8 @@
     [formControl]="form"
     [matAutocomplete]="auto"
     placeholder="BTC/EUR o ASML"
+    (focus)="onFocusSearch()"
+    (click)="onFocusSearch()"
   />
 
   <button class="search-btn" type="button" aria-label="Buscar">

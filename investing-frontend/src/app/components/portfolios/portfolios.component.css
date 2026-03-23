@@ -598,3 +598,17 @@
   line-height: 1;
   color: #b7b7b7;
 }
+
+.add-position.is-disabled {
+  opacity: 0.6;
+}
+
+.add-position.is-disabled .add-position-form {
+  pointer-events: none;
+}
+
+.add-position.is-disabled .add-position-form input,
+.add-position.is-disabled .add-position-form select,
+.add-position.is-disabled .add-position-form button {
+  cursor: not-allowed;
+}
