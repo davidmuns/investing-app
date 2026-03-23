@@ -79,16 +79,36 @@
       <mat-icon matTooltip="Crear nueva cartera">add</mat-icon>
     </button>
   </div>
+  <!-- Position summary container -->
+  <div *ngIf="this.portfolioType.endsWith('S')" class="positionSummary">
+    <div class="summaryItem">
+      <label>Val. mercado:</label>
+      <span>0 €</span>
+    </div>
+    <div class="summaryItem">
+      <label>B/P posic. abiertas:</label>
+      <span>0 € / 0,00%</span>
+    </div>
+    <div class="summaryItem" id="dailyDiv72486322">
+      <label>B/P diario:</label>
+      <span>0 € / 0,00%</span>
+    </div>
+  </div>
 
-  <!-- SEARCH BAR -->
+  <!-- Instrument-position Search bar -->
   <div *ngIf="!loading && portfolios.length" class="panel">
     <div class="panelTop">
       <div class="addSymbol">
-        <label class="addSymbolLabel">Añadir posición</label>
-        <app-search-position-gpt
+        <ng-container *ngIf="this.portfolioType.endsWith('S'); else simbol">
+          <label class="addSymbolLabel">Añadir posición</label>
+        </ng-container>
+        <ng-template #simbol>
+          <label class="addSymbolLabel">Añadir símbolo</label>
+        </ng-template>
+        <app-search-instrument
           [portfolioId]="portfolioId"
           (instrumentCreated)="reloadInstruments()"
-        ></app-search-position-gpt>
+        ></app-search-instrument>
         <!-- <app-search-position-oriol></app-search-position-oriol> -->
       </div>
       <div>
@@ -105,6 +125,95 @@
     <p *ngIf="symbolError" class="error">{{ symbolError }}</p>
 
     <div class="panelHeader"></div>
+  </div>
+  <!-- Position form -->
+  <div *ngIf="this.portfolioType.endsWith('S')" class="add-position is-open">
+    <div class="position-details">
+      <form class="add-position-form" name="addNewRow" data-type="none">
+        <div class="field field-type">
+          <label for="operation">Tipo:</label>
+          <select name="operation" id="operation" tabindex="2" class="new-input select-box">
+            <option value="B">Compra</option>
+            <option value="S">Venta</option>
+          </select>
+        </div>
+
+        <div class="field field-date">
+          <label for="position-date">Fecha:</label>
+
+          <div class="calendar-date-picker">
+            <div class="dates-input-wrapper">
+              <div class="date-field">
+                <span class="date-range">23/03/2026</span>
+              </div>
+            </div>
+
+            <div class="date-picker-icon-wrap" aria-hidden="true">
+              <span class="date-picker-icon"></span>
+            </div>
+
+            <input
+              type="date"
+              id="position-date"
+              name="position-date"
+              class="native-date-input"
+              value="2026-03-23"
+              tabindex="3"
+            />
+          </div>
+        </div>
+
+        <div class="field field-amount">
+          <label for="amount">Cantidad:</label>
+          <input
+            name="amount"
+            id="amount"
+            tabindex="4"
+            type="text"
+            value=""
+            class="new-input input-text-box amount"
+            maxlength="20"
+          />
+        </div>
+
+        <div class="field field-price">
+          <label for="price">Precio:</label>
+          <input
+            name="price"
+            tabindex="5"
+            id="price"
+            type="text"
+            value="248,82"
+            class="new-input input-text-box"
+            placeholder="0,00"
+            maxlength="15"
+          />
+        </div>
+
+        <div class="field field-commission">
+          <label for="commission">Comisión:</label>
+          <div class="input-group input-group-enabled">
+            <input
+              name="commission"
+              tabindex="7"
+              type="text"
+              class="form-control form-control-enabled"
+              id="commission"
+              maxlength="9"
+            />
+            <span class="cur-container">$</span>
+          </div>
+        </div>
+
+        <a
+          href="javascript:void(0);"
+          tabindex="8"
+          class="add-position-btn new-btn arrow light-gray align-bottom disabled"
+        >
+          Añadir posición
+        </a>
+      </form>
+    </div>
   </div>
 
   <div *ngIf="!loading && !portfolios.length" class="hint">No hay carteras. Crea una con el botón “+”.</div>

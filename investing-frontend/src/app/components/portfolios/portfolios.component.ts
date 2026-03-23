@@ -34,6 +34,7 @@ export class PortfoliosComponent implements OnInit {
   @ViewChild('nameInput') nameInput?: ElementRef<HTMLInputElement>;
   @ViewChildren('editInput') editInputs!: QueryList<ElementRef<HTMLInputElement>>;
   instruments: InstrumentResponse[] = [];
+  portfolioType: string = '';
 
   toggleActions(): void {
     this.actionsOpen = !this.actionsOpen;
@@ -78,6 +79,7 @@ export class PortfoliosComponent implements OnInit {
         this.reload(p.id);
         this.reloadInstruments();
         this.portfolioId = p.id;
+        this.portfolioType = p.type;
       },
       error: (err) => {
         if (err?.status === 409) {
@@ -183,6 +185,7 @@ export class PortfoliosComponent implements OnInit {
       this.saveEdit(this.editingIndex);
     }
     this.selectedIndex = i;
+    this.portfolioType = this.portfolios[this.selectedIndex].type;
     this.setPortfolioId();
     this.reloadInstruments();
   }

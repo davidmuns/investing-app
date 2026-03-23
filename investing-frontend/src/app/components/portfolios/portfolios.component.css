@@ -148,6 +148,13 @@
     gap: 16px;
 }
 
+.panelTop2 {
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: flex-start;
+    gap: 16px;
+}
+
 .actions {
     position: relative;
 }
@@ -367,4 +374,227 @@
 
 .addSymbolBtn:hover {
     opacity: 1;
+}
+
+.positionSummary {
+    padding: 22px 9px 31px;
+    margin: 0 3px;
+    font: inherit;
+    position: relative;
+    border-bottom: 1px solid #dadada;
+}
+
+.positionSummary .summaryItem {
+    height: 43px;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-left: 23px;
+    border-left: 1px solid #dadada;
+    margin-left: 21px;
+    vertical-align: top;
+    span {
+        font-weight: bold;
+        font-size: large;
+    }
+}
+
+.positionSummary .summaryItem:first-child {
+    padding: 10;
+    border: none;
+    margin: 0;
+}
+
+.add-position {
+  background: #f3f3f3;
+  border-top: 1px solid #d8d8d8;
+  padding: 18px 24px 22px;
+  font-family: Arial, sans-serif;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.add-position *,
+.add-position *::before,
+.add-position *::after {
+  box-sizing: border-box;
+}
+
+.add-position .position-details {
+  width: 100%;
+}
+
+.add-position .add-position-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: nowrap;
+}
+
+.add-position .field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.add-position .field > label {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: #333;
+}
+
+.add-position .new-input,
+.add-position .input-text-box,
+.add-position .select-box,
+.add-position .form-control {
+  height: 32px;
+  border: 1px solid #9d9d9d;
+  background: #fff;
+  padding: 0 10px;
+  font-size: 14px;
+  color: #222;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+}
+
+.add-position .select-box {
+  width: 142px;
+  cursor: pointer;
+}
+
+.add-position .field-date {
+  width: 145px;
+}
+
+.add-position .calendar-date-picker {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  height: 32px;
+  border: 1px solid #9d9d9d;
+  background: #fff;
+  overflow: hidden;
+}
+
+.add-position .dates-input-wrapper {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  padding: 0 10px;
+  pointer-events: none;
+}
+
+.add-position .date-field {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.add-position .date-range {
+  font-size: 14px;
+  color: #222;
+  white-space: nowrap;
+}
+
+.add-position .date-picker-icon-wrap {
+  width: 32px;
+  min-width: 32px;
+  border-left: 1px solid #9d9d9d;
+  background: #f7f7f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.add-position .date-picker-icon::before {
+  content: "📅";
+  font-size: 13px;
+  line-height: 1;
+}
+
+.add-position .native-date-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  border: 0;
+}
+
+.add-position .native-date-input::-webkit-calendar-picker-indicator {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.add-position .field-amount .input-text-box,
+.add-position .field-price .input-text-box {
+  width: 140px;
+}
+
+.add-position .field-commission {
+  width: 140px;
+}
+
+.add-position .input-group {
+  display: flex;
+  align-items: stretch;
+  height: 32px;
+  border: 1px solid #9d9d9d;
+  background: #fff;
+}
+
+.add-position .input-group .form-control {
+  height: 100%;
+  flex: 1;
+  min-width: 0;
+  border: 0;
+}
+
+.add-position .cur-container {
+  width: 32px;
+  min-width: 32px;
+  border-left: 1px solid #9d9d9d;
+  background: #f7f7f7;
+  color: #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-style: normal;
+}
+
+.add-position .add-position-btn {
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-end;
+  margin-left: 10px;
+  padding: 0 0 0 8px;
+  background: transparent;
+  border: 0;
+  text-decoration: none;
+  white-space: nowrap;
+  color: #b7b7b7;
+  font-size: 14px;
+  font-weight: 600;
+  pointer-events: none;
+  cursor: default;
+}
+
+.add-position .add-position-btn::before {
+  content: "↪";
+  margin-right: 8px;
+  font-size: 18px;
+  line-height: 1;
+  color: #b7b7b7;
 }

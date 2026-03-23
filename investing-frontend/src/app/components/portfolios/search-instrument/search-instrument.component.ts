@@ -8,11 +8,11 @@ import { InstrumentRequest } from '@app/shared/models/instrument-request';
 import { InstrumentResponse } from '@app/shared/models/instrument-response';
 
 @Component({
-  selector: 'app-search-position-gpt',
-  templateUrl: './search-position-gpt.component.html',
-  styleUrls: ['./search-position-gpt.component.css'],
+  selector: 'app-search-instrument',
+  templateUrl: './search-instrument.component.html',
+  styleUrls: ['./search-instrument.component.css'],
 })
-export class SearchPositionGptComponent implements OnInit {
+export class SearchInstrumentComponent implements OnInit {
   form = this.fb.control<string | InstrumentResponse>('', [Validators.minLength(1)]);
   @Output() instrumentCreated = new EventEmitter<void>();
   @Input() portfolioId: number = 0;

@@ -4,11 +4,10 @@ import { ModalPortfolioComponent } from './modal-portfolio/modal-portfolio.compo
 import { PortfoliosComponent } from './portfolios.component';
 import { SharedModule } from '@app/shared/shared.module';
 import { TableComponent } from '../table/table.component';
-import { SearchPositionGptComponent } from './search-position-gpt/search-position-gpt.component';
-import { SearchPositionOriolComponent } from './search-position-oriol/search-position-oriol.component';
+import { SearchInstrumentComponent } from './search-instrument/search-instrument.component';
 
 @NgModule({
-  declarations: [ModalPortfolioComponent, PortfoliosComponent, SearchPositionGptComponent, SearchPositionOriolComponent],
+  declarations: [ModalPortfolioComponent, PortfoliosComponent, SearchInstrumentComponent],
   imports: [CommonModule, SharedModule],
 })
 export class PortfoliosModule {}
