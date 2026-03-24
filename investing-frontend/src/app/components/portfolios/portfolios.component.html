@@ -158,6 +158,7 @@
 
         <div class="field field-date">
           <label for="position-date">Fecha:</label>
+
           <div class="calendar-date-picker">
             <input
               type="date"
@@ -167,6 +168,10 @@
               [(ngModel)]="positionForm.date"
               [disabled]="!positionFormEnabled"
             />
+
+            <div class="date-picker-icon-wrap" aria-hidden="true">
+              <span class="date-picker-icon"></span>
+            </div>
           </div>
         </div>
 
@@ -209,13 +214,7 @@
           </div>
         </div>
 
-        <button
-          type="submit"
-          class="add-position-btn new-btn arrow light-gray align-bottom"
-          [disabled]="!canSubmitPosition()"
-        >
-          Añadir posición
-        </button>
+        <button type="submit" class="add-position-btn" [disabled]="!canSubmitPosition()">Añadir posición</button>
       </form>
     </div>
   </div>

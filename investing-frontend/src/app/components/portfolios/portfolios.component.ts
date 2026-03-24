@@ -298,7 +298,8 @@ export class PortfoliosComponent implements OnInit {
 
   onInstrumentSearchFocus(): void {
     if (!this.portfolioType.endsWith('S')) return;
-
+    // Si ya hay un instrumento seleccionado, no vuelvas a deshabilitar el formulario
+    if (this.selectedInstrument) return;
     this.positionFormVisible = true;
     this.positionFormEnabled = false;
     this.selectedInstrument = null;
@@ -310,18 +311,18 @@ export class PortfoliosComponent implements OnInit {
   }
 
   onInstrumentSelected(instrument: InstrumentResponse): void {
+    this.selectedInstrument = instrument;
+    this.positionFormVisible = true;
+    this.positionFormEnabled = true;
+    this.positionForm.date = this.getTodayForInput();
     this.instrumentSvc.searchQuote(instrument.symbol).subscribe({
       next: (data) => {
-        this.positionForm.date = this.getTodayForInput();
         this.positionForm.price = this.toInputNumber(data.close);
       },
       error: () => {
         alert('No se pudo recibir la cotización.');
       },
     });
-    this.selectedInstrument = instrument;
-    this.positionFormVisible = true;
-    this.positionFormEnabled = true;
   }
 
   private getTodayForInput(): string {

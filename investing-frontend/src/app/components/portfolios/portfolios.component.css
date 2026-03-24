@@ -465,51 +465,51 @@
   cursor: pointer;
 }
 
+/* FECHA */
 .add-position .field-date {
-  width: 145px;
+  width: 170px;
+  min-width: 170px;
 }
 
 .add-position .calendar-date-picker {
   position: relative;
-  display: flex;
-  align-items: stretch;
+  display: block;
+  width: 100%;
   height: 32px;
   border: 1px solid #9d9d9d;
   background: #fff;
   overflow: hidden;
 }
 
-.add-position .dates-input-wrapper {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  min-width: 0;
-  padding: 0 10px;
-  pointer-events: none;
-}
-
-.add-position .date-field {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-}
-
+/* ocultamos solo la estructura antigua de texto */
+.add-position .dates-input-wrapper,
+.add-position .date-field,
 .add-position .date-range {
-  font-size: 14px;
-  color: #222;
-  white-space: nowrap;
+  display: none;
 }
 
+/* icono visual a la derecha */
 .add-position .date-picker-icon-wrap {
+  position: absolute;
+  top: 0;
+  right: 0;
   width: 32px;
-  min-width: 32px;
+  height: 100%;
   border-left: 1px solid #9d9d9d;
   background: #f7f7f7;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: none;
+  z-index: 1;
+}
+
+.add-position .date-picker-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
 }
 
 .add-position .date-picker-icon::before {
@@ -519,21 +519,39 @@
 }
 
 .add-position .native-date-input {
-  position: absolute;
-  inset: 0;
+  display: block;
   width: 100%;
   height: 100%;
-  opacity: 0;
-  cursor: pointer;
   border: 0;
+  background: #fff;
+  color: #222;
+  font-size: 14px;
+  padding: 0 36px 0 8px;
+  outline: none;
+  box-shadow: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 
+/* el icono nativo sigue activo pero invisible */
 .add-position .native-date-input::-webkit-calendar-picker-indicator {
+  opacity: 0;
   position: absolute;
-  inset: 0;
-  width: 100%;
+  top: 0;
+  right: 0;
+  width: 32px;
   height: 100%;
   cursor: pointer;
+}
+
+.add-position .native-date-input::-webkit-datetime-edit {
+  padding: 0;
+}
+
+.add-position .native-date-input::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
 }
 
 .add-position .field-amount .input-text-box,
@@ -584,23 +602,24 @@
   border: 0;
   text-decoration: none;
   white-space: nowrap;
-  color: #b7b7b7;
   font-size: 14px;
   font-weight: 600;
-  pointer-events: none;
-  cursor: default;
+  color: #6b6b6b;
+  cursor: pointer;
+  pointer-events: auto;
 }
-
 .add-position .add-position-btn::before {
   content: "↪";
   margin-right: 8px;
   font-size: 18px;
   line-height: 1;
-  color: #b7b7b7;
+  color: inherit;
 }
-
-.add-position.is-disabled {
-  opacity: 0.6;
+/* estado deshabilitado real */
+.add-position .add-position-btn:disabled {
+  color: #b7b7b7;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .add-position.is-disabled .add-position-form {
