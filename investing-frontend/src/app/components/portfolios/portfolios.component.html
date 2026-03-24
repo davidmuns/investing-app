@@ -106,11 +106,10 @@
           <label class="addSymbolLabel">Añadir símbolo</label>
         </ng-template>
         <app-search-instrument
-          [portfolioId]="portfolioId"
           [portfolioType]="portfolioType"
-          (searchFocused)="onPositionSearchFocus()"
+          (searchFocused)="onInstrumentSearchFocus()"
           (instrumentSelected)="onInstrumentSelected($event)"
-          (instrumentCreated)="reloadInstruments()"
+          (instrumentEmitted)="onInstrumentEmitted($event)"
         ></app-search-instrument>
       </div>
       <div>

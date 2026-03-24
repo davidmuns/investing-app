@@ -30,4 +30,8 @@ export class InstrumentService {
   search(query: string): Observable<SearchResponse<InstrumentResponse>> {
     return this.http.get<SearchResponse<InstrumentResponse>>(`${this.externalApiUrl}/search?q=${query}`);
   }
+
+  searchQuote(query: string): Observable<InstrumentResponse> {
+    return this.http.get<InstrumentResponse>(`${this.externalApiUrl}/search-quote?q=${query}`);
+  }
 }

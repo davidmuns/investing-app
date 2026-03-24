@@ -17,7 +17,7 @@
   <mat-autocomplete
     #auto="matAutocomplete"
     [displayWith]="displayInstrument"
-    (optionSelected)="onOptionSelected($event)"
+    (optionSelected)="onInstrumentClicked($event)"
     panelWidth="720px"
   >
     <mat-option *ngFor="let instrument of filteredOptions | async" [value]="instrument">

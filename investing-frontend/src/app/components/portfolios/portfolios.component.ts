@@ -10,6 +10,7 @@ import { InstrumentResponse } from '@app/shared/models/instrument-response';
 import { UtilsService } from '@app/services/utils.service';
 import { Instrument } from '@app/shared/models/instrument';
 import { PortfolioRequest } from '@app/shared/models/portfolios-request';
+import { InstrumentRequest } from '@app/shared/models/instrument-request';
 type ApiError = { error?: string; message?: string };
 
 @Component({
@@ -105,6 +106,17 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
+  onInstrumentEmitted(instrument: InstrumentRequest): void {
+    this.instrumentSvc.create(instrument, this.portfolioId).subscribe({
+      next: (data) => {
+        this.reloadInstruments();
+      },
+      error: (err) => {
+        console.log(err.error.message);
+      },
+    });
+  }
+
   reloadInstruments(): void {
     this.instrumentSvc.list().subscribe({
       next: (data) => {
@@ -193,6 +205,7 @@ export class PortfoliosComponent implements OnInit {
 
   selectTab(i: number) {
     // si estás editando otra pestaña, guarda (o cancela) antes
+    this.positionFormVisible = false;
     if (this.editingIndex !== null && this.editingIndex !== i) {
       this.saveEdit(this.editingIndex);
     }
@@ -283,7 +296,7 @@ export class PortfoliosComponent implements OnInit {
     this.positionFormVisible = false;
   }
 
-  onPositionSearchFocus(): void {
+  onInstrumentSearchFocus(): void {
     if (!this.portfolioType.endsWith('S')) return;
 
     this.positionFormVisible = true;
@@ -297,13 +310,18 @@ export class PortfoliosComponent implements OnInit {
   }
 
   onInstrumentSelected(instrument: InstrumentResponse): void {
-    console.log(instrument);
+    this.instrumentSvc.searchQuote(instrument.symbol).subscribe({
+      next: (data) => {
+        this.positionForm.date = this.getTodayForInput();
+        this.positionForm.price = this.toInputNumber(data.close);
+      },
+      error: () => {
+        alert('No se pudo recibir la cotización.');
+      },
+    });
     this.selectedInstrument = instrument;
     this.positionFormVisible = true;
     this.positionFormEnabled = true;
-
-    this.positionForm.date = this.getTodayForInput();
-    this.positionForm.price = this.toInputNumber(instrument.close);
   }
 
   private getTodayForInput(): string {

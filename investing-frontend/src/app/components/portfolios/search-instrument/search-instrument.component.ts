@@ -14,10 +14,9 @@ import { InstrumentResponse } from '@app/shared/models/instrument-response';
 })
 export class SearchInstrumentComponent implements OnInit {
   form = this.fb.control<string | InstrumentResponse>('', [Validators.minLength(1)]);
-  @Output() instrumentCreated = new EventEmitter<void>();
+  @Output() instrumentEmitted = new EventEmitter<InstrumentRequest>();
   @Output() searchFocused = new EventEmitter<void>();
   @Output() instrumentSelected = new EventEmitter<InstrumentResponse>();
-  @Input() portfolioId: number = 0;
   @Input() portfolioType = '';
   instruments: InstrumentResponse[] = [];
   filteredOptions!: Observable<InstrumentResponse[]>;
@@ -61,11 +60,11 @@ export class SearchInstrumentComponent implements OnInit {
     }
 
     return this.instrumentSvc.search(value).pipe(map((response) => this.handleSearchResults(response)));
+    // return this.instrumentSvc.searchQuote(value).pipe(map((response) => this.handleQuoteResults(response)));
   }
 
   private handleSearchResults(response: SearchResponse<InstrumentResponse>): InstrumentResponse[] {
     this.instruments = response.data;
-    // console.log(this.instruments);
     return response.data.map((response) => response);
   }
 
@@ -75,30 +74,17 @@ export class SearchInstrumentComponent implements OnInit {
   //   this.form.reset();
   // }
 
-  onOptionSelected(event: MatAutocompleteSelectedEvent): void {
+  onInstrumentClicked(event: MatAutocompleteSelectedEvent): void {
     const instrument = event.option.value as InstrumentResponse;
-
     if (this.portfolioType.endsWith('S')) {
       this.instrumentSelected.emit(instrument);
       return;
     }
-
-    this.addInstrument(instrument);
+    this.instrumentEmitted.emit(instrument);
     this.form.reset();
   }
 
   onFocusSearch(): void {
     this.searchFocused.emit();
-  }
-
-  addInstrument(instrument: InstrumentRequest) {
-    this.instrumentSvc.create(instrument, this.portfolioId).subscribe({
-      next: (data) => {
-        this.instrumentCreated.emit();
-      },
-      error: (err) => {
-        console.log(err.error.message);
-      },
-    });
   }
 }
