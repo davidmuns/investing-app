@@ -624,6 +624,7 @@
 
 .add-position.is-disabled .add-position-form {
   pointer-events: none;
+  opacity: 0.4;
 }
 
 .add-position.is-disabled .add-position-form input,

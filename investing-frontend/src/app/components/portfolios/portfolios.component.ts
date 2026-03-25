@@ -206,6 +206,7 @@ export class PortfoliosComponent implements OnInit {
   selectTab(i: number) {
     // si estás editando otra pestaña, guarda (o cancela) antes
     this.positionFormVisible = false;
+    this.selectedInstrument = null;
     if (this.editingIndex !== null && this.editingIndex !== i) {
       this.saveEdit(this.editingIndex);
     }
@@ -294,6 +295,7 @@ export class PortfoliosComponent implements OnInit {
 
   onCloseFormClicked() {
     this.positionFormVisible = false;
+    this.selectedInstrument = null;
   }
 
   onInstrumentSearchFocus(): void {
@@ -362,6 +364,8 @@ export class PortfoliosComponent implements OnInit {
     };
 
     console.log('SUBMIT POSITION =>', payload);
+    this.positionFormEnabled = false;
+    this.positionFormVisible = false;
 
     // Sustituir por tu servicio real
     // this.positionService.create(payload).subscribe(...)

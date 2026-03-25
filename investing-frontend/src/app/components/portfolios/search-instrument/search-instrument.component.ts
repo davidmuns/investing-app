@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { InstrumentService } from '@app/services/instrument.service';
 import { SearchResponse } from '@app/shared/models/search-response';
@@ -31,6 +31,10 @@ export class SearchInstrumentComponent implements OnInit {
 
   ngOnInit(): void {
     this.initFilteredOptions();
+  }
+
+  ngOnChanges() {
+    this.form.reset();
   }
 
   private initFilteredOptions(): void {
