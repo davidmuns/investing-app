@@ -12,6 +12,7 @@ public record TwelveDataQuoteResponse(
         Double high,
         Double low,
         Double change,
+        String exchange,
         @JsonProperty("percent_change")
         Double percentChange,
         @JsonProperty("previous_close")
