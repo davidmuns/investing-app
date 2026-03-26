@@ -11,6 +11,8 @@ import { UtilsService } from '@app/services/utils.service';
 import { Instrument } from '@app/shared/models/instrument';
 import { PortfolioRequest } from '@app/shared/models/portfolios-request';
 import { InstrumentRequest } from '@app/shared/models/instrument-request';
+import { PositionRequest } from '@app/shared/models/position-request';
+import { PositionService } from '@app/services/position.service';
 type ApiError = { error?: string; message?: string };
 
 @Component({
@@ -36,18 +38,32 @@ export class PortfoliosComponent implements OnInit {
   @ViewChildren('editInput') editInputs!: QueryList<ElementRef<HTMLInputElement>>;
   instruments: InstrumentResponse[] = [];
   portfolioType: string = '';
-
+  instrumentSymbol: string = '';
+  instrumentName: string = '';
   positionFormVisible = false;
   positionFormEnabled = false;
   selectedInstrument: InstrumentResponse | null = null;
 
   positionForm = {
-    operation: 'B',
+    operation: 'Compra',
     date: '',
     quantity: '',
     price: '',
     commission: '',
   };
+
+  constructor(
+    private portfolioService: PortfolioService,
+    public dialog: MatDialog,
+    private instrumentSvc: InstrumentService,
+    private utilsSvc: UtilsService,
+    private positionSvc: PositionService,
+  ) {}
+
+  ngOnInit(): void {
+    this.reload();
+    this.reloadInstruments();
+  }
 
   toggleActions(): void {
     this.actionsOpen = !this.actionsOpen;
@@ -61,18 +77,6 @@ export class PortfoliosComponent implements OnInit {
   onDocumentClick(): void {
     this.closeActions();
     if (this.actionsOpen) this.closeActions();
-  }
-
-  constructor(
-    private portfolioService: PortfolioService,
-    public dialog: MatDialog,
-    private instrumentSvc: InstrumentService,
-    private utilsSvc: UtilsService,
-  ) {}
-
-  ngOnInit(): void {
-    this.reload();
-    this.reloadInstruments();
   }
 
   onAddPortfolioClicked(): void {
@@ -305,7 +309,7 @@ export class PortfoliosComponent implements OnInit {
     this.positionFormVisible = true;
     this.positionFormEnabled = false;
     this.selectedInstrument = null;
-    this.positionForm.operation = 'B';
+    this.positionForm.operation = 'Compra';
     this.positionForm.date = '';
     this.positionForm.quantity = '';
     this.positionForm.price = '';
@@ -320,6 +324,8 @@ export class PortfoliosComponent implements OnInit {
     this.instrumentSvc.searchQuote(instrument.symbol).subscribe({
       next: (data) => {
         this.positionForm.price = this.toInputNumber(data.close);
+        this.instrumentSymbol = data.symbol;
+        this.instrumentName = data.name;
       },
       error: () => {
         alert('No se pudo recibir la cotización.');
@@ -340,6 +346,12 @@ export class PortfoliosComponent implements OnInit {
     return String(value).replace('.', ',');
   }
 
+  blockDot(event: KeyboardEvent): void {
+    if (event.key === '.') {
+      event.preventDefault();
+    }
+  }
+
   canSubmitPosition(): boolean {
     return !!(
       this.positionFormEnabled &&
@@ -353,15 +365,25 @@ export class PortfoliosComponent implements OnInit {
   submitPosition(): void {
     if (!this.canSubmitPosition() || !this.selectedInstrument) return;
 
-    const payload = {
+    const payload: PositionRequest = {
+      name: this.instrumentName,
       portfolioId: this.portfolioId,
-      instrumentId: this.selectedInstrument.id,
-      operation: this.positionForm.operation,
+      type: this.positionForm.operation,
       date: this.positionForm.date,
       quantity: this.parseLocalizedNumber(this.positionForm.quantity),
       price: this.parseLocalizedNumber(this.positionForm.price),
-      commission: this.parseLocalizedNumber(this.positionForm.commission || '0'),
+      fee: this.parseLocalizedNumber(this.positionForm.commission || '0'),
+      symbol: this.instrumentSymbol,
     };
+
+    this.positionSvc.create(payload).subscribe({
+      next: () => {
+        console.log('Posición creada');
+      },
+      error: (err) => {
+        console.error('Error al crear la posición', err);
+      },
+    });
 
     console.log('SUBMIT POSITION =>', payload);
     this.positionFormEnabled = false;

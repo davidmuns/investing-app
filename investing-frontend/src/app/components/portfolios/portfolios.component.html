@@ -151,8 +151,8 @@
             [(ngModel)]="positionForm.operation"
             [disabled]="!positionFormEnabled"
           >
-            <option value="B">Compra</option>
-            <option value="S">Venta</option>
+            <option value="Compra">Compra</option>
+            <option value="Venta">Venta</option>
           </select>
         </div>
 
@@ -184,6 +184,7 @@
             class="new-input input-text-box amount"
             [(ngModel)]="positionForm.quantity"
             [disabled]="!positionFormEnabled"
+            (keydown)="blockDot($event)"
           />
         </div>
 
@@ -196,6 +197,7 @@
             class="new-input input-text-box"
             [(ngModel)]="positionForm.price"
             [disabled]="!positionFormEnabled"
+            (keydown)="blockDot($event)"
           />
         </div>
 
@@ -209,6 +211,7 @@
               class="form-control form-control-enabled"
               [(ngModel)]="positionForm.commission"
               [disabled]="!positionFormEnabled"
+              (keydown)="blockDot($event)"
             />
             <span class="cur-container">€</span>
           </div>
