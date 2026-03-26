@@ -1,0 +1,40 @@
+package com.davidmuns.investing.controller;
+
+import com.davidmuns.investing.dto.InstrumentRequest;
+import com.davidmuns.investing.dto.InstrumentResponse;
+import com.davidmuns.investing.dto.PositionRequest;
+import com.davidmuns.investing.dto.SearchResponse;
+import com.davidmuns.investing.entity.Position;
+import com.davidmuns.investing.service.InstrumentService;
+import com.davidmuns.investing.service.PositionService;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/positions")
+@CrossOrigin
+@Slf4j
+public class PositionController {
+
+    private final PositionService positionService;
+
+    public PositionController(PositionService positionService) {
+        this.positionService = positionService;
+    }
+
+    @PostMapping("/{portfolioId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void create(@Valid @RequestBody PositionRequest req, @PathVariable Long portfolioId) {
+        positionService.save(req, portfolioId);
+    }
+
+    @GetMapping("/{portfolioId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public SearchResponse<Position> listByPortfolioID(@PathVariable Long portfolioId) {
+        return positionService.findAllByPortfolioID(portfolioId);
+    }
+}
