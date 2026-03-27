@@ -29,7 +29,10 @@ public class Position {
     private Double netAmount;
 
     @Column
-    private Double averagePrice;
+    private Double grossAmount;
+
+    @Column
+    private Double price;
 
 //    @Column(name = "current_price", nullable = false, precision = 19, scale = 4)
 //    private BigDecimal currentPrice;

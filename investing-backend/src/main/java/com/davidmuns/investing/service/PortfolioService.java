@@ -8,6 +8,7 @@ import com.davidmuns.investing.exception.DuplicatePortfolioException;
 import com.davidmuns.investing.exception.NotFoundException;
 import com.davidmuns.investing.repo.InstrumentRepository;
 import com.davidmuns.investing.repo.PortfolioRepository;
+import com.davidmuns.investing.repo.PositionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,16 +18,18 @@ import java.util.stream.Collectors;
 @Service
 public class PortfolioService {
 
-    private final PortfolioRepository repository;
+    private final PortfolioRepository portfolioRepository;
     private final InstrumentRepository instrumentRepository;
+    private final PositionRepository positionRepository;
 
-    public PortfolioService(PortfolioRepository repository, InstrumentRepository instrumentRepository) {
-        this.repository = repository;
+    public PortfolioService(PortfolioRepository portfolioRepository, InstrumentRepository instrumentRepository, PositionRepository positionRepository) {
+        this.portfolioRepository = portfolioRepository;
         this.instrumentRepository = instrumentRepository;
+        this.positionRepository = positionRepository;
     }
 
     public SearchResponse<PortfolioResponse> findAll() {
-        List<PortfolioResponse> dtoList = repository.findAll()
+        List<PortfolioResponse> dtoList = portfolioRepository.findAll()
                 .stream()
                 .map(pr -> new PortfolioResponse(
                         pr.getId(),
@@ -40,29 +43,31 @@ public class PortfolioService {
     public PortfolioResponse create(CreatePortfolioRequest req) {
         String name = req.name().trim();
 
-        if (repository.existsByNameIgnoreCaseAndType(name, req.type())) {
+        if (portfolioRepository.existsByNameIgnoreCaseAndType(name, req.type())) {
             throw new DuplicatePortfolioException("Ya existe una cartera '" + name + "' de tipo " + req.type());
         }
 
-        return toResponse(repository.save(new Portfolio(name, req.type())));
+        return toResponse(portfolioRepository.save(new Portfolio(name, req.type())));
     }
 
     @Transactional
     public void delete(Long id) {
         String msg = "No existe portfolio con id:";
-        if (!repository.existsById(id)) {
+        if (!portfolioRepository.existsById(id)) {
             throw new NotFoundException(id, msg);
         }
         instrumentRepository.deleteByPortfolioId(id);
-        repository.deleteById(id);
+        positionRepository.deleteByPortfolioId(id);
+
+        portfolioRepository.deleteById(id);
     }
 
     public PortfolioResponse rename(Long id, String newName) {
         String msg = "No existe portfolio con id:";
-        Portfolio portfolio = repository.findById(id)
+        Portfolio portfolio = portfolioRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(id, msg));
         portfolio.setName(newName.trim());
-        return toResponse(repository.save(portfolio));
+        return toResponse(portfolioRepository.save(portfolio));
     }
 
     private static PortfolioResponse toResponse(Portfolio p) {
