@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PositionRequest } from '@app/shared/models/position-request';
+import { PositionResponse } from '@app/shared/models/position-response';
+import { SearchResponse } from '@app/shared/models/search-response';
 import { environment } from '@env/environment';
 import { Observable } from 'rxjs';
 
@@ -14,5 +16,9 @@ export class PositionService {
 
   create(req: PositionRequest): Observable<void> {
     return this.http.post<void>(this.apiUrl + '/' + req.portfolioId, req);
+  }
+
+  listByPortfolioId(id: number): Observable<SearchResponse<PositionResponse>> {
+    return this.http.get<SearchResponse<PositionResponse>>(this.apiUrl + '/' + id);
   }
 }

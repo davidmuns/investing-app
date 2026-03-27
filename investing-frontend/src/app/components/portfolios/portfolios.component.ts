@@ -13,6 +13,7 @@ import { PortfolioRequest } from '@app/shared/models/portfolios-request';
 import { InstrumentRequest } from '@app/shared/models/instrument-request';
 import { PositionRequest } from '@app/shared/models/position-request';
 import { PositionService } from '@app/services/position.service';
+import { PositionResponse } from '@app/shared/models/position-response';
 type ApiError = { error?: string; message?: string };
 
 @Component({
@@ -43,6 +44,13 @@ export class PortfoliosComponent implements OnInit {
   positionFormVisible = false;
   positionFormEnabled = false;
   selectedInstrument: InstrumentResponse | null = null;
+  positions: PositionResponse[] = [];
+  marketValue = 0;
+  totalNetAmount = 0;
+  totalProfitLossValue = 0;
+  totalProfitLossPercentage = 0;
+  dailyProfitLossValue = 0;
+  dailyProfitLossPercentage = 0;
 
   positionForm = {
     operation: 'Compra',
@@ -218,11 +226,13 @@ export class PortfoliosComponent implements OnInit {
     this.portfolioType = this.portfolios[this.selectedIndex].type;
     this.setPortfolioId();
     this.reloadInstruments();
+    // this.calculateTotals();
   }
 
   private setPortfolioId(): void {
     const selected = this.portfolios?.[this.selectedIndex];
     this.portfolioId = selected?.id ?? 0;
+    this.listPositionsByPortfolioId(this.portfolioId);
   }
 
   startEdit(i: number) {
@@ -346,10 +356,43 @@ export class PortfoliosComponent implements OnInit {
     return String(value).replace('.', ',');
   }
 
-  blockDot(event: KeyboardEvent): void {
-    if (event.key === '.') {
-      event.preventDefault();
+  blockInvalidNumberKey(event: KeyboardEvent): void {
+    const allowedControlKeys = [
+      'Backspace',
+      'Delete',
+      'Tab',
+      'Escape',
+      'Enter',
+      'ArrowLeft',
+      'ArrowRight',
+      'ArrowUp',
+      'ArrowDown',
+      'Home',
+      'End',
+    ];
+
+    // Permitir atajos tipo Ctrl+C, Ctrl+V, Ctrl+A, Ctrl+X
+    if (event.ctrlKey || event.metaKey) {
+      return;
     }
+
+    // Permitir teclas de control
+    if (allowedControlKeys.includes(event.key)) {
+      return;
+    }
+
+    // Permitir números
+    if (/^\d$/.test(event.key)) {
+      return;
+    }
+
+    // Permitir coma
+    if (event.key === ',') {
+      return;
+    }
+
+    // Bloquear todo lo demás, incluido el punto
+    event.preventDefault();
   }
 
   canSubmitPosition(): boolean {
@@ -379,6 +422,7 @@ export class PortfoliosComponent implements OnInit {
     this.positionSvc.create(payload).subscribe({
       next: () => {
         console.log('Posición creada');
+        this.listPositionsByPortfolioId(this.portfolioId);
       },
       error: (err) => {
         console.error('Error al crear la posición', err);
@@ -388,9 +432,57 @@ export class PortfoliosComponent implements OnInit {
     console.log('SUBMIT POSITION =>', payload);
     this.positionFormEnabled = false;
     this.positionFormVisible = false;
+  }
 
-    // Sustituir por tu servicio real
-    // this.positionService.create(payload).subscribe(...)
+  listPositionsByPortfolioId(id: number) {
+    this.positionSvc.listByPortfolioId(id).subscribe({
+      next: (resp) => {
+        console.log(resp.data);
+        this.positions = resp.data;
+        this.calculateTotalProfitLoss();
+        this.calculateDailyProfitLoss();
+      },
+      error: (err) => {
+        console.error('Error al crear la posición', err);
+      },
+    });
+  }
+
+  private calculateTotalProfitLoss() {
+    const totals = this.positions.reduce(
+      (acc, position) => {
+        acc.closePrice += position.close * position.quantity;
+        acc.netAmount += position.netAmount;
+        return acc;
+      },
+      { closePrice: 0, netAmount: 0 },
+    );
+    this.marketValue = totals.closePrice;
+    this.totalNetAmount = totals.netAmount;
+    this.totalProfitLossValue = this.marketValue - this.totalNetAmount;
+    this.totalProfitLossPercentage = (this.marketValue / this.totalNetAmount - 1) * 100;
+  }
+
+  private calculateDailyProfitLoss() {
+    const totals = this.positions.reduce(
+      (acc, position) => {
+        const previousValue = position.previousClose * position.quantity;
+        const dailyValue = (position.close - position.previousClose) * position.quantity;
+
+        acc.previousPortfolioValue += previousValue;
+        acc.dailyProfitLossValue += dailyValue;
+
+        return acc;
+      },
+      {
+        previousPortfolioValue: 0,
+        dailyProfitLossValue: 0,
+      },
+    );
+
+    this.dailyProfitLossValue = totals.dailyProfitLossValue;
+    this.dailyProfitLossPercentage =
+      totals.previousPortfolioValue !== 0 ? (totals.dailyProfitLossValue / totals.previousPortfolioValue) * 100 : 0;
   }
 
   private parseLocalizedNumber(value: string): number {

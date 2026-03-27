@@ -83,15 +83,25 @@
   <div *ngIf="this.portfolioType.endsWith('S')" class="positionSummary">
     <div class="summaryItem">
       <label>Val. mercado:</label>
-      <span>0 €</span>
+      <span>{{ marketValue | number: '1.1-2' }} $</span>
     </div>
     <div class="summaryItem">
       <label>B/P posic. abiertas:</label>
-      <span>0 € / 0,00%</span>
+      <span *ngIf="totalProfitLossValue < 0" style="color: red">
+        {{ totalProfitLossValue | number: '1.1-2' }} $ / {{ totalProfitLossPercentage | number: '1.1-2' }}%
+      </span>
+      <span *ngIf="totalProfitLossValue >= 0" style="color: green">
+        {{ totalProfitLossValue | number: '1.1-2' }} $ / {{ totalProfitLossPercentage | number: '1.1-2' }}%
+      </span>
     </div>
     <div class="summaryItem" id="dailyDiv72486322">
       <label>B/P diario:</label>
-      <span>0 € / 0,00%</span>
+      <span *ngIf="dailyProfitLossValue < 0" style="color: red">
+        {{ dailyProfitLossValue | number: '1.1-2' }} $ / {{ dailyProfitLossPercentage | number: '1.1-2' }}%
+      </span>
+      <span *ngIf="dailyProfitLossValue >= 0" style="color: green">
+        {{ dailyProfitLossValue | number: '1.1-2' }} $ / {{ dailyProfitLossPercentage | number: '1.1-2' }}%
+      </span>
     </div>
   </div>
 
@@ -184,7 +194,7 @@
             class="new-input input-text-box amount"
             [(ngModel)]="positionForm.quantity"
             [disabled]="!positionFormEnabled"
-            (keydown)="blockDot($event)"
+            (keydown)="blockInvalidNumberKey($event)"
           />
         </div>
 
@@ -197,7 +207,7 @@
             class="new-input input-text-box"
             [(ngModel)]="positionForm.price"
             [disabled]="!positionFormEnabled"
-            (keydown)="blockDot($event)"
+            (keydown)="blockInvalidNumberKey($event)"
           />
         </div>
 
@@ -211,7 +221,7 @@
               class="form-control form-control-enabled"
               [(ngModel)]="positionForm.commission"
               [disabled]="!positionFormEnabled"
-              (keydown)="blockDot($event)"
+              (keydown)="blockInvalidNumberKey($event)"
             />
             <span class="cur-container">€</span>
           </div>
@@ -229,6 +239,7 @@
       <mat-tab-group mat-align-tabs="start" animationDuration="500ms">
         <!-- RESUMEN TAB -->
         <mat-tab label="Resumen">
+          <!-- WATCHLIST TABLE -->
           <app-table
             *ngIf="instruments.length"
             [instruments]="instruments"
