@@ -21,4 +21,8 @@ export class PositionService {
   listByPortfolioId(id: number): Observable<SearchResponse<PositionResponse>> {
     return this.http.get<SearchResponse<PositionResponse>>(this.apiUrl + '/' + id);
   }
+
+  deleteById(id: number): Observable<void> {
+    return this.http.delete<void>(this.apiUrl + '/' + id);
+  }
 }

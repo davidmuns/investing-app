@@ -6,8 +6,7 @@
   <span class="spacer"></span>
 
   <button mat-icon-button [matMenuTriggerFor]="user">
-    iniciar sesión
-    <!-- <mat-icon>account_circle</mat-icon> -->
+    {{ this.tokenService.isLogged() ? tokenService.getUsername() : 'iniciar sesión' }}
   </button>
 
   <button mat-button routerLink="/portfolios">
@@ -19,8 +18,8 @@
   </button>
 
   <!-- <button mat-icon-button [matMenuTriggerFor]="language">
-        <mat-icon>language</mat-icon>
-    </button> -->
+    <mat-icon>language</mat-icon>
+  </button> -->
 </mat-toolbar>
 
 <mat-menu #user="matMenu">

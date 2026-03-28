@@ -156,13 +156,23 @@ export class PortfoliosComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error deleting instrument', err);
-        this.utilsSvc.showSnackBar(`Could not delete instrument ${name}`, 3000);
+        this.utilsSvc.showSnackBar(`Could not delete instrument ${instrument.name}`, 3000);
       },
     });
   }
 
   onDeletePosition(position: PositionResponse): void {
-    console.log('Eliminar posición', position);
+    this.positionSvc.deleteById(position.id).subscribe({
+      next: () => {
+        this.utilsSvc.showSnackBar(`Position ${position.name} deleted`, 3000);
+        this.positions = this.positions.filter((i) => i.id !== position.id);
+        this.listPositionsByPortfolioId(this.portfolioId);
+      },
+      error: (err) => {
+        console.error('Error deleting position', err);
+        this.utilsSvc.showSnackBar(`Could not delete position ${position.name}`, 3000);
+      },
+    });
   }
 
   reload(createdId?: number): void {
@@ -176,7 +186,7 @@ export class PortfoliosComponent implements OnInit {
           const idx = this.portfolios.findIndex((p) => p.id === createdId);
           this.selectedIndex = idx >= 0 ? idx : 0;
         }
-        this.setPortfolioId();
+        this.setPortfolio();
         this.loading = false;
       },
       error: () => {
@@ -236,14 +246,14 @@ export class PortfoliosComponent implements OnInit {
     }
     this.selectedIndex = i;
     this.portfolioType = this.portfolios[this.selectedIndex].type;
-    this.setPortfolioId();
+    this.setPortfolio();
     this.reloadInstruments();
-    // this.calculateTotals();
   }
 
-  private setPortfolioId(): void {
+  private setPortfolio(): void {
     const selected = this.portfolios?.[this.selectedIndex];
     this.portfolioId = selected?.id ?? 0;
+    this.portfolioType = selected.type ?? '';
     this.listPositionsByPortfolioId(this.portfolioId);
   }
 
@@ -468,7 +478,7 @@ export class PortfoliosComponent implements OnInit {
     this.marketValue = totals.closePrice;
     this.totalNetAmount = totals.netAmount;
     this.totalProfitLossValue = this.marketValue - this.totalNetAmount;
-    this.totalProfitLossPercentage = (this.marketValue / this.totalNetAmount - 1) * 100;
+    this.totalProfitLossPercentage = this.marketValue != 0 ? (this.marketValue / this.totalNetAmount - 1) * 100 : 0;
   }
 
   private calculateDailyProfitLoss() {

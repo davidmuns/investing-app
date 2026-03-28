@@ -1,3 +1,4 @@
+<img class="banner" src="assets/img/home-banner.png" alt="" />
 <div class="page" (click)="closeEditIfOpen()">
   <div class="header">
     <div class="actions">
@@ -88,19 +89,25 @@
     </div>
     <div class="summaryItem">
       <label>B/P posic. abiertas:</label>
+      <span *ngIf="totalProfitLossValue == 0" style="color: black">
+        {{ totalProfitLossValue | number: '1.1-2' }} $ / {{ totalProfitLossPercentage | number: '1.1-2' }}%
+      </span>
       <span *ngIf="totalProfitLossValue < 0" style="color: red">
         {{ totalProfitLossValue | number: '1.1-2' }} $ / {{ totalProfitLossPercentage | number: '1.1-2' }}%
       </span>
-      <span *ngIf="totalProfitLossValue >= 0" style="color: green">
+      <span *ngIf="totalProfitLossValue > 0" style="color: green">
         {{ totalProfitLossValue | number: '1.1-2' }} $ / {{ totalProfitLossPercentage | number: '1.1-2' }}%
       </span>
     </div>
     <div class="summaryItem">
       <label>B/P diario:</label>
+      <span *ngIf="dailyProfitLossValue == 0" style="color: black">
+        {{ dailyProfitLossValue | number: '1.1-2' }} $ / {{ dailyProfitLossPercentage | number: '1.1-2' }}%
+      </span>
       <span *ngIf="dailyProfitLossValue < 0" style="color: red">
         {{ dailyProfitLossValue | number: '1.1-2' }} $ / {{ dailyProfitLossPercentage | number: '1.1-2' }}%
       </span>
-      <span *ngIf="dailyProfitLossValue >= 0" style="color: green">
+      <span *ngIf="dailyProfitLossValue > 0" style="color: green">
         {{ dailyProfitLossValue | number: '1.1-2' }} $ / {{ dailyProfitLossPercentage | number: '1.1-2' }}%
       </span>
     </div>
@@ -286,6 +293,8 @@
     No tiene ninguna posición abierta. Vaya a Añadir posición para abrir una nueva posición.
   </p>
 </div>
+
+<app-footer></app-footer>
 
 <!-- PORTFOLIO MENU -->
 <mat-menu #portfolio>

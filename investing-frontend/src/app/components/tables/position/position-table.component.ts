@@ -61,7 +61,6 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['positions']) {
-      console.log('Positions before => ', this.positions);
       this.setTableData();
     }
   }
@@ -85,7 +84,6 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
         totalProfitLossPercentage,
       };
     });
-    console.log('Positions after => ', this.dataSource.data);
   }
 
   announceSortChange(sortState: Sort): void {
