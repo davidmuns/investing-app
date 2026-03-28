@@ -7,6 +7,7 @@ import com.davidmuns.investing.service.PositionService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,5 +34,11 @@ public class PositionController {
     @ResponseStatus(HttpStatus.CREATED)
     public SearchResponse<PositionResponse> listByPortfolioID(@PathVariable Long portfolioId) {
         return positionService.findAllByPortfolioID(portfolioId);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        positionService.delete(id);
+        return ResponseEntity.noContent().build(); // 204 ✅
     }
 }

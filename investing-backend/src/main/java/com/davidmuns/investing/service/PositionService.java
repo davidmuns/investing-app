@@ -2,8 +2,10 @@ package com.davidmuns.investing.service;
 
 import com.davidmuns.investing.client.TwelveDataClient;
 import com.davidmuns.investing.dto.*;
+import com.davidmuns.investing.entity.Instrument;
 import com.davidmuns.investing.entity.Portfolio;
 import com.davidmuns.investing.entity.Position;
+import com.davidmuns.investing.exception.NotFoundException;
 import com.davidmuns.investing.repo.PortfolioRepository;
 import com.davidmuns.investing.repo.PositionRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +48,12 @@ public class PositionService {
         return new SearchResponse<>(resp, positions.size());
     }
 
+    public void delete(Long id) {
+        Position position = positionRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(id, "Position not found with id: "));
+        positionRepository.delete(position);
+    }
+
     private Position buildPosition(PositionRequest req, Portfolio portfolio) {
         Position position = new Position();
         position.setName(req.name());
@@ -72,6 +80,7 @@ public class PositionService {
             log.error(e.getMessage());
         }
 
+
         return new PositionResponse(
                 position.getId(),
                 position.getName(),
@@ -80,8 +89,8 @@ public class PositionService {
                 position.getQuantity(),
                 position.getPortfolio().getId(),
                 position.getPrice(),
-                quote.close(),
-                quote.previousClose(),
+                quote != null? quote.close(): 0.0,
+                quote != null? quote.previousClose(): 0.0,
                 position.getFee(),
                 position.getCreatedAt(),
                 position.getNetAmount(),

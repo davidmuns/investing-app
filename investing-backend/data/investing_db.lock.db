@@ -1,6 +1,6 @@
 #FileLock
-#Fri Mar 27 16:50:46 CET 2026
-server=localhost\:53603
-hostName=localhost
+#Sat Mar 28 17:46:47 CET 2026
+server=192.168.1.35\:57663
+hostName=David
 method=file
-id=19d2ffda8ae229ec5f0003d4b0285827503c1f1c67c
+id=19d35574e368964be8dbee60b5bc3bca0918640663d
