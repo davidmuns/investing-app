@@ -15,6 +15,7 @@ import { LOCALE_ID } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import { HomeComponent } from './components/home/home.component';
+
 registerLocaleData(localeEs);
 
 @NgModule({

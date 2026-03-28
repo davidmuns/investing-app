@@ -87,6 +87,14 @@ export class PortfoliosComponent implements OnInit {
     if (this.actionsOpen) this.closeActions();
   }
 
+  get isWatchlist(): boolean {
+    return this.portfolioType === 'WATCHLIST';
+  }
+
+  get isEmptyPortfolio(): boolean {
+    return this.isWatchlist ? this.instruments.length === 0 : this.positions.length === 0;
+  }
+
   onAddPortfolioClicked(): void {
     const dialogRef = this.dialog.open(ModalPortfolioComponent, {
       width: '380px',
@@ -151,6 +159,10 @@ export class PortfoliosComponent implements OnInit {
         this.utilsSvc.showSnackBar(`Could not delete instrument ${name}`, 3000);
       },
     });
+  }
+
+  onDeletePosition(position: PositionResponse): void {
+    console.log('Eliminar posición', position);
   }
 
   reload(createdId?: number): void {
@@ -421,15 +433,12 @@ export class PortfoliosComponent implements OnInit {
 
     this.positionSvc.create(payload).subscribe({
       next: () => {
-        console.log('Posición creada');
         this.listPositionsByPortfolioId(this.portfolioId);
       },
       error: (err) => {
         console.error('Error al crear la posición', err);
       },
     });
-
-    console.log('SUBMIT POSITION =>', payload);
     this.positionFormEnabled = false;
     this.positionFormVisible = false;
   }
@@ -437,7 +446,6 @@ export class PortfoliosComponent implements OnInit {
   listPositionsByPortfolioId(id: number) {
     this.positionSvc.listByPortfolioId(id).subscribe({
       next: (resp) => {
-        console.log(resp.data);
         this.positions = resp.data;
         this.calculateTotalProfitLoss();
         this.calculateDailyProfitLoss();

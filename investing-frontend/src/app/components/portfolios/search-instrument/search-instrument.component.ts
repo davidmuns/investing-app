@@ -62,21 +62,13 @@ export class SearchInstrumentComponent implements OnInit {
       this.instruments = [];
       return of([]);
     }
-
     return this.instrumentSvc.search(value).pipe(map((response) => this.handleSearchResults(response)));
-    // return this.instrumentSvc.searchQuote(value).pipe(map((response) => this.handleQuoteResults(response)));
   }
 
   private handleSearchResults(response: SearchResponse<InstrumentResponse>): InstrumentResponse[] {
     this.instruments = response.data;
     return response.data.map((response) => response);
   }
-
-  // onOptionSelected(event: MatAutocompleteSelectedEvent): void {
-  //   const instrument = event.option.value as InstrumentRequest;
-  //   this.addInstrument(instrument);
-  //   this.form.reset();
-  // }
 
   onInstrumentClicked(event: MatAutocompleteSelectedEvent): void {
     const instrument = event.option.value as InstrumentResponse;

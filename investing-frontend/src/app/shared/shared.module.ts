@@ -4,10 +4,11 @@ import { MaterialModule } from './material/material.module';
 import { PipesModule } from './pipes/pipes.module';
 import { FormTemplateComponent } from './form-template/form-template.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TableComponent } from '@app/components/table/table.component';
+import { InstrumentTableComponent } from '@app/components/tables/instrument/instrument-table.component';
+import { PositionTableComponent } from '@app/components/tables/position/position-table.component';
 
 @NgModule({
-  declarations: [FormTemplateComponent, TableComponent],
+  declarations: [FormTemplateComponent, InstrumentTableComponent, PositionTableComponent],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule, FormsModule],
   exports: [
     CommonModule,
@@ -16,7 +17,8 @@ import { TableComponent } from '@app/components/table/table.component';
     FormTemplateComponent,
     ReactiveFormsModule,
     FormsModule,
-    TableComponent,
+    InstrumentTableComponent,
+    PositionTableComponent,
   ],
 })
 export class SharedModule {}

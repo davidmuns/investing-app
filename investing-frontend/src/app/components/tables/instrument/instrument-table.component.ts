@@ -16,11 +16,11 @@ import { Instrument } from '@app/shared/models/instrument';
 import { InstrumentResponse } from '@app/shared/models/instrument-response';
 
 @Component({
-  selector: 'app-table',
-  templateUrl: './table.component.html',
-  styleUrls: ['./table.component.css'],
+  selector: 'app-instrument-table',
+  templateUrl: './instrument-table.component.html',
+  styleUrls: ['./instrument-table.component.css'],
 })
-export class TableComponent implements OnInit, AfterViewInit, OnChanges {
+export class InstrumentTableComponent implements OnInit, AfterViewInit, OnChanges {
   instrumentColumns = [
     // { def: 'id', label: 'ID' },
     { def: 'name', label: 'Nombre' },
