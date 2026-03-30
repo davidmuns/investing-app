@@ -20,6 +20,9 @@ public class Position {
     private String symbol;
 
     @Column(nullable = false)
+    private String exchange;
+
+    @Column(nullable = false)
     private String type;
 
     @Column(nullable = false)

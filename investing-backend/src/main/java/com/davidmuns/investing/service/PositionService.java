@@ -2,7 +2,6 @@ package com.davidmuns.investing.service;
 
 import com.davidmuns.investing.client.TwelveDataClient;
 import com.davidmuns.investing.dto.*;
-import com.davidmuns.investing.entity.Instrument;
 import com.davidmuns.investing.entity.Portfolio;
 import com.davidmuns.investing.entity.Position;
 import com.davidmuns.investing.exception.NotFoundException;
@@ -12,7 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -48,6 +49,25 @@ public class PositionService {
         return new SearchResponse<>(resp, positions.size());
     }
 
+    public SearchResponse<PositionSummaryResponse> findSummaryByPortfolioId(Long portfolioId) {
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+
+        List<Position> positions = positionRepository.findByPortfolio(portfolio)
+                .orElse(List.of());
+
+        Map<String, List<Position>> grouped = positions.stream()
+                .collect(Collectors.groupingBy(position ->
+                        position.getSymbol() + "|" + position.getExchange() + "|" + position.getType()
+                ));
+
+        List<PositionSummaryResponse> summaries = grouped.values().stream()
+                .map(this::toSummaryResponse)
+                .toList();
+
+        return new SearchResponse<>(summaries, summaries.size());
+    }
+
     public void delete(Long id) {
         Position position = positionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(id, "Position not found with id: "));
@@ -58,6 +78,7 @@ public class PositionService {
         Position position = new Position();
         position.setName(req.name());
         position.setSymbol(req.symbol());
+        position.setExchange(req.exchange());
         position.setType(req.type());
         position.setQuantity(req.quantity());
         Double fee = req.fee() != null ? req.fee(): 0;
@@ -95,6 +116,57 @@ public class PositionService {
                 position.getCreatedAt(),
                 position.getNetAmount(),
                 position.getGrossAmount()
+        );
+    }
+
+    private PositionSummaryResponse toSummaryResponse(List<Position> positions) {
+        Position first = positions.get(0);
+
+        double totalQuantity = positions.stream()
+                .mapToDouble(Position::getQuantity)
+                .sum();
+
+        double totalGrossCost = positions.stream()
+                .mapToDouble(position -> position.getPrice() * position.getQuantity())
+                .sum();
+
+        double totalFees = positions.stream()
+                .mapToDouble(position -> position.getFee() != null ? position.getFee() : 0.0)
+                .sum();
+
+        double averagePrice = totalQuantity != 0 ? totalGrossCost / totalQuantity : 0.0;
+        double totalNetCost = totalGrossCost + totalFees;
+
+        TwelveDataQuoteResponse quote = null;
+
+        try {
+            quote = twelveDataClient.getQuote(first.getSymbol());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+
+        double currentPrice = quote != null ? quote.close() : 0.0;
+        double previousClose = quote != null ? quote.previousClose() : 0.0;
+
+        double marketValue = currentPrice * totalQuantity;
+        double previousMarketValue = previousClose * totalQuantity;
+        double dailyProfitLoss = (currentPrice - previousClose) * totalQuantity;
+        double dailyProfitLossPercentage = previousMarketValue != 0 ? (dailyProfitLoss / previousMarketValue) * 100 : 0.0;
+        double netProfitLoss = marketValue - totalNetCost;
+        double netProfitLossPercentage = totalNetCost != 0 ? (netProfitLoss / totalNetCost) * 100 : 0.0;
+
+        return new PositionSummaryResponse(
+                first.getName(),
+                first.getSymbol(),
+                first.getType(),
+                totalQuantity,
+                averagePrice,
+                currentPrice,
+                marketValue,
+                dailyProfitLoss,
+                dailyProfitLossPercentage,
+                netProfitLossPercentage,
+                netProfitLoss
         );
     }
 }

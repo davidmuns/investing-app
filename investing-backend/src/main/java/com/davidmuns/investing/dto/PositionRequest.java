@@ -8,6 +8,7 @@ import java.util.Date;
 public record PositionRequest(
         String name,
         String symbol,
+        String exchange,
         Double quantity,
         String type,
         Double price,

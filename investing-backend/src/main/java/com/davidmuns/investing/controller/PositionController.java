@@ -1,8 +1,6 @@
 package com.davidmuns.investing.controller;
 
 import com.davidmuns.investing.dto.*;
-import com.davidmuns.investing.entity.Position;
-import com.davidmuns.investing.service.InstrumentService;
 import com.davidmuns.investing.service.PositionService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +32,12 @@ public class PositionController {
     @ResponseStatus(HttpStatus.CREATED)
     public SearchResponse<PositionResponse> listByPortfolioID(@PathVariable Long portfolioId) {
         return positionService.findAllByPortfolioID(portfolioId);
+    }
+
+    @GetMapping("/{portfolioId}/summary")
+    @ResponseStatus(HttpStatus.OK)
+    public SearchResponse<PositionSummaryResponse> summaryByPortfolioId(@PathVariable Long portfolioId) {
+        return positionService.findSummaryByPortfolioId(portfolioId);
     }
 
     @DeleteMapping("/{id}")
