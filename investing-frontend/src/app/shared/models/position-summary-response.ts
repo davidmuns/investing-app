@@ -11,5 +11,5 @@ export interface PositionSummaryResponse {
   // dailyProfitLossPercentage: number;
   netProfitLossPercentage: number;
   netProfitLoss: number;
-  // portfolioId: number;
+  portfolioId: number;
 }

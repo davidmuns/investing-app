@@ -72,8 +72,8 @@ export class PortfoliosComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.reload();
-    this.reloadInstruments();
+    this.uploadPortfolios();
+    // this.reloadInstruments();
   }
 
   toggleActions(): void {
@@ -112,7 +112,8 @@ export class PortfoliosComponent implements OnInit {
   createPortfolio(newPortfolio: PortfolioRequest) {
     this.portfolioService.create(newPortfolio).subscribe({
       next: (p) => {
-        this.reload(p.id);
+        this.portfolios = [...this.portfolios, p];
+        this.setPortfolioTab(p.id);
         this.reloadInstruments();
         this.portfolioId = p.id;
         this.portfolioType = p.type;
@@ -129,10 +130,20 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
+  setPortfolioTab(createdId: number) {
+    if (createdId != null) {
+      const idx = this.portfolios.findIndex((p) => p.id === createdId);
+      this.selectedIndex = idx >= 0 ? idx : 0;
+    }
+    // this.setPortfolio();
+  }
+
   onInstrumentEmitted(instrument: InstrumentRequest): void {
     this.instrumentSvc.create(instrument, this.portfolioId).subscribe({
-      next: (data) => {
-        this.reloadInstruments();
+      next: (resp) => {
+        // console.log(this.instruments);
+        // this.reloadInstruments();
+        this.instruments = [...this.instruments, resp];
       },
       error: (err) => {
         console.log(err.error.message);
@@ -178,19 +189,10 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
-  reload(createdId?: number): void {
-    this.loading = true;
-    this.errorMsg = '';
-
+  uploadPortfolios(): void {
     this.portfolioService.list().subscribe({
-      next: (data) => {
-        this.portfolios = data.data;
-        if (createdId != null) {
-          const idx = this.portfolios.findIndex((p) => p.id === createdId);
-          this.selectedIndex = idx >= 0 ? idx : 0;
-        }
-        this.setPortfolio();
-        this.loading = false;
+      next: (resp) => {
+        this.portfolios = resp.data;
       },
       error: () => {
         this.errorMsg = 'No se pudo cargar la lista de carteras.';
@@ -249,14 +251,19 @@ export class PortfoliosComponent implements OnInit {
     }
     this.selectedIndex = i;
     this.portfolioType = this.portfolios[this.selectedIndex].type;
-    this.setPortfolio();
-    this.reloadInstruments();
+    this.portfolioId = this.portfolios[this.selectedIndex].id;
+    if (this.portfolioType === 'WATCHLIST') {
+      this.reloadInstruments();
+      return;
+    }
+    this.uploadPositions();
+    // this.reloadInstruments();
   }
 
-  private setPortfolio(): void {
-    const selected = this.portfolios?.[this.selectedIndex];
-    this.portfolioId = selected?.id ?? 0;
-    this.portfolioType = selected.type ?? '';
+  private uploadPositions(): void {
+    // const selected = this.portfolios?.[this.selectedIndex];
+    // this.portfolioId = selected?.id ?? 0;
+    // this.portfolioType = selected.type ?? '';
     this.listPositionsByPortfolioId(this.portfolioId);
     this.listPositionSummaryByPortfolioId(this.portfolioId);
   }
@@ -450,6 +457,7 @@ export class PortfoliosComponent implements OnInit {
     this.positionSvc.create(payload).subscribe({
       next: () => {
         this.listPositionsByPortfolioId(this.portfolioId);
+        this.listPositionSummaryByPortfolioId(this.portfolioId);
       },
       error: (err) => {
         console.error('Error al crear la posición', err);
