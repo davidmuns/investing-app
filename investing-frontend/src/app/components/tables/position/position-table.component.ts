@@ -13,6 +13,7 @@ import {
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { PositionResponse } from '@app/shared/models/position-response';
+import { PositionSummaryResponse } from '@app/shared/models/position-summary-response';
 
 export interface PositionRow extends PositionResponse {
   marketValue: number;
@@ -39,19 +40,36 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
     { def: 'totalProfitLossPercentage', label: '% B/P neto' },
     { def: 'totalProfitLoss', label: 'B/P neto' },
   ];
+  positionSummaryColumns = [
+    { def: 'name', label: 'Nombre' },
+    { def: 'symbol', label: 'Símbolo' },
+    { def: 'type', label: 'Tipo' },
+    { def: 'totalQuantity', label: 'Cantidad' },
+    { def: 'averagePrice', label: 'Precio medio' },
+    { def: 'currentPrice', label: 'Precio actual' },
+    { def: 'marketValue', label: 'Val. mercado' },
+    { def: 'dailyProfitLoss', label: 'B/P diario' },
+    { def: 'netProfitLossPercentage', label: '% B/P neto' },
+    { def: 'netProfitLoss', label: 'B/P neto' },
+  ];
 
-  displayedColumns = [...this.positionColumns.map((c) => c.def), 'actions'];
+  // displayedColumns = [...this.positionColumns.map((c) => c.def), 'actions'];
+  displayedColumns = [...this.positionSummaryColumns.map((c) => c.def), 'actions'];
 
   @Input() positions: PositionResponse[] = [];
+  @Input() positionsSummary: PositionSummaryResponse[] = [];
   @Output() positionDeleted = new EventEmitter<PositionResponse>();
 
-  dataSource = new MatTableDataSource<PositionRow>([]);
+  // dataSource = new MatTableDataSource<PositionRow>([]);
+
+  dataSource = new MatTableDataSource<PositionSummaryResponse>([]);
 
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(private _liveAnnouncer: LiveAnnouncer) {}
 
   ngOnInit(): void {
+    console.log(this.positionsSummary);
     this.setTableData();
   }
 
@@ -60,31 +78,35 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['positions']) {
+    if (changes['positionsSummary'] || changes['positions']) {
       this.setTableData();
     }
   }
 
   private setTableData(): void {
-    this.dataSource.data = this.positions.map((position) => {
-      const marketValue = position.close * position.quantity;
-
-      const totalProfitLoss = marketValue - position.netAmount;
-
-      const totalProfitLossPercentage = position.netAmount !== 0 ? (totalProfitLoss / position.netAmount) * 100 : 0;
-
-      const dailyProfitLoss =
-        position.previousClose != null ? (position.close - position.previousClose) * position.quantity : 0;
-
-      return {
-        ...position,
-        marketValue,
-        dailyProfitLoss,
-        totalProfitLoss,
-        totalProfitLossPercentage,
-      };
-    });
+    this.dataSource.data = this.positionsSummary;
   }
+
+  // private setTableData(): void {
+  //   this.dataSource.data = this.positions.map((position) => {
+  //     const marketValue = position.close * position.quantity;
+
+  //     const totalProfitLoss = marketValue - position.netAmount;
+
+  //     const totalProfitLossPercentage = position.netAmount !== 0 ? (totalProfitLoss / position.netAmount) * 100 : 0;
+
+  //     const dailyProfitLoss =
+  //       position.previousClose != null ? (position.close - position.previousClose) * position.quantity : 0;
+
+  //     return {
+  //       ...position,
+  //       marketValue,
+  //       dailyProfitLoss,
+  //       totalProfitLoss,
+  //       totalProfitLossPercentage,
+  //     };
+  //   });
+  // }
 
   announceSortChange(sortState: Sort): void {
     if (sortState.direction) {
@@ -99,7 +121,7 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
   }
 
   getValueStyle(columnDef: string, element: PositionRow): { [key: string]: string } {
-    const coloredColumns = ['dailyProfitLoss', 'totalProfitLoss', 'totalProfitLossPercentage'];
+    const coloredColumns = ['dailyProfitLoss', 'netProfitLoss', 'netProfitLossPercentage'];
 
     if (!coloredColumns.includes(columnDef)) {
       return {};

@@ -14,6 +14,7 @@ import { InstrumentRequest } from '@app/shared/models/instrument-request';
 import { PositionRequest } from '@app/shared/models/position-request';
 import { PositionService } from '@app/services/position.service';
 import { PositionResponse } from '@app/shared/models/position-response';
+import { PositionSummaryResponse } from '@app/shared/models/position-summary-response';
 type ApiError = { error?: string; message?: string };
 
 @Component({
@@ -41,10 +42,12 @@ export class PortfoliosComponent implements OnInit {
   portfolioType: string = '';
   instrumentSymbol: string = '';
   instrumentName: string = '';
+  instrumentExchange: string = '';
   positionFormVisible = false;
   positionFormEnabled = false;
   selectedInstrument: InstrumentResponse | null = null;
   positions: PositionResponse[] = [];
+  positionsSummary: PositionSummaryResponse[] = [];
   marketValue = 0;
   totalNetAmount = 0;
   totalProfitLossValue = 0;
@@ -255,6 +258,7 @@ export class PortfoliosComponent implements OnInit {
     this.portfolioId = selected?.id ?? 0;
     this.portfolioType = selected.type ?? '';
     this.listPositionsByPortfolioId(this.portfolioId);
+    this.listPositionSummaryByPortfolioId(this.portfolioId);
   }
 
   startEdit(i: number) {
@@ -358,6 +362,7 @@ export class PortfoliosComponent implements OnInit {
         this.positionForm.price = this.toInputNumber(data.close);
         this.instrumentSymbol = data.symbol;
         this.instrumentName = data.name;
+        this.instrumentExchange = data.exchange;
       },
       error: () => {
         alert('No se pudo recibir la cotización.');
@@ -435,6 +440,7 @@ export class PortfoliosComponent implements OnInit {
       portfolioId: this.portfolioId,
       type: this.positionForm.operation,
       date: this.positionForm.date,
+      exchange: this.instrumentExchange,
       quantity: this.parseLocalizedNumber(this.positionForm.quantity),
       price: this.parseLocalizedNumber(this.positionForm.price),
       fee: this.parseLocalizedNumber(this.positionForm.commission || '0'),
@@ -459,6 +465,17 @@ export class PortfoliosComponent implements OnInit {
         this.positions = resp.data;
         this.calculateTotalProfitLoss();
         this.calculateDailyProfitLoss();
+      },
+      error: (err) => {
+        console.error('Error al crear la posición', err);
+      },
+    });
+  }
+
+  listPositionSummaryByPortfolioId(id: number) {
+    this.positionSvc.listSummaryByPortfolioId(id).subscribe({
+      next: (resp) => {
+        this.positionsSummary = resp.data;
       },
       error: (err) => {
         console.error('Error al crear la posición', err);

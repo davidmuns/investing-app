@@ -265,6 +265,7 @@
         <!-- POSITIONS TABLE -->
         <app-position-table
           *ngIf="positions.length"
+          [positionsSummary]="positionsSummary"
           [positions]="positions"
           (positionDeleted)="onDeletePosition($event)"
         ></app-position-table>
