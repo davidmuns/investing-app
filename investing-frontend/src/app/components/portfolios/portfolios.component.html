@@ -11,7 +11,7 @@
       </button>
     </div>
     <div class="headerActions">
-      <button mat-button (click)="reloadInstruments()">
+      <button mat-button (click)="loadInstruments()">
         <mat-icon matTooltip="Actualizar precios">refresh</mat-icon>
       </button>
     </div>
@@ -126,7 +126,7 @@
         <app-search-instrument
           [portfolioType]="portfolioType"
           (searchFocused)="onInstrumentSearchFocus()"
-          (instrumentSelected)="onInstrumentSelected($event)"
+          (instrumentSelectedFromPositionPortfolio)="onInstrumentSelectedFromPositionPortfolio($event)"
           (instrumentEmitted)="onInstrumentEmitted($event)"
         ></app-search-instrument>
       </div>
@@ -240,7 +240,7 @@
       </form>
     </div>
   </div>
-
+  <!-- </div> -->
   <div *ngIf="!loading && !portfolios.length" class="hint">No hay carteras. Crea una con el botón “+”.</div>
 
   <ng-container *ngIf="isWatchlist; else positionTable">
@@ -250,7 +250,7 @@
         <!-- WATCHLIST TABLE -->
         <app-instrument-table
           *ngIf="instruments.length"
-          [instruments]="instruments"
+          [instruments]="portfolioInstruments"
           (instrumentDeleted)="onDeleteInstrument($event)"
         ></app-instrument-table>
       </mat-tab>
@@ -277,7 +277,7 @@
 </div>
 <!-- TEXT IF NO TABLE -->
 <div
-  *ngIf="!instruments.length && portfolioType === 'WATCHLIST'"
+  *ngIf="!instruments.length && portfolioType === WATCHLIST"
   class="panel"
   style="text-align: center; font-size: 17px"
 >
@@ -285,11 +285,7 @@
     Gestione su cartera aquí añadiendo acciones, bonos, materias primas, índices o monedas.
   </p>
 </div>
-<div
-  *ngIf="!positions.length && portfolioType === 'POSITIONS'"
-  class="panel"
-  style="text-align: center; font-size: 17px"
->
+<div *ngIf="!positions.length && portfolioType === POSITIONS" class="panel" style="text-align: center; font-size: 17px">
   <p style="color: rgb(114, 118, 118)">
     No tiene ninguna posición abierta. Vaya a Añadir posición para abrir una nueva posición.
   </p>
@@ -302,7 +298,7 @@
   <ng-container *ngFor="let p of portfolios; index as i">
     <button mat-menu-item (click)="selectTab(i)">
       <mat-icon>
-        {{ p.type === 'WATCHLIST' ? 'remove_red_eye' : 'business_center' }}
+        {{ p.type === WATCHLIST ? 'remove_red_eye' : 'business_center' }}
       </mat-icon>
       {{ p.name }}
     </button>

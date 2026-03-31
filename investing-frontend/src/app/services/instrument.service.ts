@@ -19,6 +19,10 @@ export class InstrumentService {
     return this.http.get<SearchResponse<InstrumentResponse>>(this.apiUrl);
   }
 
+  listByPortfolioId(id: number): Observable<SearchResponse<InstrumentResponse>> {
+    return this.http.get<SearchResponse<InstrumentResponse>>(this.apiUrl + '/' + id);
+  }
+
   create(req: InstrumentRequest, portfolioId: number): Observable<InstrumentResponse> {
     return this.http.post<InstrumentResponse>(this.apiUrl + '/' + portfolioId, req);
   }

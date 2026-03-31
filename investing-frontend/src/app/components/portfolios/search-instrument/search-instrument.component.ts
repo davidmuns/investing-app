@@ -6,6 +6,7 @@ import { debounceTime, map, Observable, of, switchMap } from 'rxjs';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { InstrumentRequest } from '@app/shared/models/instrument-request';
 import { InstrumentResponse } from '@app/shared/models/instrument-response';
+import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-search-instrument',
@@ -16,7 +17,7 @@ export class SearchInstrumentComponent implements OnInit {
   form = this.fb.control<string | InstrumentResponse>('', [Validators.minLength(1)]);
   @Output() instrumentEmitted = new EventEmitter<InstrumentRequest>();
   @Output() searchFocused = new EventEmitter<void>();
-  @Output() instrumentSelected = new EventEmitter<InstrumentResponse>();
+  @Output() instrumentSelectedFromPositionPortfolio = new EventEmitter<InstrumentResponse>();
   @Input() portfolioType = '';
   instruments: InstrumentResponse[] = [];
   filteredOptions!: Observable<InstrumentResponse[]>;
@@ -72,8 +73,8 @@ export class SearchInstrumentComponent implements OnInit {
 
   onInstrumentClicked(event: MatAutocompleteSelectedEvent): void {
     const instrument = event.option.value as InstrumentResponse;
-    if (this.portfolioType.endsWith('S')) {
-      this.instrumentSelected.emit(instrument);
+    if (this.portfolioType === environment.POSITION_PORTFOLIO) {
+      this.instrumentSelectedFromPositionPortfolio.emit(instrument);
       return;
     }
     this.instrumentEmitted.emit(instrument);

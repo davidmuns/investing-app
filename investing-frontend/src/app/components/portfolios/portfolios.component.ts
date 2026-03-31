@@ -15,6 +15,7 @@ import { PositionRequest } from '@app/shared/models/position-request';
 import { PositionService } from '@app/services/position.service';
 import { PositionResponse } from '@app/shared/models/position-response';
 import { PositionSummaryResponse } from '@app/shared/models/position-summary-response';
+import { environment } from '@env/environment';
 type ApiError = { error?: string; message?: string };
 
 @Component({
@@ -39,6 +40,7 @@ export class PortfoliosComponent implements OnInit {
   @ViewChild('nameInput') nameInput?: ElementRef<HTMLInputElement>;
   @ViewChildren('editInput') editInputs!: QueryList<ElementRef<HTMLInputElement>>;
   instruments: InstrumentResponse[] = [];
+  portfolioInstruments: InstrumentResponse[] = [];
   portfolioType: string = '';
   instrumentSymbol: string = '';
   instrumentName: string = '';
@@ -54,6 +56,8 @@ export class PortfoliosComponent implements OnInit {
   totalProfitLossPercentage = 0;
   dailyProfitLossValue = 0;
   dailyProfitLossPercentage = 0;
+  WATCHLIST = environment.WATCHLIST_PORTFOLIO;
+  POSITIONS = environment.POSITION_PORTFOLIO;
 
   positionForm = {
     operation: 'Compra',
@@ -72,8 +76,8 @@ export class PortfoliosComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.uploadPortfolios();
-    // this.reloadInstruments();
+    this.loadPortfolios();
+    this.loadInstruments();
   }
 
   toggleActions(): void {
@@ -91,7 +95,7 @@ export class PortfoliosComponent implements OnInit {
   }
 
   get isWatchlist(): boolean {
-    return this.portfolioType === 'WATCHLIST';
+    return this.portfolioType === this.WATCHLIST;
   }
 
   get isEmptyPortfolio(): boolean {
@@ -114,9 +118,10 @@ export class PortfoliosComponent implements OnInit {
       next: (p) => {
         this.portfolios = [...this.portfolios, p];
         this.setPortfolioTab(p.id);
-        this.reloadInstruments();
-        this.portfolioId = p.id;
-        this.portfolioType = p.type;
+        // this.filterPortfolioInstruments();
+        // this.reloadInstruments();
+        // this.portfolioId = p.id;
+        // this.portfolioType = p.type;
       },
       error: (err) => {
         if (err?.status === 409) {
@@ -144,6 +149,8 @@ export class PortfoliosComponent implements OnInit {
         // console.log(this.instruments);
         // this.reloadInstruments();
         this.instruments = [...this.instruments, resp];
+        // this.portfolioInstruments = this.instruments.filter((i) => i.portfolioId == this.portfolioId);
+        this.filterPortfolioInstruments();
       },
       error: (err) => {
         console.log(err.error.message);
@@ -151,10 +158,23 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
-  reloadInstruments(): void {
+  uploadInstrumentsByPortfolioId(id: number) {
+    this.instrumentSvc.listByPortfolioId(id).subscribe({
+      next: (resp) => {
+        this.instruments = resp.data;
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
+  }
+
+  loadInstruments(): void {
     this.instrumentSvc.list().subscribe({
       next: (data) => {
-        this.instruments = data.data.filter((i) => i.portfolioId == this.portfolioId);
+        // this.instruments = data.data.filter((i) => i.portfolioId == this.portfolioId);
+        this.instruments = data.data;
+        this.filterPortfolioInstruments();
       },
       error: (err) => {
         console.log(err);
@@ -167,6 +187,7 @@ export class PortfoliosComponent implements OnInit {
       next: () => {
         this.utilsSvc.showSnackBar(`Instrument ${instrument.name} deleted`, 3000);
         this.instruments = this.instruments.filter((i) => i.id !== instrument.id);
+        this.filterPortfolioInstruments();
       },
       error: (err) => {
         console.error('Error deleting instrument', err);
@@ -189,7 +210,7 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
-  uploadPortfolios(): void {
+  loadPortfolios(): void {
     this.portfolioService.list().subscribe({
       next: (resp) => {
         this.portfolios = resp.data;
@@ -216,7 +237,8 @@ export class PortfoliosComponent implements OnInit {
         this.portfolios = this.portfolios.filter((p) => p.id !== deletingId);
 
         if (this.portfolios.length === 0) {
-          const defaultPortfolio = { name: 'Mi cartera', type: 'WATCHLIST' } as PortfolioRequest;
+          // const defaultPortfolio = { name: 'Mi cartera', type: 'WATCHLIST' } as PortfolioRequest;
+          const defaultPortfolio = { name: 'Mi cartera', type: 'POSITIONS' } as PortfolioRequest;
           this.createPortfolio(defaultPortfolio);
           this.selectedIndex = 0;
           return;
@@ -252,15 +274,25 @@ export class PortfoliosComponent implements OnInit {
     this.selectedIndex = i;
     this.portfolioType = this.portfolios[this.selectedIndex].type;
     this.portfolioId = this.portfolios[this.selectedIndex].id;
-    if (this.portfolioType === 'WATCHLIST') {
-      this.reloadInstruments();
+
+    if (this.portfolioType === this.WATCHLIST) {
+      // this.portfolioInstruments = this.instruments.filter((i) => i.portfolioId == this.portfolioId);
+      this.filterPortfolioInstruments();
+      console.log(this.portfolioInstruments);
+      // this.uploadInstrumentsByPortfolioId(this.portfolioId);
+      // this.reloadInstruments();
       return;
     }
-    this.uploadPositions();
+    this.loadPositions();
     // this.reloadInstruments();
   }
 
-  private uploadPositions(): void {
+  filterPortfolioInstruments() {
+    this.portfolioInstruments = this.instruments.filter((i) => i.portfolioId == this.portfolioId);
+    // console.log(this.portfolioInstruments);
+  }
+
+  private loadPositions(): void {
     // const selected = this.portfolios?.[this.selectedIndex];
     // this.portfolioId = selected?.id ?? 0;
     // this.portfolioType = selected.type ?? '';
@@ -346,7 +378,7 @@ export class PortfoliosComponent implements OnInit {
   }
 
   onInstrumentSearchFocus(): void {
-    if (!this.portfolioType.endsWith('S')) return;
+    if (this.portfolioType === this.WATCHLIST) return;
     // Si ya hay un instrumento seleccionado, no vuelvas a deshabilitar el formulario
     if (this.selectedInstrument) return;
     this.positionFormVisible = true;
@@ -359,7 +391,7 @@ export class PortfoliosComponent implements OnInit {
     this.positionForm.commission = '';
   }
 
-  onInstrumentSelected(instrument: InstrumentResponse): void {
+  onInstrumentSelectedFromPositionPortfolio(instrument: InstrumentResponse): void {
     this.selectedInstrument = instrument;
     this.positionFormVisible = true;
     this.positionFormEnabled = true;
