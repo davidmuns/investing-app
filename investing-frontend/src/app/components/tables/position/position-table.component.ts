@@ -59,6 +59,7 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
   @Input() positions: PositionResponse[] = [];
   @Input() positionsSummary: PositionSummaryResponse[] = [];
   @Output() positionDeleted = new EventEmitter<PositionResponse>();
+  positionSelected: PositionSummaryResponse | null = null;
 
   // dataSource = new MatTableDataSource<PositionRow>([]);
 
@@ -81,6 +82,10 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
     if (changes['positionsSummary'] || changes['positions']) {
       this.setTableData();
     }
+  }
+
+  onRowClick(row: PositionSummaryResponse): void {
+    this.positionSelected = this.positionSelected?.symbol === row.symbol ? null : row;
   }
 
   private setTableData(): void {
