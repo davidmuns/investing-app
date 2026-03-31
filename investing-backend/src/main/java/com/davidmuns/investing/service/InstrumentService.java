@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,7 @@ public class InstrumentService {
     private final InstrumentRepository instrumentRepository;
     private final PortfolioRepository portfolioRepository;
     private final TwelveDataClient twelveDataClient;
+    private static final String PORTFOLIO_NOT_FOUND_MESSAGE = "Portfolio not found with id: ";
 
     public InstrumentService(InstrumentRepository instrumentRepository, PortfolioRepository portfolioRepository, TwelveDataClient twelveDataClient) {
         this.instrumentRepository = instrumentRepository;
@@ -31,8 +33,7 @@ public class InstrumentService {
 
     @Transactional
     public InstrumentResponse create(InstrumentRequest req, Long portfolioId) {
-        Portfolio portfolio = portfolioRepository.findById(portfolioId)
-                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+        Portfolio portfolio = checkIfPortfolioExistsOrElseThrowNotFoundException(portfolioId);
         String name = normalize(req.name());
         String symbol = normalize(req.symbol().toUpperCase());
         String type = normalize(req.type());
@@ -59,6 +60,17 @@ public class InstrumentService {
         return new SearchResponse<>(dtoList, dtoList.size());
     }
 
+    public SearchResponse<InstrumentResponse> findAllByPortfolioId(Long portfolioId) {
+        Portfolio portfolio = checkIfPortfolioExistsOrElseThrowNotFoundException(portfolioId);
+        List<Instrument> instruments = instrumentRepository.findByPortfolio(portfolio)
+                .orElse(Collections.emptyList());
+        List<InstrumentResponse> resp = instruments
+                .stream()
+                .map(this::toResponse)
+                .toList();
+        return new SearchResponse<>(resp, instruments.size());
+    }
+
     public SearchResponse<InstrumentResponse> search(String query) {
 
         if (query == null || query.trim().isEmpty()) {
@@ -79,6 +91,14 @@ public class InstrumentService {
                         .collect(Collectors.toList());
 
         return new SearchResponse<>(dtoList, dtoList.size());
+    }
+
+    private Portfolio checkIfPortfolioExistsOrElseThrowNotFoundException(Long portfolioId) {
+        return portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> {
+                    log.error("{}{}", PORTFOLIO_NOT_FOUND_MESSAGE, portfolioId);
+                    return new NotFoundException(portfolioId, PORTFOLIO_NOT_FOUND_MESSAGE);
+                });
     }
 
     private String normalize(String value) {

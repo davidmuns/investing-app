@@ -1,6 +1,8 @@
 package com.davidmuns.investing.repo;
 
 import com.davidmuns.investing.entity.Instrument;
+import com.davidmuns.investing.entity.Portfolio;
+import com.davidmuns.investing.entity.Position;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,5 +24,6 @@ public interface InstrumentRepository extends JpaRepository<Instrument, Long> {
     )
     List<Instrument> searchByQuery(@Param("query") String query, Pageable pageable);
     void deleteByPortfolioId(Long portfolioId);
+    Optional<List<Instrument>>findByPortfolio(Portfolio portfolio);
     Optional<Instrument> findBySymbolIgnoreCaseAndExchangeIgnoreCase(String symbol, String exchange);
 }
