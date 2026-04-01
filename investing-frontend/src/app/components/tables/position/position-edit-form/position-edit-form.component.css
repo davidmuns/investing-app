@@ -222,13 +222,28 @@
   pointer-events: none;
 }
 
-.add-position.is-disabled .add-position-form {
-  pointer-events: none;
-  opacity: 0.4;
+.add-position.is-readonly .native-date-input,
+.add-position.is-readonly .new-input,
+.add-position.is-readonly .form-control {
+  background-color: #f3f3f3;
+  color: #9b9b9b;
+  border: 1px solid #d7d7d7;
+  box-shadow: none;
+  cursor: default;
 }
 
-.add-position.is-disabled .add-position-form input,
-.add-position.is-disabled .add-position-form select,
-.add-position.is-disabled .add-position-form button {
-  cursor: not-allowed;
+.add-position.is-readonly .input-group,
+.add-position.is-readonly .calendar-date-picker {
+  opacity: 0.8;
+}
+
+.add-position.is-readonly .cur-container,
+.add-position.is-readonly .date-picker-icon-wrap {
+  background-color: #f3f3f3;
+  color: #b0b0b0;
+  border-color: #d7d7d7;
+}
+
+.add-position.is-readonly label {
+  color: #8f8f8f;
 }

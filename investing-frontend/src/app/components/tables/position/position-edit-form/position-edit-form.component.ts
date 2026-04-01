@@ -1,64 +1,149 @@
-import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { PositionService } from '@app/services/position.service';
 import { PositionResponse } from '@app/shared/models/position-response';
+
+type FormMode = 'view' | 'edit' | 'close';
+
+type PositionFormModel = {
+  id: number;
+  symbol: string;
+  date: string;
+  quantity: string;
+  price: string;
+  commission: string;
+  mode: FormMode;
+  original: {
+    date: string;
+    quantity: string;
+    price: string;
+    commission: string;
+  };
+};
 
 @Component({
   selector: 'app-position-edit-form',
   templateUrl: './position-edit-form.component.html',
   styleUrls: ['./position-edit-form.component.css'],
 })
-export class PositionEditFormComponent implements OnInit {
+export class PositionEditFormComponent implements OnChanges {
   @Input() positions: PositionResponse[] = [];
-  editPosition = false;
-  positionForms: {
-    id: number;
-    symbol: string;
-    date: string;
-    quantity: string;
-    price: string;
-    commission: string;
-  }[] = [];
+
+  positionForms: PositionFormModel[] = [];
 
   constructor(private positionSvc: PositionService) {}
 
-  ngOnInit(): void {}
-
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['positionsSummary'] || changes['positions']) {
+    if (changes['positions']) {
       this.setForms();
     }
   }
 
   setForms(): void {
-    this.positionForms = this.positions.map((p) => ({
-      id: p.id,
-      symbol: p.symbol,
-      date: p.createdAt,
-      quantity: this.toInputNumber(p.quantity),
-      price: this.toInputNumber(p.price),
-      commission: this.toInputNumber(p.fee),
-    }));
+    this.positionForms = this.positions.map((p) => {
+      const date = p.createdAt;
+      const quantity = this.toInputNumber(p.quantity);
+      const price = this.toInputNumber(p.price);
+      const commission = this.toInputNumber(p.fee);
+
+      return {
+        id: p.id,
+        symbol: p.symbol,
+        date,
+        quantity,
+        price,
+        commission,
+        mode: 'view',
+        original: {
+          date,
+          quantity,
+          price,
+          commission,
+        },
+      };
+    });
   }
 
-  submitPosition(form: any) {
-    this.editPosition = !this.editPosition;
-    console.log(form);
+  isViewMode(form: PositionFormModel): boolean {
+    return form.mode === 'view';
   }
 
-  canSubmitPosition(form: any): boolean {
-    return !!form.date && !!form.quantity && !!form.price;
+  isEditMode(form: PositionFormModel): boolean {
+    return form.mode === 'edit';
   }
 
-  onDeleteClicked(position: PositionResponse) {
-    this.positionSvc.deleteById(position.id).subscribe({
+  isCloseMode(form: PositionFormModel): boolean {
+    return form.mode === 'close';
+  }
+
+  enableEditMode(form: PositionFormModel): void {
+    form.mode = 'edit';
+  }
+
+  enableCloseMode(form: PositionFormModel): void {
+    form.mode = 'close';
+  }
+
+  cancel(form: PositionFormModel): void {
+    form.date = form.original.date;
+    form.quantity = form.original.quantity;
+    form.price = form.original.price;
+    form.commission = form.original.commission;
+    form.mode = 'view';
+  }
+
+  saveChanges(form: PositionFormModel): void {
+    if (!this.canSubmitPosition(form)) return;
+
+    const payload = {
+      id: form.id,
+      createdAt: form.date,
+      quantity: this.toNumber(form.quantity),
+      price: this.toNumber(form.price),
+      fee: this.toNumber(form.commission),
+    };
+
+    console.log('Guardar cambios', payload);
+
+    form.original = {
+      date: form.date,
+      quantity: form.quantity,
+      price: form.price,
+      commission: form.commission,
+    };
+
+    form.mode = 'view';
+
+    // cuando tengas endpoint update:
+    // this.positionSvc.update(payload).subscribe({
+    //   next: () => {
+    //     form.original = {
+    //       date: form.date,
+    //       quantity: form.quantity,
+    //       price: form.price,
+    //       commission: form.commission,
+    //     };
+    //     form.mode = 'view';
+    //   },
+    //   error: () => console.log('Error al guardar cambios'),
+    // });
+  }
+
+  closePosition(form: PositionFormModel): void {
+    if (!this.canSubmitPosition(form)) return;
+
+    this.positionSvc.deleteById(form.id).subscribe({
       next: () => {
-        console.log('Se ha eliminado la posicion ', position.name);
-        this.positions = this.positions.filter((p) => p.id == position.id);
+        this.positionForms = this.positionForms.filter((f) => f.id !== form.id);
+        this.positions = this.positions.filter((p) => p.id !== form.id);
       },
       error: () => {
         console.log('Error al eliminar posición');
       },
     });
+  }
+
+  canSubmitPosition(form: PositionFormModel): boolean {
+    return !!form.date && !!form.quantity && !!form.price;
   }
 
   blockInvalidNumberKey(event: KeyboardEvent): void {
@@ -76,32 +161,20 @@ export class PositionEditFormComponent implements OnInit {
       'End',
     ];
 
-    // Permitir atajos tipo Ctrl+C, Ctrl+V, Ctrl+A, Ctrl+X
-    if (event.ctrlKey || event.metaKey) {
-      return;
-    }
+    if (event.ctrlKey || event.metaKey) return;
+    if (allowedControlKeys.includes(event.key)) return;
+    if (/^\d$/.test(event.key)) return;
+    if (event.key === ',') return;
 
-    // Permitir teclas de control
-    if (allowedControlKeys.includes(event.key)) {
-      return;
-    }
-
-    // Permitir números
-    if (/^\d$/.test(event.key)) {
-      return;
-    }
-
-    // Permitir coma
-    if (event.key === ',') {
-      return;
-    }
-
-    // Bloquear todo lo demás, incluido el punto
     event.preventDefault();
   }
 
   private toInputNumber(value: number | string | null | undefined): string {
     if (value === null || value === undefined) return '';
     return String(value).replace('.', ',');
+  }
+
+  private toNumber(value: string): number {
+    return Number(value.replace(',', '.'));
   }
 }
