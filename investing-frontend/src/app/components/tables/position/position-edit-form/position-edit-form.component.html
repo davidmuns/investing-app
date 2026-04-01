@@ -1,1 +1,86 @@
-<p>position-edit-form works!</p>
+<!-- <ng-container *ngFor="let position of positions">
+  <div class="position">
+    <p>Símbolo: {{ position.symbol }}</p>
+    <p>Fecha: {{ position.createdAt }}</p>
+    <p>Cantidad: {{ position.quantity }}</p>
+    <p>Precio:{{ position.price }}</p>
+    <p>Comisión:{{ position.fee }}</p>
+    <button mat-icon-button color="warn" (click)="onDeleteClicked(position); $event.stopPropagation()">
+      <mat-icon matTooltip="Eliminar">delete</mat-icon>
+    </button>
+  </div>
+</ng-container> -->
+<ng-container *ngFor="let form of positionForms">
+  <div class="add-position is-open">
+    <div class="position-details"></div>
+    <form class="add-position-form" (ngSubmit)="submitPosition(form)" #positionNgForm="ngForm">
+      <div class="field field-date">
+        <label [for]="'position-date-' + form.id">Fecha:</label>
+        <div class="calendar-date-picker">
+          <input
+            type="date"
+            [id]="'position-date-' + form.id"
+            [name]="'positionDate-' + form.id"
+            class="native-date-input"
+            [(ngModel)]="form.date"
+            [disabled]="!editPosition"
+          />
+          <div class="date-picker-icon-wrap" aria-hidden="true">
+            <span class="date-picker-icon"></span>
+          </div>
+        </div>
+      </div>
+      <div class="field field-amount">
+        <label [for]="'amount-' + form.id">Cantidad:</label>
+        <input
+          [id]="'amount-' + form.id"
+          [name]="'quantity-' + form.id"
+          type="text"
+          class="new-input input-text-box amount"
+          [(ngModel)]="form.quantity"
+          (keydown)="blockInvalidNumberKey($event)"
+          [disabled]="!editPosition"
+        />
+      </div>
+      <div class="field field-price">
+        <label [for]="'price-' + form.id">Precio:</label>
+        <input
+          [id]="'price-' + form.id"
+          [name]="'price-' + form.id"
+          type="text"
+          class="new-input input-text-box"
+          [(ngModel)]="form.price"
+          (keydown)="blockInvalidNumberKey($event)"
+          [disabled]="!editPosition"
+        />
+      </div>
+      <div class="field field-commission">
+        <label [for]="'commission-' + form.id">Comisión:</label>
+        <div class="input-group input-group-enabled">
+          <input
+            [id]="'commission-' + form.id"
+            [name]="'commission-' + form.id"
+            type="text"
+            class="form-control form-control-enabled"
+            [(ngModel)]="form.commission"
+            (keydown)="blockInvalidNumberKey($event)"
+            [disabled]="!editPosition"
+          />
+          <span class="cur-container">€</span>
+        </div>
+      </div>
+      <button mat-button *ngIf="!editPosition" type="submit" [disabled]="!canSubmitPosition(form)">
+        <mat-icon>done</mat-icon>
+        Cerrar posición
+      </button>
+      <button *ngIf="editPosition" type="submit" class="add-position-btn" [disabled]="!canSubmitPosition(form)">
+        Cerrar posición
+      </button>
+      <button mat-button *ngIf="!editPosition" type="submit" [disabled]="!canSubmitPosition(form)">
+        <mat-icon>create</mat-icon>
+        Editar posición
+      </button>
+      <button mat-button *ngIf="editPosition" type="submit" [disabled]="!canSubmitPosition(form)">Cancelar</button>
+    </form>
+  </div>
+</ng-container>

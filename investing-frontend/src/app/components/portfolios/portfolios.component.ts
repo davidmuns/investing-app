@@ -278,7 +278,6 @@ export class PortfoliosComponent implements OnInit {
     if (this.portfolioType === this.WATCHLIST) {
       // this.portfolioInstruments = this.instruments.filter((i) => i.portfolioId == this.portfolioId);
       this.filterPortfolioInstruments();
-      console.log(this.portfolioInstruments);
       // this.uploadInstrumentsByPortfolioId(this.portfolioId);
       // this.reloadInstruments();
       return;

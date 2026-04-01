@@ -54,9 +54,11 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
   ];
 
   // displayedColumns = [...this.positionColumns.map((c) => c.def), 'actions'];
-  displayedColumns = [...this.positionSummaryColumns.map((c) => c.def), 'actions'];
+  // displayedColumns = [...this.positionSummaryColumns.map((c) => c.def), 'actions'];
+  displayedColumns = [...this.positionSummaryColumns.map((c) => c.def)];
 
   @Input() positions: PositionResponse[] = [];
+  filteredPositions: PositionResponse[] = [];
   @Input() positionsSummary: PositionSummaryResponse[] = [];
   @Output() positionDeleted = new EventEmitter<PositionResponse>();
   positionSelected: PositionSummaryResponse | null = null;
@@ -70,7 +72,7 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
   constructor(private _liveAnnouncer: LiveAnnouncer) {}
 
   ngOnInit(): void {
-    console.log(this.positionsSummary);
+    // console.log(this.positionsSummary);
     this.setTableData();
   }
 
@@ -86,6 +88,7 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
 
   onRowClick(row: PositionSummaryResponse): void {
     this.positionSelected = this.positionSelected?.symbol === row.symbol ? null : row;
+    this.filteredPositions = this.positions.filter((p) => p.symbol == row.symbol);
   }
 
   private setTableData(): void {

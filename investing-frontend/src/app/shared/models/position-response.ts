@@ -5,7 +5,7 @@ export interface PositionResponse {
   type: string;
   fee: number;
   price: number;
-  date: string;
+  createdAt: string;
   quantity: number;
   portfolioId: number;
   close: number;
