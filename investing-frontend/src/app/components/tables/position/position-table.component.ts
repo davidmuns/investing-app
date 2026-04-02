@@ -28,18 +28,6 @@ export interface PositionRow extends PositionResponse {
   styleUrls: ['./position-table.component.css'],
 })
 export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges {
-  positionColumns = [
-    { def: 'name', label: 'Nombre' },
-    { def: 'symbol', label: 'Símbolo' },
-    { def: 'type', label: 'Tipo' },
-    { def: 'quantity', label: 'Cantidad' },
-    { def: 'price', label: 'Precio medio' },
-    { def: 'close', label: 'Precio actual' },
-    { def: 'marketValue', label: 'Val. mercado' },
-    { def: 'dailyProfitLoss', label: 'B/P diario' },
-    { def: 'totalProfitLossPercentage', label: '% B/P neto' },
-    { def: 'totalProfitLoss', label: 'B/P neto' },
-  ];
   positionSummaryColumns = [
     { def: 'name', label: 'Nombre' },
     { def: 'symbol', label: 'Símbolo' },
@@ -53,8 +41,6 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
     { def: 'netProfitLoss', label: 'B/P neto' },
   ];
 
-  // displayedColumns = [...this.positionColumns.map((c) => c.def), 'actions'];
-  // displayedColumns = [...this.positionSummaryColumns.map((c) => c.def), 'actions'];
   displayedColumns = [...this.positionSummaryColumns.map((c) => c.def)];
 
   @Input() positions: PositionResponse[] = [];
@@ -63,17 +49,12 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
   @Output() positionDeleted = new EventEmitter<PositionResponse>();
   @Output() positionsChanged = new EventEmitter<void>();
   positionSelected: PositionSummaryResponse | null = null;
-
-  // dataSource = new MatTableDataSource<PositionRow>([]);
-
   dataSource = new MatTableDataSource<PositionSummaryResponse>([]);
-
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(private _liveAnnouncer: LiveAnnouncer) {}
 
   ngOnInit(): void {
-    // console.log(this.positionsSummary);
     this.setTableData();
   }
 
@@ -118,27 +99,6 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
   private setTableData(): void {
     this.dataSource.data = this.positionsSummary;
   }
-
-  // private setTableData(): void {
-  //   this.dataSource.data = this.positions.map((position) => {
-  //     const marketValue = position.close * position.quantity;
-
-  //     const totalProfitLoss = marketValue - position.netAmount;
-
-  //     const totalProfitLossPercentage = position.netAmount !== 0 ? (totalProfitLoss / position.netAmount) * 100 : 0;
-
-  //     const dailyProfitLoss =
-  //       position.previousClose != null ? (position.close - position.previousClose) * position.quantity : 0;
-
-  //     return {
-  //       ...position,
-  //       marketValue,
-  //       dailyProfitLoss,
-  //       totalProfitLoss,
-  //       totalProfitLossPercentage,
-  //     };
-  //   });
-  // }
 
   announceSortChange(sortState: Sort): void {
     if (sortState.direction) {
