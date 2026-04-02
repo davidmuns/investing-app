@@ -242,6 +242,7 @@
   </div>
   <div *ngIf="!loading && !portfolios.length" class="hint">No hay carteras. Crea una con el botón “+”.</div>
 
+  <!-- TABLES -->
   <ng-container *ngIf="isWatchlist; else positionTable">
     <mat-tab-group mat-align-tabs="start" animationDuration="500ms">
       <!-- RESUMEN TAB -->
