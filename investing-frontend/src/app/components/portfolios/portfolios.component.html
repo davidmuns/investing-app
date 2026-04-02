@@ -268,7 +268,10 @@
           [positionsSummary]="positionsSummary"
           [positions]="positions"
           (positionDeleted)="onDeletePosition($event)"
-        ></app-position-table>
+          (positionsChanged)="reloadPositionsData()"
+        >
+          >
+        </app-position-table>
       </mat-tab>
       <!-- TRANSACCIONS TAB -->
       <mat-tab label="Transacciones"></mat-tab>

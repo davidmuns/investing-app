@@ -1,6 +1,7 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { PositionService } from '@app/services/position.service';
 import { PositionResponse } from '@app/shared/models/position-response';
+import { PositionSummaryResponse } from '@app/shared/models/position-summary-response';
 
 type FormMode = 'view' | 'edit' | 'close';
 
@@ -27,6 +28,8 @@ type PositionFormModel = {
 })
 export class PositionEditFormComponent implements OnChanges {
   @Input() positions: PositionResponse[] = [];
+  @Input() positionsSummary: PositionSummaryResponse[] = [];
+  @Output() positionsChanged = new EventEmitter<void>();
 
   positionForms: PositionFormModel[] = [];
 
@@ -133,8 +136,7 @@ export class PositionEditFormComponent implements OnChanges {
 
     this.positionSvc.deleteById(form.id).subscribe({
       next: () => {
-        this.positionForms = this.positionForms.filter((f) => f.id !== form.id);
-        this.positions = this.positions.filter((p) => p.id !== form.id);
+        this.positionsChanged.emit();
       },
       error: () => {
         console.log('Error al eliminar posición');

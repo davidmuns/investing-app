@@ -498,6 +498,11 @@ export class PortfoliosComponent implements OnInit {
     this.positionFormVisible = false;
   }
 
+  reloadPositionsData(): void {
+    this.listPositionsByPortfolioId(this.portfolioId);
+    this.listPositionSummaryByPortfolioId(this.portfolioId);
+  }
+
   listPositionsByPortfolioId(id: number) {
     this.positionSvc.listByPortfolioId(id).subscribe({
       next: (resp) => {

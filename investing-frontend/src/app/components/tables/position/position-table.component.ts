@@ -61,6 +61,7 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
   filteredPositions: PositionResponse[] = [];
   @Input() positionsSummary: PositionSummaryResponse[] = [];
   @Output() positionDeleted = new EventEmitter<PositionResponse>();
+  @Output() positionsChanged = new EventEmitter<void>();
   positionSelected: PositionSummaryResponse | null = null;
 
   // dataSource = new MatTableDataSource<PositionRow>([]);
@@ -83,7 +84,30 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['positionsSummary'] || changes['positions']) {
       this.setTableData();
+      this.restoreExpandedRow();
     }
+  }
+
+  private restoreExpandedRow(): void {
+    if (!this.positionSelected) {
+      this.filteredPositions = [];
+      return;
+    }
+
+    const updatedSelected = this.positionsSummary.find((p) => p.symbol === this.positionSelected?.symbol);
+
+    if (!updatedSelected) {
+      this.positionSelected = null;
+      this.filteredPositions = [];
+      return;
+    }
+
+    this.positionSelected = updatedSelected;
+    this.filteredPositions = this.positions.filter((p) => p.symbol === updatedSelected.symbol);
+  }
+
+  onPositionsChanged(): void {
+    this.positionsChanged.emit();
   }
 
   onRowClick(row: PositionSummaryResponse): void {
