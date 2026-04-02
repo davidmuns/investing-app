@@ -46,8 +46,7 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
   @Input() positions: PositionResponse[] = [];
   filteredPositions: PositionResponse[] = [];
   @Input() positionsSummary: PositionSummaryResponse[] = [];
-  @Output() positionDeleted = new EventEmitter<PositionResponse>();
-  @Output() positionsChanged = new EventEmitter<void>();
+  @Output() deletePosition = new EventEmitter<number>();
   positionSelected: PositionSummaryResponse | null = null;
   dataSource = new MatTableDataSource<PositionSummaryResponse>([]);
   @ViewChild(MatSort) sort!: MatSort;
@@ -87,8 +86,8 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
     this.filteredPositions = this.positions.filter((p) => p.symbol === updatedSelected.symbol);
   }
 
-  onPositionsChanged(): void {
-    this.positionsChanged.emit();
+  onDeletePosition(event: number) {
+    this.deletePosition.emit(event);
   }
 
   onRowClick(row: PositionSummaryResponse): void {
@@ -106,10 +105,6 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
     } else {
       this._liveAnnouncer.announce('Sorting cleared');
     }
-  }
-
-  onDeleteClicked(position: PositionResponse): void {
-    this.positionDeleted.emit(position);
   }
 
   getValueStyle(columnDef: string, element: PositionRow): { [key: string]: string } {

@@ -135,6 +135,42 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
+  onDeletePortfolio(): void {
+    const selected = this.portfolios[this.selectedIndex];
+    if (!selected) return;
+
+    const ok = confirm(`¿Eliminar la cartera "${selected.name}"?`);
+    if (!ok) return;
+
+    const deletingId = selected.id;
+
+    this.portfolioService.delete(deletingId).subscribe({
+      next: () => {
+        const deletedIndex = this.portfolios.findIndex((p) => p.id === deletingId);
+        this.portfolios = this.portfolios.filter((p) => p.id !== deletingId);
+
+        if (this.portfolios.length === 0) {
+          // const defaultPortfolio = { name: 'Mi cartera', type: 'WATCHLIST' } as PortfolioRequest;
+          const defaultPortfolio = { name: 'Mi cartera', type: 'POSITIONS' } as PortfolioRequest;
+          this.createPortfolio(defaultPortfolio);
+          this.selectedIndex = 0;
+          return;
+        }
+
+        // Mantener “posición” si existe; si borraste la última, selecciona la nueva última
+        this.selectedIndex = Math.min(this.selectedIndex, this.portfolios.length - 1);
+
+        // Si borraste una tab anterior a la seleccionada, desplaza el índice
+        if (deletedIndex >= 0 && deletedIndex < this.selectedIndex) {
+          this.selectedIndex = this.selectedIndex - 1;
+        }
+      },
+      error: () => {
+        this.errorMsg = 'No se pudo eliminar la cartera.';
+      },
+    });
+  }
+
   setPortfolioTab(createdId: number) {
     if (createdId != null) {
       const idx = this.portfolios.findIndex((p) => p.id === createdId);
@@ -196,20 +232,6 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
-  onDeletePosition(position: PositionResponse): void {
-    this.positionSvc.deleteById(position.id).subscribe({
-      next: () => {
-        this.utilsSvc.showSnackBar(`Position ${position.name} deleted`, 3000);
-        this.positions = this.positions.filter((i) => i.id !== position.id);
-        this.listPositionsByPortfolioId(this.portfolioId);
-      },
-      error: (err) => {
-        console.error('Error deleting position', err);
-        this.utilsSvc.showSnackBar(`Could not delete position ${position.name}`, 3000);
-      },
-    });
-  }
-
   loadPortfolios(): void {
     this.portfolioService.list().subscribe({
       next: (resp) => {
@@ -218,42 +240,6 @@ export class PortfoliosComponent implements OnInit {
       error: () => {
         this.errorMsg = 'No se pudo cargar la lista de carteras.';
         this.loading = false;
-      },
-    });
-  }
-
-  onDeletePortfolio(): void {
-    const selected = this.portfolios[this.selectedIndex];
-    if (!selected) return;
-
-    const ok = confirm(`¿Eliminar la cartera "${selected.name}"?`);
-    if (!ok) return;
-
-    const deletingId = selected.id;
-
-    this.portfolioService.delete(deletingId).subscribe({
-      next: () => {
-        const deletedIndex = this.portfolios.findIndex((p) => p.id === deletingId);
-        this.portfolios = this.portfolios.filter((p) => p.id !== deletingId);
-
-        if (this.portfolios.length === 0) {
-          // const defaultPortfolio = { name: 'Mi cartera', type: 'WATCHLIST' } as PortfolioRequest;
-          const defaultPortfolio = { name: 'Mi cartera', type: 'POSITIONS' } as PortfolioRequest;
-          this.createPortfolio(defaultPortfolio);
-          this.selectedIndex = 0;
-          return;
-        }
-
-        // Mantener “posición” si existe; si borraste la última, selecciona la nueva última
-        this.selectedIndex = Math.min(this.selectedIndex, this.portfolios.length - 1);
-
-        // Si borraste una tab anterior a la seleccionada, desplaza el índice
-        if (deletedIndex >= 0 && deletedIndex < this.selectedIndex) {
-          this.selectedIndex = this.selectedIndex - 1;
-        }
-      },
-      error: () => {
-        this.errorMsg = 'No se pudo eliminar la cartera.';
       },
     });
   }
@@ -498,9 +484,20 @@ export class PortfoliosComponent implements OnInit {
     this.positionFormVisible = false;
   }
 
-  reloadPositionsData(): void {
-    this.listPositionsByPortfolioId(this.portfolioId);
-    this.listPositionSummaryByPortfolioId(this.portfolioId);
+  onDeletePosition(id: number) {
+    const position = this.positions.find((p) => p.id === id);
+    this.positionSvc.deleteById(id).subscribe({
+      next: () => {
+        this.positions = this.positions.filter((i) => i.id !== id);
+        this.listPositionsByPortfolioId(this.portfolioId);
+        this.listPositionSummaryByPortfolioId(this.portfolioId);
+        this.utilsSvc.showSnackBar(`Position ${position?.name} deleted`, 3000);
+      },
+      error: (err) => {
+        console.error('Error deleting position', err);
+        this.utilsSvc.showSnackBar(`Could not delete position ${position?.name}`, 3000);
+      },
+    });
   }
 
   listPositionsByPortfolioId(id: number) {

@@ -30,6 +30,7 @@ export class PositionEditFormComponent implements OnChanges {
   @Input() positions: PositionResponse[] = [];
   @Input() positionsSummary: PositionSummaryResponse[] = [];
   @Output() positionsChanged = new EventEmitter<void>();
+  @Output() deletePosition = new EventEmitter<number>();
 
   positionForms: PositionFormModel[] = [];
 
@@ -133,15 +134,7 @@ export class PositionEditFormComponent implements OnChanges {
 
   closePosition(form: PositionFormModel): void {
     if (!this.canSubmitPosition(form)) return;
-
-    this.positionSvc.deleteById(form.id).subscribe({
-      next: () => {
-        this.positionsChanged.emit();
-      },
-      error: () => {
-        console.log('Error al eliminar posición');
-      },
-    });
+    this.deletePosition.emit(form.id);
   }
 
   canSubmitPosition(form: PositionFormModel): boolean {

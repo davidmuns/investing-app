@@ -267,11 +267,8 @@
           *ngIf="positions.length"
           [positionsSummary]="positionsSummary"
           [positions]="positions"
-          (positionDeleted)="onDeletePosition($event)"
-          (positionsChanged)="reloadPositionsData()"
-        >
-          >
-        </app-position-table>
+          (deletePosition)="onDeletePosition($event)"
+        ></app-position-table>
       </mat-tab>
       <!-- TRANSACCIONS TAB -->
       <mat-tab label="Transacciones"></mat-tab>
