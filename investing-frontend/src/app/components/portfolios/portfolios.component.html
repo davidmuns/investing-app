@@ -83,37 +83,12 @@
     </button>
   </div>
 
-  <!-- Position summary container -->
-  <div *ngIf="!isWatchlist" class="positionSummary">
-    <div class="summaryItem">
-      <label>Val. mercado:</label>
-      <span>{{ marketValue | number: '1.1-2' }} $</span>
-    </div>
-    <div class="summaryItem">
-      <label>B/P posic. abiertas:</label>
-      <span *ngIf="totalProfitLossValue == 0" style="color: black">
-        {{ totalProfitLossValue | number: '1.1-2' }} $ / {{ totalProfitLossPercentage | number: '1.1-2' }}%
-      </span>
-      <span *ngIf="totalProfitLossValue < 0" style="color: red">
-        {{ totalProfitLossValue | number: '1.1-2' }} $ / {{ totalProfitLossPercentage | number: '1.1-2' }}%
-      </span>
-      <span *ngIf="totalProfitLossValue > 0" style="color: green">
-        {{ totalProfitLossValue | number: '1.1-2' }} $ / {{ totalProfitLossPercentage | number: '1.1-2' }}%
-      </span>
-    </div>
-    <div class="summaryItem">
-      <label>B/P diario:</label>
-      <span *ngIf="dailyProfitLossValue == 0" style="color: black">
-        {{ dailyProfitLossValue | number: '1.1-2' }} $ / {{ dailyProfitLossPercentage | number: '1.1-2' }}%
-      </span>
-      <span *ngIf="dailyProfitLossValue < 0" style="color: red">
-        {{ dailyProfitLossValue | number: '1.1-2' }} $ / {{ dailyProfitLossPercentage | number: '1.1-2' }}%
-      </span>
-      <span *ngIf="dailyProfitLossValue > 0" style="color: green">
-        {{ dailyProfitLossValue | number: '1.1-2' }} $ / {{ dailyProfitLossPercentage | number: '1.1-2' }}%
-      </span>
-    </div>
-  </div>
+  <!-- Position summary panel -->
+  <app-position-summary-panel
+    *ngIf="!isWatchlist"
+    [positions]="positions"
+    [positionsSummary]="positionsSummary"
+  ></app-position-summary-panel>
 
   <!-- Search bar -->
   <div *ngIf="!loading && portfolios.length" class="panel">

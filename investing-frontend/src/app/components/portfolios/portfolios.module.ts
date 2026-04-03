@@ -7,9 +7,10 @@ import { SearchInstrumentComponent } from './search-instrument/search-instrument
 import { LayoutModule } from '@app/layout/layout.module';
 import { TableModule } from '../tables/table.module';
 import { AddPositionFormComponent } from './add-position-form/add-position-form.component';
+import { PositionSummaryPanelComponent } from './position-summary-panel/position-summary-panel.component';
 
 @NgModule({
-  declarations: [ModalPortfolioComponent, PortfoliosComponent, SearchInstrumentComponent, AddPositionFormComponent],
+  declarations: [ModalPortfolioComponent, PortfoliosComponent, SearchInstrumentComponent, AddPositionFormComponent, PositionSummaryPanelComponent],
   imports: [CommonModule, SharedModule, LayoutModule, TableModule],
 })
 export class PortfoliosModule {}

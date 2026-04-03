@@ -52,12 +52,6 @@ export class PortfoliosComponent implements OnInit {
   selectedInstrument: InstrumentResponse | null = null;
   positions: PositionResponse[] = [];
   positionsSummary: PositionSummaryResponse[] = [];
-  marketValue = 0;
-  totalNetAmount = 0;
-  totalProfitLossValue = 0;
-  totalProfitLossPercentage = 0;
-  dailyProfitLossValue = 0;
-  dailyProfitLossPercentage = 0;
   WATCHLIST = environment.WATCHLIST_PORTFOLIO;
   POSITIONS = environment.POSITION_PORTFOLIO;
 
@@ -249,16 +243,11 @@ export class PortfoliosComponent implements OnInit {
       this.filterPortfolioInstruments();
       return;
     }
-    this.loadPositions();
+    this.reloadPositions();
   }
 
   filterPortfolioInstruments() {
     this.portfolioInstruments = this.instruments.filter((i) => i.portfolioId == this.portfolioId);
-  }
-
-  private loadPositions(): void {
-    this.listPositionsByPortfolioId(this.portfolioId);
-    this.listPositionSummaryByPortfolioId(this.portfolioId);
   }
 
   startEdit(i: number) {
@@ -340,7 +329,7 @@ export class PortfoliosComponent implements OnInit {
 
   onInstrumentSearchFocus(): void {
     if (this.portfolioType === this.WATCHLIST) return;
-    // Si ya hay un instrumento seleccionado, no vuelvas a deshabilitar el formulario
+    // Si ya hay un instrumento seleccionado, no volver a deshabilitar el formulario
     if (this.selectedInstrument) return;
     this.positionFormVisible = true;
     this.positionFormEnabled = false;
@@ -403,7 +392,7 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
-  reloadPositions() {
+  private reloadPositions() {
     this.listPositionsByPortfolioId(this.portfolioId);
     this.listPositionSummaryByPortfolioId(this.portfolioId);
   }
@@ -412,8 +401,6 @@ export class PortfoliosComponent implements OnInit {
     this.positionSvc.listByPortfolioId(id).subscribe({
       next: (resp) => {
         this.positions = resp.data;
-        this.calculateTotalProfitLoss();
-        this.calculateDailyProfitLoss();
       },
       error: (err) => {
         console.error('Error al crear la posición', err);
@@ -430,47 +417,5 @@ export class PortfoliosComponent implements OnInit {
         console.error('Error al crear summary', err);
       },
     });
-  }
-
-  private calculateTotalProfitLoss() {
-    const totals = this.positions.reduce(
-      (acc, position) => {
-        acc.closePrice += position.close * position.quantity;
-        acc.netAmount += position.netAmount;
-        return acc;
-      },
-      { closePrice: 0, netAmount: 0 },
-    );
-    this.marketValue = totals.closePrice;
-    this.totalNetAmount = totals.netAmount;
-    this.totalProfitLossValue = this.marketValue - this.totalNetAmount;
-    this.totalProfitLossPercentage = this.marketValue != 0 ? (this.marketValue / this.totalNetAmount - 1) * 100 : 0;
-  }
-
-  private calculateDailyProfitLoss() {
-    const totals = this.positions.reduce(
-      (acc, position) => {
-        const previousValue = position.previousClose * position.quantity;
-        const dailyValue = (position.close - position.previousClose) * position.quantity;
-
-        acc.previousPortfolioValue += previousValue;
-        acc.dailyProfitLossValue += dailyValue;
-
-        return acc;
-      },
-      {
-        previousPortfolioValue: 0,
-        dailyProfitLossValue: 0,
-      },
-    );
-
-    this.dailyProfitLossValue = totals.dailyProfitLossValue;
-    this.dailyProfitLossPercentage =
-      totals.previousPortfolioValue !== 0 ? (totals.dailyProfitLossValue / totals.previousPortfolioValue) * 100 : 0;
-  }
-
-  private parseLocalizedNumber(value: string): number {
-    const normalized = (value || '').replace(/\./g, '').replace(',', '.').trim();
-    return normalized ? Number(normalized) : 0;
   }
 }
