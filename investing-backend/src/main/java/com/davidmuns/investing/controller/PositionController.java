@@ -28,6 +28,12 @@ public class PositionController {
         positionService.save(req, portfolioId);
     }
 
+    @PatchMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public void editPosition(@RequestBody UpdatePositionRequest req) {
+        positionService.update(req);
+    }
+
     @GetMapping("/{portfolioId}")
     @ResponseStatus(HttpStatus.CREATED)
     public SearchResponse<PositionResponse> listByPortfolioID(@PathVariable Long portfolioId) {

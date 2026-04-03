@@ -74,6 +74,22 @@ public class PositionService {
         positionRepository.delete(position);
     }
 
+    public void update(UpdatePositionRequest req) {
+        Position position = positionRepository.findById(req.id())
+                .orElseThrow(() -> new NotFoundException(req.id(), "Position not found with id: "));
+
+        position.setQuantity(req.quantity());
+        position.setPrice(req.price());
+        position.setFee(req.fee());
+        position.setCreatedAt(req.createdAt());
+        Double gross = calculateGross(req.quantity(), req.price());
+        Double net = calculateNet(gross, req.fee());
+        position.setGrossAmount(gross);
+        position.setNetAmount(net);
+        positionRepository.save(position);
+    }
+
+
     private Position buildPosition(PositionRequest req, Portfolio portfolio) {
         Position position = new Position();
         position.setName(req.name());
@@ -84,9 +100,9 @@ public class PositionService {
         Double fee = req.fee() != null ? req.fee(): 0;
         position.setFee(fee);
         position.setPrice(req.price());
-        Double grossAmount = req.price() * req.quantity();
+        Double grossAmount = calculateGross(req.quantity(), req.price());
         position.setGrossAmount(grossAmount);
-        position.setNetAmount(grossAmount + fee);
+        position.setNetAmount(calculateNet(grossAmount, req.fee()));
         position.setCreatedAt(req.date());
         position.setPortfolio(portfolio);
         return position;
@@ -100,7 +116,6 @@ public class PositionService {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-
 
         return new PositionResponse(
                 position.getId(),
@@ -168,5 +183,13 @@ public class PositionService {
                 netProfitLossPercentage,
                 netProfitLoss
         );
+    }
+
+    private Double calculateGross(Double quantity, Double price){
+        return quantity * price;
+    }
+
+    private Double calculateNet(Double gross, Double fee){
+        return gross + fee;
     }
 }
