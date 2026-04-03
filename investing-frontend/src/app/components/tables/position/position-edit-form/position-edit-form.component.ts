@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { PositionService } from '@app/services/position.service';
+import { UtilsService } from '@app/services/utils.service';
 import { PositionResponse } from '@app/shared/models/position-response';
 import { PositionSummaryResponse } from '@app/shared/models/position-summary-response';
 import { UpdatePositionRequest } from '@app/shared/models/update-position-request';
@@ -30,13 +30,12 @@ type PositionFormModel = {
 export class PositionEditFormComponent implements OnChanges {
   @Input() positions: PositionResponse[] = [];
   @Input() positionsSummary: PositionSummaryResponse[] = [];
-  @Output() positionsChanged = new EventEmitter<void>();
   @Output() deletePosition = new EventEmitter<number>();
   @Output() updatePosition = new EventEmitter<UpdatePositionRequest>();
 
   positionForms: PositionFormModel[] = [];
 
-  constructor(private positionSvc: PositionService) {}
+  constructor(private utilsSvc: UtilsService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['positions']) {
@@ -47,9 +46,9 @@ export class PositionEditFormComponent implements OnChanges {
   setForms(): void {
     this.positionForms = this.positions.map((p) => {
       const date = p.createdAt;
-      const quantity = this.toInputNumber(p.quantity);
-      const price = this.toInputNumber(p.price);
-      const commission = this.toInputNumber(p.fee);
+      const quantity = this.utilsSvc.toInputNumber(p.quantity);
+      const price = this.utilsSvc.toInputNumber(p.price);
+      const commission = this.utilsSvc.toInputNumber(p.fee);
 
       return {
         id: p.id,
@@ -119,31 +118,7 @@ export class PositionEditFormComponent implements OnChanges {
   }
 
   blockInvalidNumberKey(event: KeyboardEvent): void {
-    const allowedControlKeys = [
-      'Backspace',
-      'Delete',
-      'Tab',
-      'Escape',
-      'Enter',
-      'ArrowLeft',
-      'ArrowRight',
-      'ArrowUp',
-      'ArrowDown',
-      'Home',
-      'End',
-    ];
-
-    if (event.ctrlKey || event.metaKey) return;
-    if (allowedControlKeys.includes(event.key)) return;
-    if (/^\d$/.test(event.key)) return;
-    if (event.key === ',') return;
-
-    event.preventDefault();
-  }
-
-  private toInputNumber(value: number | string | null | undefined): string {
-    if (value === null || value === undefined) return '';
-    return String(value).replace('.', ',');
+    this.utilsSvc.blockInvalidNumberKey(event);
   }
 
   private toNumber(value: string): number {
