@@ -14,6 +14,7 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { PositionResponse } from '@app/shared/models/position-response';
 import { PositionSummaryResponse } from '@app/shared/models/position-summary-response';
+import { UpdatePositionRequest } from '@app/shared/models/update-position-request';
 
 export interface PositionRow extends PositionResponse {
   marketValue: number;
@@ -47,6 +48,7 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
   filteredPositions: PositionResponse[] = [];
   @Input() positionsSummary: PositionSummaryResponse[] = [];
   @Output() deletePosition = new EventEmitter<number>();
+  @Output() updatePosition = new EventEmitter<UpdatePositionRequest>();
   positionSelected: PositionSummaryResponse | null = null;
   dataSource = new MatTableDataSource<PositionSummaryResponse>([]);
   @ViewChild(MatSort) sort!: MatSort;
@@ -88,6 +90,10 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
 
   onDeletePosition(event: number) {
     this.deletePosition.emit(event);
+  }
+
+  onUpdatePosition(event: UpdatePositionRequest) {
+    this.updatePosition.emit(event);
   }
 
   onRowClick(row: PositionSummaryResponse): void {

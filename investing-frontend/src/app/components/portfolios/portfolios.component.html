@@ -28,7 +28,9 @@
         [selectedIndex]="selectedIndex"
         (selectedIndexChange)="selectTab($event)"
       >
-        <mat-tab *ngFor="let p of portfolios | searchBar: this.symbolQuery; let i = index; trackBy: trackByPortfolio">
+        <mat-tab
+          *ngFor="let portfolio of portfolios | searchBar: this.symbolQuery; let i = index; trackBy: trackByPortfolio"
+        >
           <ng-template mat-tab-label>
             <!-- ✅ Drag SOLO en el label -->
             <div
@@ -41,12 +43,12 @@
             >
               <ng-container *ngIf="editingIndex !== i; else editMode">
                 <mat-icon class="dragHint" aria-hidden="true">drag_indicator</mat-icon>
-                <mat-icon *ngIf="p.type.endsWith('T')">remove_red_eye</mat-icon>
-                <mat-icon *ngIf="p.type.endsWith('S')">business_center</mat-icon>
+                <mat-icon>
+                  {{ portfolio.type == WATCHLIST ? 'remove_red_eye' : 'business_center' }}
+                </mat-icon>
                 <span class="tabLabelText">
-                  {{ p.name }}
+                  {{ portfolio.name }}
                 </span>
-
                 <button
                   class="editButton"
                   mat-icon-button
@@ -268,6 +270,7 @@
           [positionsSummary]="positionsSummary"
           [positions]="positions"
           (deletePosition)="onDeletePosition($event)"
+          (updatePosition)="onUpdatePosition($event)"
         ></app-position-table>
       </mat-tab>
       <!-- TRANSACCIONS TAB -->
@@ -295,12 +298,12 @@
 
 <!-- PORTFOLIO MENU -->
 <mat-menu #portfolio>
-  <ng-container *ngFor="let p of portfolios; index as i">
+  <ng-container *ngFor="let portfolio of portfolios; index as i">
     <button mat-menu-item (click)="selectTab(i)">
       <mat-icon>
-        {{ p.type === WATCHLIST ? 'remove_red_eye' : 'business_center' }}
+        {{ portfolio.type === WATCHLIST ? 'remove_red_eye' : 'business_center' }}
       </mat-icon>
-      {{ p.name }}
+      {{ portfolio.name }}
     </button>
     <mat-divider *ngIf="i < portfolios.length - 1"></mat-divider>
   </ng-container>

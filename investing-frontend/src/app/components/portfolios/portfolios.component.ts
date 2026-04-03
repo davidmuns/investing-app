@@ -16,6 +16,7 @@ import { PositionService } from '@app/services/position.service';
 import { PositionResponse } from '@app/shared/models/position-response';
 import { PositionSummaryResponse } from '@app/shared/models/position-summary-response';
 import { environment } from '@env/environment';
+import { UpdatePositionRequest } from '@app/shared/models/update-position-request';
 type ApiError = { error?: string; message?: string };
 
 @Component({
@@ -118,10 +119,6 @@ export class PortfoliosComponent implements OnInit {
       next: (p) => {
         this.portfolios = [...this.portfolios, p];
         this.setPortfolioTab(p.id);
-        // this.filterPortfolioInstruments();
-        // this.reloadInstruments();
-        // this.portfolioId = p.id;
-        // this.portfolioType = p.type;
       },
       error: (err) => {
         if (err?.status === 409) {
@@ -150,7 +147,6 @@ export class PortfoliosComponent implements OnInit {
         this.portfolios = this.portfolios.filter((p) => p.id !== deletingId);
 
         if (this.portfolios.length === 0) {
-          // const defaultPortfolio = { name: 'Mi cartera', type: 'WATCHLIST' } as PortfolioRequest;
           const defaultPortfolio = { name: 'Mi cartera', type: 'POSITIONS' } as PortfolioRequest;
           this.createPortfolio(defaultPortfolio);
           this.selectedIndex = 0;
@@ -176,16 +172,12 @@ export class PortfoliosComponent implements OnInit {
       const idx = this.portfolios.findIndex((p) => p.id === createdId);
       this.selectedIndex = idx >= 0 ? idx : 0;
     }
-    // this.setPortfolio();
   }
 
   onInstrumentEmitted(instrument: InstrumentRequest): void {
     this.instrumentSvc.create(instrument, this.portfolioId).subscribe({
       next: (resp) => {
-        // console.log(this.instruments);
-        // this.reloadInstruments();
         this.instruments = [...this.instruments, resp];
-        // this.portfolioInstruments = this.instruments.filter((i) => i.portfolioId == this.portfolioId);
         this.filterPortfolioInstruments();
       },
       error: (err) => {
@@ -208,7 +200,6 @@ export class PortfoliosComponent implements OnInit {
   loadInstruments(): void {
     this.instrumentSvc.list().subscribe({
       next: (data) => {
-        // this.instruments = data.data.filter((i) => i.portfolioId == this.portfolioId);
         this.instruments = data.data;
         this.filterPortfolioInstruments();
       },
@@ -262,25 +253,17 @@ export class PortfoliosComponent implements OnInit {
     this.portfolioId = this.portfolios[this.selectedIndex].id;
 
     if (this.portfolioType === this.WATCHLIST) {
-      // this.portfolioInstruments = this.instruments.filter((i) => i.portfolioId == this.portfolioId);
       this.filterPortfolioInstruments();
-      // this.uploadInstrumentsByPortfolioId(this.portfolioId);
-      // this.reloadInstruments();
       return;
     }
     this.loadPositions();
-    // this.reloadInstruments();
   }
 
   filterPortfolioInstruments() {
     this.portfolioInstruments = this.instruments.filter((i) => i.portfolioId == this.portfolioId);
-    // console.log(this.portfolioInstruments);
   }
 
   private loadPositions(): void {
-    // const selected = this.portfolios?.[this.selectedIndex];
-    // this.portfolioId = selected?.id ?? 0;
-    // this.portfolioType = selected.type ?? '';
     this.listPositionsByPortfolioId(this.portfolioId);
     this.listPositionSummaryByPortfolioId(this.portfolioId);
   }
@@ -473,8 +456,7 @@ export class PortfoliosComponent implements OnInit {
 
     this.positionSvc.create(payload).subscribe({
       next: () => {
-        this.listPositionsByPortfolioId(this.portfolioId);
-        this.listPositionSummaryByPortfolioId(this.portfolioId);
+        this.reloadPositions();
       },
       error: (err) => {
         console.error('Error al crear la posición', err);
@@ -488,9 +470,7 @@ export class PortfoliosComponent implements OnInit {
     const position = this.positions.find((p) => p.id === id);
     this.positionSvc.deleteById(id).subscribe({
       next: () => {
-        this.positions = this.positions.filter((i) => i.id !== id);
-        this.listPositionsByPortfolioId(this.portfolioId);
-        this.listPositionSummaryByPortfolioId(this.portfolioId);
+        this.reloadPositions();
         this.utilsSvc.showSnackBar(`Position ${position?.name} deleted`, 3000);
       },
       error: (err) => {
@@ -498,6 +478,22 @@ export class PortfoliosComponent implements OnInit {
         this.utilsSvc.showSnackBar(`Could not delete position ${position?.name}`, 3000);
       },
     });
+  }
+
+  onUpdatePosition(event: UpdatePositionRequest) {
+    this.positionSvc.update(event).subscribe({
+      next: () => {
+        this.reloadPositions();
+      },
+      error: (err) => {
+        console.error('Error updating position', err);
+      },
+    });
+  }
+
+  reloadPositions() {
+    this.listPositionsByPortfolioId(this.portfolioId);
+    this.listPositionSummaryByPortfolioId(this.portfolioId);
   }
 
   listPositionsByPortfolioId(id: number) {
@@ -519,7 +515,7 @@ export class PortfoliosComponent implements OnInit {
         this.positionsSummary = resp.data;
       },
       error: (err) => {
-        console.error('Error al crear la posición', err);
+        console.error('Error al crear summary', err);
       },
     });
   }
