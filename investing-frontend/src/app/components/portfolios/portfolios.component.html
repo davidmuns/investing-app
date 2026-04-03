@@ -176,6 +176,7 @@
     </mat-tab-group>
   </ng-template>
 </div>
+
 <!-- TEXT IF NO TABLE -->
 <div
   *ngIf="!instruments.length && portfolioType === WATCHLIST"
@@ -192,8 +193,6 @@
   </p>
 </div>
 
-<app-footer></app-footer>
-
 <!-- PORTFOLIO MENU -->
 <mat-menu #portfolio>
   <ng-container *ngFor="let portfolio of portfolios; index as i">
@@ -207,7 +206,7 @@
   </ng-container>
 </mat-menu>
 
-<!-- DELETE PORTFOLIO -->
+<!-- DELETE PORTFOLIO MENU -->
 <mat-menu #delete_portfolio>
   <ng-container>
     <button mat-menu-item>
@@ -221,3 +220,5 @@
     </button>
   </ng-container>
 </mat-menu>
+
+<app-footer></app-footer>

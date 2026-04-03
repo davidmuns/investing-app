@@ -1,5 +1,5 @@
 .container {
-  height: 900px;
+  height: 500px;
   margin: 0px;
 
   /* @media(max-width: 800px) {
@@ -16,4 +16,29 @@ table {
 
 th.mat-sort-header-sorted {
   color: black;
+}
+
+.actions-cell .delete-icon {
+  opacity: 0;
+  visibility: hidden;
+  cursor: pointer;
+  transition: opacity 0.9s ease;
+}
+
+.data-row:hover{
+ 
+  background-color: rgb(232, 253, 253);
+
+}
+
+.data-row:hover .actions-cell .delete-icon {
+   cursor: pointer;
+  opacity: 0.5;
+  visibility: visible;
+  font-size: 20px;
+}
+
+.actions-cell {
+  width: 10px;
+  text-align: center;
 }
