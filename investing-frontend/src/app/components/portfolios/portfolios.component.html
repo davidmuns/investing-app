@@ -115,16 +115,13 @@
     </div>
   </div>
 
-  <!-- Instrument/position Search bar -->
+  <!-- Search bar -->
   <div *ngIf="!loading && portfolios.length" class="panel">
     <div class="panelTop">
       <div class="addSymbol">
-        <ng-container *ngIf="this.portfolioType.endsWith('S'); else simbol">
-          <label class="addSymbolLabel">Añadir posición</label>
-        </ng-container>
-        <ng-template #simbol>
-          <label class="addSymbolLabel">Añadir símbolo</label>
-        </ng-template>
+        <label class="addSymbolLabel">
+          {{ this.portfolioType == WATCHLIST ? 'Añadir posición' : 'Añadir símbolo' }}
+        </label>
         <app-search-instrument
           [portfolioType]="portfolioType"
           (searchFocused)="onInstrumentSearchFocus()"
@@ -155,93 +152,19 @@
     <div class="panelHeader"></div>
   </div>
 
-  <!-- Position form -->
-  <div
+  <!-- Add Position form -->
+  <app-add-position-form
     *ngIf="!isWatchlist && positionFormVisible"
-    class="add-position is-open"
-    [class.is-disabled]="!positionFormEnabled"
-  >
-    <div class="position-details">
-      <form class="add-position-form" (ngSubmit)="submitPosition()" #positionNgForm="ngForm">
-        <div class="field field-type">
-          <label for="operation">Tipo:</label>
-          <select
-            name="operation"
-            id="operation"
-            class="new-input select-box"
-            [(ngModel)]="positionForm.operation"
-            [disabled]="!positionFormEnabled"
-          >
-            <option value="Compra">Compra</option>
-            <option value="Venta">Venta</option>
-          </select>
-        </div>
+    [positionFormEnabled]="positionFormEnabled"
+    [selectedInstrument]="selectedInstrument"
+    [instrumentExchange]="instrumentExchange"
+    [instrumentSymbol]="instrumentSymbol"
+    [instrumentName]="instrumentName"
+    [closePrice]="closePrice"
+    [portfolioId]="portfolioId"
+    (createPosition)="onCreatePosition($event)"
+  ></app-add-position-form>
 
-        <div class="field field-date">
-          <label for="position-date">Fecha:</label>
-
-          <div class="calendar-date-picker">
-            <input
-              type="date"
-              id="position-date"
-              name="positionDate"
-              class="native-date-input"
-              [(ngModel)]="positionForm.date"
-              [disabled]="!positionFormEnabled"
-            />
-
-            <div class="date-picker-icon-wrap" aria-hidden="true">
-              <span class="date-picker-icon"></span>
-            </div>
-          </div>
-        </div>
-
-        <div class="field field-amount">
-          <label for="amount">Cantidad:</label>
-          <input
-            id="amount"
-            name="quantity"
-            type="text"
-            class="new-input input-text-box amount"
-            [(ngModel)]="positionForm.quantity"
-            [disabled]="!positionFormEnabled"
-            (keydown)="blockInvalidNumberKey($event)"
-          />
-        </div>
-
-        <div class="field field-price">
-          <label for="price">Precio:</label>
-          <input
-            id="price"
-            name="price"
-            type="text"
-            class="new-input input-text-box"
-            [(ngModel)]="positionForm.price"
-            [disabled]="!positionFormEnabled"
-            (keydown)="blockInvalidNumberKey($event)"
-          />
-        </div>
-
-        <div class="field field-commission">
-          <label for="commission">Comisión:</label>
-          <div class="input-group input-group-enabled">
-            <input
-              id="commission"
-              name="commission"
-              type="text"
-              class="form-control form-control-enabled"
-              [(ngModel)]="positionForm.commission"
-              [disabled]="!positionFormEnabled"
-              (keydown)="blockInvalidNumberKey($event)"
-            />
-            <span class="cur-container">€</span>
-          </div>
-        </div>
-
-        <button type="submit" class="add-position-btn" [disabled]="!canSubmitPosition()">Añadir posición</button>
-      </form>
-    </div>
-  </div>
   <div *ngIf="!loading && !portfolios.length" class="hint">No hay carteras. Crea una con el botón “+”.</div>
 
   <!-- TABLES -->

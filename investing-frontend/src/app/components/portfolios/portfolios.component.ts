@@ -46,6 +46,7 @@ export class PortfoliosComponent implements OnInit {
   instrumentSymbol: string = '';
   instrumentName: string = '';
   instrumentExchange: string = '';
+  closePrice = 0;
   positionFormVisible = false;
   positionFormEnabled = false;
   selectedInstrument: InstrumentResponse | null = null;
@@ -59,14 +60,6 @@ export class PortfoliosComponent implements OnInit {
   dailyProfitLossPercentage = 0;
   WATCHLIST = environment.WATCHLIST_PORTFOLIO;
   POSITIONS = environment.POSITION_PORTFOLIO;
-
-  positionForm = {
-    operation: 'Compra',
-    date: '',
-    quantity: '',
-    price: '',
-    commission: '',
-  };
 
   constructor(
     private portfolioService: PortfolioService,
@@ -352,21 +345,15 @@ export class PortfoliosComponent implements OnInit {
     this.positionFormVisible = true;
     this.positionFormEnabled = false;
     this.selectedInstrument = null;
-    this.positionForm.operation = 'Compra';
-    this.positionForm.date = '';
-    this.positionForm.quantity = '';
-    this.positionForm.price = '';
-    this.positionForm.commission = '';
   }
 
   onInstrumentSelectedFromPositionPortfolio(instrument: InstrumentResponse): void {
     this.selectedInstrument = instrument;
     this.positionFormVisible = true;
     this.positionFormEnabled = true;
-    this.positionForm.date = this.getTodayForInput();
     this.instrumentSvc.searchQuote(instrument.symbol).subscribe({
       next: (data) => {
-        this.positionForm.price = this.toInputNumber(data.close);
+        this.closePrice = data.close;
         this.instrumentSymbol = data.symbol;
         this.instrumentName = data.name;
         this.instrumentExchange = data.exchange;
@@ -377,84 +364,9 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
-  private getTodayForInput(): string {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
-  }
-
-  private toInputNumber(value: number | string | null | undefined): string {
-    if (value === null || value === undefined) return '';
-    return String(value).replace('.', ',');
-  }
-
-  blockInvalidNumberKey(event: KeyboardEvent): void {
-    const allowedControlKeys = [
-      'Backspace',
-      'Delete',
-      'Tab',
-      'Escape',
-      'Enter',
-      'ArrowLeft',
-      'ArrowRight',
-      'ArrowUp',
-      'ArrowDown',
-      'Home',
-      'End',
-    ];
-
-    // Permitir atajos tipo Ctrl+C, Ctrl+V, Ctrl+A, Ctrl+X
-    if (event.ctrlKey || event.metaKey) {
-      return;
-    }
-
-    // Permitir teclas de control
-    if (allowedControlKeys.includes(event.key)) {
-      return;
-    }
-
-    // Permitir números
-    if (/^\d$/.test(event.key)) {
-      return;
-    }
-
-    // Permitir coma
-    if (event.key === ',') {
-      return;
-    }
-
-    // Bloquear todo lo demás, incluido el punto
-    event.preventDefault();
-  }
-
-  canSubmitPosition(): boolean {
-    return !!(
-      this.positionFormEnabled &&
-      this.selectedInstrument &&
-      this.positionForm.quantity.trim() &&
-      this.positionForm.price.trim() &&
-      this.positionForm.date.trim()
-    );
-  }
-
-  submitPosition(): void {
-    if (!this.canSubmitPosition() || !this.selectedInstrument) return;
-
-    const payload: PositionRequest = {
-      name: this.instrumentName,
-      portfolioId: this.portfolioId,
-      type: this.positionForm.operation,
-      date: this.positionForm.date,
-      exchange: this.instrumentExchange,
-      quantity: this.parseLocalizedNumber(this.positionForm.quantity),
-      price: this.parseLocalizedNumber(this.positionForm.price),
-      fee: this.parseLocalizedNumber(this.positionForm.commission || '0'),
-      symbol: this.instrumentSymbol,
-    };
-
-    this.positionSvc.create(payload).subscribe({
+  onCreatePosition(position: PositionRequest) {
+    console.log(position);
+    this.positionSvc.create(position).subscribe({
       next: () => {
         this.reloadPositions();
       },
