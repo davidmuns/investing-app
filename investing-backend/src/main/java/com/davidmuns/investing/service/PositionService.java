@@ -4,8 +4,10 @@ import com.davidmuns.investing.client.TwelveDataClient;
 import com.davidmuns.investing.dto.*;
 import com.davidmuns.investing.entity.Portfolio;
 import com.davidmuns.investing.entity.Position;
+import com.davidmuns.investing.entity.PositionClose;
 import com.davidmuns.investing.exception.NotFoundException;
 import com.davidmuns.investing.repo.PortfolioRepository;
+import com.davidmuns.investing.repo.PositionCloseRepository;
 import com.davidmuns.investing.repo.PositionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,37 +23,36 @@ public class PositionService {
     private final PositionRepository positionRepository;
     private final PortfolioRepository portfolioRepository;
     private final TwelveDataClient twelveDataClient;
+    private final PositionCloseRepository positionCloseRepository;
 
-    public PositionService(PositionRepository positionRepository, PortfolioRepository portfolioRepository, TwelveDataClient twelveDataClient) {
+    public PositionService(PositionRepository positionRepository, PortfolioRepository portfolioRepository, TwelveDataClient twelveDataClient, PositionCloseRepository positionCloseRepository) {
         this.positionRepository = positionRepository;
         this.portfolioRepository = portfolioRepository;
         this.twelveDataClient = twelveDataClient;
+        this.positionCloseRepository = positionCloseRepository;
     }
 
     @Transactional
     public void save(PositionRequest req, Long portfolioId) {
-        Portfolio portfolio = portfolioRepository.findById(portfolioId)
-                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+        Portfolio portfolio = getPortfolio(portfolioId);
         this.positionRepository.save(buildPosition(req, portfolio));
     }
 
     public SearchResponse<PositionResponse> findAllByPortfolioID(Long portfolioId) {
-        Portfolio portfolio = portfolioRepository.findById(portfolioId)
-                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+        Portfolio portfolio = getPortfolio(portfolioId);
         List<Position> positions = null;
 
         Optional<List<Position>> optionalPosition = positionRepository.findByPortfolio(portfolio);
         positions = optionalPosition.get();
         List<PositionResponse> resp = positions
                 .stream()
-                .map(this::toResponse)
+                .map(this::toPositionResponse)
                 .toList();
         return new SearchResponse<>(resp, positions.size());
     }
 
     public SearchResponse<PositionSummaryResponse> findSummaryByPortfolioId(Long portfolioId) {
-        Portfolio portfolio = portfolioRepository.findById(portfolioId)
-                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+        Portfolio portfolio = getPortfolio(portfolioId);
 
         List<Position> positions = positionRepository.findByPortfolio(portfolio)
                 .orElse(List.of());
@@ -69,14 +70,12 @@ public class PositionService {
     }
 
     public void delete(Long id) {
-        Position position = positionRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id, "Position not found with id: "));
+        Position position = getPosition(id);
         positionRepository.delete(position);
     }
 
     public void edit(UpdatePositionRequest req) {
-        Position position = positionRepository.findById(req.id())
-                .orElseThrow(() -> new NotFoundException(req.id(), "Position not found with id: "));
+        Position position = getPosition(req.id());
         position.setQuantity(req.quantity());
         position.setPrice(req.price());
         position.setFee(req.fee());
@@ -88,16 +87,22 @@ public class PositionService {
         positionRepository.save(position);
     }
 
-    public void close(UpdatePositionRequest req) {
-        Position position = positionRepository.findById(req.id())
-                .orElseThrow(() -> new NotFoundException(req.id(), "Position not found with id: "));
+    public PositionCloseResponse close(UpdatePositionRequest req) {
+        Position position = getPosition(req.id());
+        PositionClose positionClose = buildPositionClose(position, req);
+        return toPositionCloseResponse(positionCloseRepository.save(positionClose));
+    }
 
+    private PositionClose buildPositionClose(Position position, UpdatePositionRequest req) {
+        PositionClose positionClose = new PositionClose();
         Double purchasePrice = position.getPrice();
         Double sellingPrice = req.price();
         Double soldShares = req.quantity();
         Double totalPurchasePrice = soldShares * purchasePrice;
         Double totalSellingPrice = soldShares * sellingPrice;
         Double profitLoss = totalSellingPrice - totalPurchasePrice - req.fee();
+        Double totalSellingPriceLessPurchaseFee = totalSellingPrice - position.getFee();
+        Double profitLossPercentage = ((totalSellingPrice/(totalPurchasePrice)-1)) * 100;
         Double remainShares = position.getQuantity() - req.quantity();
         if (remainShares > 0) {
             UpdatePositionRequest newReq = new UpdatePositionRequest(
@@ -110,20 +115,20 @@ public class PositionService {
         }else{
             delete(position.getId());
         }
+        positionClose.setName(position.getName());
+        positionClose.setSymbol(position.getSymbol());
+        positionClose.setOpenedAt(position.getCreatedAt());
+        positionClose.setType(position.getType());
+        positionClose.setQuantity(soldShares);
+        positionClose.setEntryPrice(position.getPrice());
+        positionClose.setClosedAt(req.createdAt());
+        positionClose.setExitPrice(req.price());
+        positionClose.setProfitLoss(profitLoss);
+        positionClose.setProfitLossPercentage(profitLossPercentage);
+        positionClose.setPortfolio(getPortfolio(position.getPortfolio().getId()));
 
-        log.info("Nombre => {}", position.getName());
-        log.info("Símbolo => {}", position.getSymbol());
-        log.info("F. apertura => {}", position.getCreatedAt());
-        log.info("Tipo => {}", position.getType());
-        log.info("Cantidad => {}", soldShares);
-        log.info("Precio entrada => {}", position.getPrice());
-        log.info("Fecha cierre => {}", req.createdAt());
-        log.info("Precio cierre => {}", req.price());
-        log.info("B/P neto => {}", profitLoss);
-
-
+        return positionClose;
     }
-
 
     private Position buildPosition(PositionRequest req, Portfolio portfolio) {
         Position position = new Position();
@@ -143,7 +148,7 @@ public class PositionService {
         return position;
     }
 
-    private PositionResponse toResponse(Position position) {
+    private PositionResponse toPositionResponse(Position position) {
         TwelveDataQuoteResponse quote = null;
 
         try {
@@ -166,6 +171,24 @@ public class PositionService {
                 position.getCreatedAt(),
                 position.getNetAmount(),
                 position.getGrossAmount()
+        );
+    }
+
+    private PositionCloseResponse toPositionCloseResponse(PositionClose positionClose) {
+
+        return new PositionCloseResponse(
+                positionClose.getId(),
+                positionClose.getName(),
+                positionClose.getSymbol(),
+                positionClose.getOpenedAt(),
+                positionClose.getType(),
+                positionClose.getQuantity(),
+                positionClose.getEntryPrice(),
+                positionClose.getClosedAt(),
+                positionClose.getExitPrice(),
+                positionClose.getProfitLossPercentage(),
+                positionClose.getProfitLoss(),
+                positionClose.getPortfolio().getId()
         );
     }
 
@@ -228,12 +251,15 @@ public class PositionService {
         return gross + fee;
     }
 
-    private void calculateProfitLoss(Long positionId){
-        Optional<Position> optional = positionRepository.findById(positionId);
-        Position position = null;
-        if (optional.isPresent()) {
-            position = optional.get();
-        }
-
+    private Portfolio getPortfolio(Long portfolioId) {
+        return portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
     }
+
+    private Position getPosition(Long positionId) {
+        return positionRepository.findById(positionId)
+                .orElseThrow(() -> new NotFoundException(positionId, "Position not found with id: "));
+    }
+
+
 }

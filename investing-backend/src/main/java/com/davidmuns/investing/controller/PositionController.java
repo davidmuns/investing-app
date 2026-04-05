@@ -36,8 +36,8 @@ public class PositionController {
 
     @PutMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void close(@RequestBody UpdatePositionRequest req) {
-        positionService.close(req);
+    public PositionCloseResponse close(@RequestBody UpdatePositionRequest req) {
+        return positionService.close(req);
     }
 
     @GetMapping("/{portfolioId}")
