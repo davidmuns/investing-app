@@ -74,10 +74,9 @@ public class PositionService {
         positionRepository.delete(position);
     }
 
-    public void update(UpdatePositionRequest req) {
+    public void edit(UpdatePositionRequest req) {
         Position position = positionRepository.findById(req.id())
                 .orElseThrow(() -> new NotFoundException(req.id(), "Position not found with id: "));
-
         position.setQuantity(req.quantity());
         position.setPrice(req.price());
         position.setFee(req.fee());
@@ -87,6 +86,42 @@ public class PositionService {
         position.setGrossAmount(gross);
         position.setNetAmount(net);
         positionRepository.save(position);
+    }
+
+    public void close(UpdatePositionRequest req) {
+        Position position = positionRepository.findById(req.id())
+                .orElseThrow(() -> new NotFoundException(req.id(), "Position not found with id: "));
+
+        Double purchasePrice = position.getPrice();
+        Double sellingPrice = req.price();
+        Double soldShares = req.quantity();
+        Double totalPurchasePrice = soldShares * purchasePrice;
+        Double totalSellingPrice = soldShares * sellingPrice;
+        Double profitLoss = totalSellingPrice - totalPurchasePrice - req.fee();
+        Double remainShares = position.getQuantity() - req.quantity();
+        if (remainShares > 0) {
+            UpdatePositionRequest newReq = new UpdatePositionRequest(
+                    position.getId(),
+                    remainShares,
+                    position.getPrice(),
+                    position.getFee(),
+                    position.getCreatedAt());
+            edit(newReq);
+        }else{
+            delete(position.getId());
+        }
+
+        log.info("Nombre => {}", position.getName());
+        log.info("Símbolo => {}", position.getSymbol());
+        log.info("F. apertura => {}", position.getCreatedAt());
+        log.info("Tipo => {}", position.getType());
+        log.info("Cantidad => {}", soldShares);
+        log.info("Precio entrada => {}", position.getPrice());
+        log.info("Fecha cierre => {}", req.createdAt());
+        log.info("Precio cierre => {}", req.price());
+        log.info("B/P neto => {}", profitLoss);
+
+
     }
 
 
@@ -191,5 +226,14 @@ public class PositionService {
 
     private Double calculateNet(Double gross, Double fee){
         return gross + fee;
+    }
+
+    private void calculateProfitLoss(Long positionId){
+        Optional<Position> optional = positionRepository.findById(positionId);
+        Position position = null;
+        if (optional.isPresent()) {
+            position = optional.get();
+        }
+
     }
 }

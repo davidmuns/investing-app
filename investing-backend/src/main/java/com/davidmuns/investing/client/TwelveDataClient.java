@@ -25,7 +25,7 @@ public class TwelveDataClient {
                 .uri(uriBuilder -> uriBuilder
                         .path("/symbol_search")
                         .queryParam("symbol", query)
-                        .queryParam("outputsize", 20)
+                        .queryParam("outputsize", 30)
                         .queryParam("apikey", apiKey)
                         .build())
                 .retrieve()

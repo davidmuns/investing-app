@@ -30,8 +30,14 @@ public class PositionController {
 
     @PatchMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void editPosition(@RequestBody UpdatePositionRequest req) {
-        positionService.update(req);
+    public void edit(@RequestBody UpdatePositionRequest req) {
+        positionService.edit(req);
+    }
+
+    @PutMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public void close(@RequestBody UpdatePositionRequest req) {
+        positionService.close(req);
     }
 
     @GetMapping("/{portfolioId}")
