@@ -84,11 +84,7 @@
   </div>
 
   <!-- Position summary panel -->
-  <app-position-summary-panel
-    *ngIf="!isWatchlist"
-    [positions]="positions"
-    [positionsSummary]="positionsSummary"
-  ></app-position-summary-panel>
+  <app-position-summary-panel *ngIf="!isWatchlist" [positionsSummary]="positionsSummary"></app-position-summary-panel>
 
   <!-- Search bar -->
   <div *ngIf="!loading && portfolios.length" class="panel">

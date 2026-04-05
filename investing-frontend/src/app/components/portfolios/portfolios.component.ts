@@ -381,6 +381,20 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
+  onClosePosition(id: number) {
+    const position = this.positions.find((p) => p.id === id);
+    this.positionSvc.deleteById(id).subscribe({
+      next: () => {
+        this.reloadPositions();
+        this.utilsSvc.showSnackBar(`Position ${position?.name} deleted`, 3000);
+      },
+      error: (err) => {
+        console.error('Error deleting position', err);
+        this.utilsSvc.showSnackBar(`Could not delete position ${position?.name}`, 3000);
+      },
+    });
+  }
+
   onUpdatePosition(event: UpdatePositionRequest) {
     this.positionSvc.update(event).subscribe({
       next: () => {

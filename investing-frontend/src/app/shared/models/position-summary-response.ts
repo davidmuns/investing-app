@@ -8,7 +8,7 @@ export interface PositionSummaryResponse {
   currentPrice: number;
   marketValue: number;
   dailyProfitLoss: number;
-  // dailyProfitLossPercentage: number;
+  dailyProfitLossPercentage: number;
   netProfitLossPercentage: number;
   netProfitLoss: number;
   portfolioId: number;

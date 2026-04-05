@@ -45,7 +45,6 @@
         <app-position-edit-form
           *ngIf="positionSelected?.symbol === row.symbol"
           [positions]="filteredPositions"
-          [positionsSummary]="positionsSummary"
           (deletePosition)="onDeletePosition($event)"
           (updatePosition)="onUpdatePosition($event)"
         ></app-position-edit-form>

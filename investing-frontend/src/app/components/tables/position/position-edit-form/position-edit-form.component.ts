@@ -29,7 +29,7 @@ type PositionFormModel = {
 })
 export class PositionEditFormComponent implements OnChanges {
   @Input() positions: PositionResponse[] = [];
-  @Input() positionsSummary: PositionSummaryResponse[] = [];
+  // @Input() positionsSummary: PositionSummaryResponse[] = [];
   @Output() deletePosition = new EventEmitter<number>();
   @Output() updatePosition = new EventEmitter<UpdatePositionRequest>();
 
