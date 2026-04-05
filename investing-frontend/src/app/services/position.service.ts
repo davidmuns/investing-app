@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { PositionCloseResponse } from '@app/shared/models/position-close-response';
 import { PositionRequest } from '@app/shared/models/position-request';
 import { PositionResponse } from '@app/shared/models/position-response';
 import { PositionSummaryResponse } from '@app/shared/models/position-summary-response';
@@ -28,8 +29,8 @@ export class PositionService {
     return this.http.get<SearchResponse<PositionSummaryResponse>>(this.apiUrl + '/' + id + '/summary');
   }
 
-  deleteById(id: number): Observable<void> {
-    return this.http.delete<void>(this.apiUrl + '/' + id);
+  close(req: UpdatePositionRequest): Observable<PositionCloseResponse> {
+    return this.http.put<PositionCloseResponse>(this.apiUrl, req);
   }
 
   update(payload: UpdatePositionRequest): Observable<void> {

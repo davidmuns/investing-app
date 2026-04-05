@@ -47,7 +47,7 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
   @Input() positions: PositionResponse[] = [];
   filteredPositions: PositionResponse[] = [];
   @Input() positionsSummary: PositionSummaryResponse[] = [];
-  @Output() deletePosition = new EventEmitter<number>();
+  @Output() closePosition = new EventEmitter<UpdatePositionRequest>();
   @Output() updatePosition = new EventEmitter<UpdatePositionRequest>();
   positionSelected: PositionSummaryResponse | null = null;
   dataSource = new MatTableDataSource<PositionSummaryResponse>([]);
@@ -88,8 +88,8 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
     this.filteredPositions = this.positions.filter((p) => p.symbol === updatedSelected.symbol);
   }
 
-  onDeletePosition(event: number) {
-    this.deletePosition.emit(event);
+  onClosePosition(event: UpdatePositionRequest) {
+    this.closePosition.emit(event);
   }
 
   onUpdatePosition(event: UpdatePositionRequest) {

@@ -163,12 +163,20 @@
           *ngIf="positions.length"
           [positionsSummary]="positionsSummary"
           [positions]="positions"
-          (deletePosition)="onDeletePosition($event)"
+          (closePosition)="onClosePosition($event)"
           (updatePosition)="onUpdatePosition($event)"
         ></app-position-table>
       </mat-tab>
       <!-- TRANSACCIONS TAB -->
-      <mat-tab label="Transacciones"></mat-tab>
+      <mat-tab label="Transacciones">
+        <!-- <app-position-table
+          *ngIf="positions.length"
+          [positionsSummary]="positionsSummary"
+          [positions]="positions"
+          (deletePosition)="onDeletePosition($event)"
+          (updatePosition)="onUpdatePosition($event)"
+        ></app-position-table> -->
+      </mat-tab>
     </mat-tab-group>
   </ng-template>
 </div>

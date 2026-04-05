@@ -367,30 +367,14 @@ export class PortfoliosComponent implements OnInit {
     this.positionFormVisible = false;
   }
 
-  onDeletePosition(id: number) {
-    const position = this.positions.find((p) => p.id === id);
-    this.positionSvc.deleteById(id).subscribe({
-      next: () => {
+  onClosePosition(position: UpdatePositionRequest) {
+    this.positionSvc.close(position).subscribe({
+      next: (resp) => {
+        console.log(resp);
         this.reloadPositions();
-        this.utilsSvc.showSnackBar(`Position ${position?.name} deleted`, 3000);
       },
       error: (err) => {
         console.error('Error deleting position', err);
-        this.utilsSvc.showSnackBar(`Could not delete position ${position?.name}`, 3000);
-      },
-    });
-  }
-
-  onClosePosition(id: number) {
-    const position = this.positions.find((p) => p.id === id);
-    this.positionSvc.deleteById(id).subscribe({
-      next: () => {
-        this.reloadPositions();
-        this.utilsSvc.showSnackBar(`Position ${position?.name} deleted`, 3000);
-      },
-      error: (err) => {
-        console.error('Error deleting position', err);
-        this.utilsSvc.showSnackBar(`Could not delete position ${position?.name}`, 3000);
       },
     });
   }

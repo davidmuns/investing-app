@@ -30,7 +30,7 @@ type PositionFormModel = {
 export class PositionEditFormComponent implements OnChanges {
   @Input() positions: PositionResponse[] = [];
   // @Input() positionsSummary: PositionSummaryResponse[] = [];
-  @Output() deletePosition = new EventEmitter<number>();
+  @Output() closePosition = new EventEmitter<UpdatePositionRequest>();
   @Output() updatePosition = new EventEmitter<UpdatePositionRequest>();
 
   positionForms: PositionFormModel[] = [];
@@ -96,21 +96,16 @@ export class PositionEditFormComponent implements OnChanges {
     form.mode = 'view';
   }
 
-  saveChanges(form: PositionFormModel): void {
+  onSaveChanges(form: PositionFormModel): void {
     if (!this.canSubmitPosition(form)) return;
-    const payload: UpdatePositionRequest = {
-      id: form.id,
-      createdAt: form.date,
-      quantity: this.toNumber(form.quantity),
-      price: this.toNumber(form.price),
-      fee: this.toNumber(form.commission),
-    };
+    const payload: UpdatePositionRequest = this.toUpdatePositionRequest(form);
     this.updatePosition.emit(payload);
   }
 
-  closePosition(form: PositionFormModel): void {
+  onClosePosition(form: PositionFormModel): void {
     if (!this.canSubmitPosition(form)) return;
-    this.deletePosition.emit(form.id);
+    const payload: UpdatePositionRequest = this.toUpdatePositionRequest(form);
+    this.closePosition.emit(payload);
   }
 
   canSubmitPosition(form: PositionFormModel): boolean {
@@ -119,6 +114,17 @@ export class PositionEditFormComponent implements OnChanges {
 
   blockInvalidNumberKey(event: KeyboardEvent): void {
     this.utilsSvc.blockInvalidNumberKey(event);
+  }
+
+  private toUpdatePositionRequest(form: PositionFormModel): UpdatePositionRequest {
+    const payload: UpdatePositionRequest = {
+      id: form.id,
+      createdAt: form.date,
+      quantity: this.toNumber(form.quantity),
+      price: this.toNumber(form.price),
+      fee: this.toNumber(form.commission),
+    };
+    return payload;
   }
 
   private toNumber(value: string): number {
