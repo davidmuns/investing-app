@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PositionCloseRepository extends JpaRepository<PositionClose, Long> {
+    void deleteByPortfolioId(Long portfolioId);
 }

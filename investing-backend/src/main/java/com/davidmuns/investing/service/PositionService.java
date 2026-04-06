@@ -38,6 +38,14 @@ public class PositionService {
         this.positionRepository.save(buildPosition(req, portfolio));
     }
 
+    public SearchResponse<PositionCloseResponse> findAllClosed() {
+        List<PositionCloseResponse> dtoList = positionCloseRepository.findAll()
+                .stream()
+                .map(this::toPositionCloseResponse)
+                .collect(Collectors.toList());
+        return new SearchResponse<>(dtoList, dtoList.size());
+    }
+
     public SearchResponse<PositionResponse> findAllByPortfolioID(Long portfolioId) {
         Portfolio portfolio = getPortfolio(portfolioId);
         List<Position> positions = null;
@@ -174,7 +182,7 @@ public class PositionService {
         );
     }
 
-    private PositionCloseResponse toPositionCloseResponse(PositionClose positionClose) {
+    private PositionCloseResponse  toPositionCloseResponse(PositionClose positionClose) {
 
         return new PositionCloseResponse(
                 positionClose.getId(),
