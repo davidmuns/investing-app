@@ -36,4 +36,8 @@ export class PositionService {
   update(payload: UpdatePositionRequest): Observable<void> {
     return this.http.patch<void>(this.apiUrl, payload);
   }
+
+  listPositionClose(): Observable<SearchResponse<PositionCloseResponse>> {
+    return this.http.get<SearchResponse<PositionCloseResponse>>(this.apiUrl + '/closed');
+  }
 }

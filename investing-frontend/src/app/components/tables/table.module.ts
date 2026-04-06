@@ -5,10 +5,16 @@ import { PositionService } from '@app/services/position.service';
 import { PositionTableComponent } from './position/position-table.component';
 import { PositionEditFormComponent } from './position/position-edit-form/position-edit-form.component';
 import { SharedModule } from '@app/shared/shared.module';
+import { PositionCloseTableComponent } from './position-close-table/position-close-table.component';
 
 @NgModule({
-  declarations: [InstrumentTableComponent, PositionTableComponent, PositionEditFormComponent],
+  declarations: [
+    InstrumentTableComponent,
+    PositionTableComponent,
+    PositionEditFormComponent,
+    PositionCloseTableComponent,
+  ],
   imports: [CommonModule, SharedModule],
-  exports: [InstrumentTableComponent, PositionTableComponent],
+  exports: [InstrumentTableComponent, PositionTableComponent, PositionCloseTableComponent],
 })
 export class TableModule {}

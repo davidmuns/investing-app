@@ -155,7 +155,7 @@
     </mat-tab-group>
   </ng-container>
   <ng-template #positionTable>
-    <mat-tab-group mat-align-tabs="start" animationDuration="500ms">
+    <mat-tab-group mat-align-tabs="start" animationDuration="1000ms">
       <!-- POSITIONS TAB -->
       <mat-tab label="Posiciones">
         <!-- POSITIONS TABLE -->
@@ -169,13 +169,10 @@
       </mat-tab>
       <!-- TRANSACCIONS TAB -->
       <mat-tab label="Transacciones">
-        <!-- <app-position-table
-          *ngIf="positions.length"
-          [positionsSummary]="positionsSummary"
-          [positions]="positions"
-          (deletePosition)="onDeletePosition($event)"
-          (updatePosition)="onUpdatePosition($event)"
-        ></app-position-table> -->
+        <app-position-close-table
+          [positionsClosed]="positionsClosed"
+          [portfolioId]="portfolioId"
+        ></app-position-close-table>
       </mat-tab>
     </mat-tab-group>
   </ng-template>

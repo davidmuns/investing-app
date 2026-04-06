@@ -17,6 +17,7 @@ import { PositionResponse } from '@app/shared/models/position-response';
 import { PositionSummaryResponse } from '@app/shared/models/position-summary-response';
 import { environment } from '@env/environment';
 import { UpdatePositionRequest } from '@app/shared/models/update-position-request';
+import { PositionCloseResponse } from '@app/shared/models/position-close-response';
 type ApiError = { error?: string; message?: string };
 
 @Component({
@@ -51,6 +52,7 @@ export class PortfoliosComponent implements OnInit {
   positionFormEnabled = false;
   selectedInstrument: InstrumentResponse | null = null;
   positions: PositionResponse[] = [];
+  positionsClosed: PositionCloseResponse[] = [];
   positionsSummary: PositionSummaryResponse[] = [];
   WATCHLIST = environment.WATCHLIST_PORTFOLIO;
   POSITIONS = environment.POSITION_PORTFOLIO;
@@ -66,6 +68,7 @@ export class PortfoliosComponent implements OnInit {
   ngOnInit(): void {
     this.loadPortfolios();
     this.loadInstruments();
+    this.listPositionClose();
   }
 
   toggleActions(): void {
@@ -132,7 +135,9 @@ export class PortfoliosComponent implements OnInit {
       next: () => {
         const deletedIndex = this.portfolios.findIndex((p) => p.id === deletingId);
         this.portfolios = this.portfolios.filter((p) => p.id !== deletingId);
-
+        this.positionsClosed = this.positionsClosed.filter((p) => p.portfolioId != deletingId);
+        this.positions = this.positions.filter((p) => p.portfolioId != deletingId);
+        this.positionsSummary = this.positionsSummary.filter((p) => p.portfolioId != deletingId);
         if (this.portfolios.length === 0) {
           const defaultPortfolio = { name: 'Mi cartera', type: 'POSITIONS' } as PortfolioRequest;
           this.createPortfolio(defaultPortfolio);
@@ -354,7 +359,6 @@ export class PortfoliosComponent implements OnInit {
   }
 
   onCreatePosition(position: PositionRequest) {
-    console.log(position);
     this.positionSvc.create(position).subscribe({
       next: () => {
         this.reloadPositions();
@@ -370,11 +374,23 @@ export class PortfoliosComponent implements OnInit {
   onClosePosition(position: UpdatePositionRequest) {
     this.positionSvc.close(position).subscribe({
       next: (resp) => {
-        console.log(resp);
+        this.positionsClosed = [...this.positionsClosed, resp];
+        console.log(this.positionsClosed);
         this.reloadPositions();
       },
       error: (err) => {
         console.error('Error deleting position', err);
+      },
+    });
+  }
+
+  listPositionClose() {
+    this.positionSvc.listPositionClose().subscribe({
+      next: (resp) => {
+        this.positionsClosed = resp.data;
+      },
+      error: (err) => {
+        console.error('Error al crear la posición', err);
       },
     });
   }

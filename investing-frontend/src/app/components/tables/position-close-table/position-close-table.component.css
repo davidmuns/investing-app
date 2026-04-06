@@ -1,0 +1,29 @@
+.container {
+  height: 900px;
+  margin: 0px;
+
+  /* @media(max-width: 800px) {
+    left: 0px;
+    min-width: 90%;
+    background-color: white;
+    margin: 0px 5%;
+  } */
+}
+
+table {
+  width: 100%;
+}
+
+th.mat-sort-header-sorted {
+  color: black;
+}
+
+.data-row:hover{
+  cursor: pointer;
+  background-color: rgb(232, 253, 253);
+}
+
+.detail-row {
+  height: 0;
+}
+
