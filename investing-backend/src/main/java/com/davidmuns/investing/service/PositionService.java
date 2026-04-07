@@ -5,6 +5,7 @@ import com.davidmuns.investing.dto.*;
 import com.davidmuns.investing.entity.Portfolio;
 import com.davidmuns.investing.entity.Position;
 import com.davidmuns.investing.entity.PositionClose;
+import com.davidmuns.investing.exception.InvalidSellQuantityException;
 import com.davidmuns.investing.exception.NotFoundException;
 import com.davidmuns.investing.repo.PortfolioRepository;
 import com.davidmuns.investing.repo.PositionCloseRepository;
@@ -77,9 +78,14 @@ public class PositionService {
         return new SearchResponse<>(summaries, summaries.size());
     }
 
-    public void delete(Long id) {
+    public void deletePosition(Long id) {
         Position position = getPosition(id);
         positionRepository.delete(position);
+    }
+
+    public void deletePositionClose(Long id) {
+        PositionClose position = getPositionClose(id);
+        positionCloseRepository.delete(position);
     }
 
     public void edit(UpdatePositionRequest req) {
@@ -97,37 +103,47 @@ public class PositionService {
 
     public PositionCloseResponse close(UpdatePositionRequest req) {
         Position position = getPosition(req.id());
+        Double requestedQuantity = req.quantity();
+        Double currentQuantity = position.getQuantity();
+
+        if (Double.compare(requestedQuantity, currentQuantity) > 0) {
+            throw new InvalidSellQuantityException(
+                    "No es posible cerrar más cantidad de la que actualmente tiene."
+            );
+        }
+
+        if (Double.compare(requestedQuantity, currentQuantity) == 0) {
+            deletePosition(position.getId());
+            return null;
+        }
         PositionClose positionClose = buildPositionClose(position, req);
         return toPositionCloseResponse(positionCloseRepository.save(positionClose));
     }
 
     private PositionClose buildPositionClose(Position position, UpdatePositionRequest req) {
         PositionClose positionClose = new PositionClose();
-        Double purchasePrice = position.getPrice();
-        Double sellingPrice = req.price();
-        Double soldShares = req.quantity();
-        Double totalPurchasePrice = soldShares * purchasePrice;
-        Double totalSellingPrice = soldShares * sellingPrice;
-        Double profitLoss = totalSellingPrice - totalPurchasePrice - req.fee();
-        Double totalSellingPriceLessPurchaseFee = totalSellingPrice - position.getFee();
-        Double profitLossPercentage = ((totalSellingPrice/(totalPurchasePrice)-1)) * 100;
-        Double remainShares = position.getQuantity() - req.quantity();
-        if (remainShares > 0) {
-            UpdatePositionRequest newReq = new UpdatePositionRequest(
+        Double netPurchasePrice = (position.getPrice() * position.getQuantity() + position.getFee()) / position.getQuantity();
+        Double totalNetPurchasePrice = req.quantity() * netPurchasePrice;
+        Double totalNetSellingPrice = (req.quantity() * req.price()) - req.fee() ;
+        Double profitLoss = totalNetSellingPrice - totalNetPurchasePrice;
+        Double profitLossPercentage = ((totalNetSellingPrice/(totalNetPurchasePrice)-1)) * 100;
+        Double remainingShares = position.getQuantity() - req.quantity();
+        if (remainingShares > 0) {
+            UpdatePositionRequest update = new UpdatePositionRequest(
                     position.getId(),
-                    remainShares,
+                    remainingShares,
                     position.getPrice(),
                     position.getFee(),
                     position.getCreatedAt());
-            edit(newReq);
+            edit(update);
         }else{
-            delete(position.getId());
+            deletePositionClose(position.getId());
         }
         positionClose.setName(position.getName());
         positionClose.setSymbol(position.getSymbol());
         positionClose.setOpenedAt(position.getCreatedAt());
         positionClose.setType(position.getType());
-        positionClose.setQuantity(soldShares);
+        positionClose.setQuantity(req.quantity());
         positionClose.setEntryPrice(position.getPrice());
         positionClose.setClosedAt(req.createdAt());
         positionClose.setExitPrice(req.price());
@@ -266,6 +282,11 @@ public class PositionService {
 
     private Position getPosition(Long positionId) {
         return positionRepository.findById(positionId)
+                .orElseThrow(() -> new NotFoundException(positionId, "Position not found with id: "));
+    }
+
+    private PositionClose getPositionClose(Long positionId) {
+        return positionCloseRepository.findById(positionId)
                 .orElseThrow(() -> new NotFoundException(positionId, "Position not found with id: "));
     }
 

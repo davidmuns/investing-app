@@ -34,4 +34,13 @@ public class ApiExceptionHandler {
         return Map.of("error", "PORTFOLIO_NOT_FOUND", "message", ex.getMessage());
     }
 
+    @ExceptionHandler(InvalidSellQuantityException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleInvalidSellQuantity(InvalidSellQuantityException ex) {
+        return Map.of(
+                "error", "INVALID_SELL_QUANTITY",
+                "message", ex.getMessage()
+        );
+    }
+
 }

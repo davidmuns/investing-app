@@ -58,9 +58,15 @@ public class PositionController {
         return positionService.findSummaryByPortfolioId(portfolioId);
     }
 
+    @DeleteMapping("/closed/{id}")
+    public ResponseEntity<Void> deletePositionClose(@PathVariable Long id) {
+        positionService.deletePositionClose(id);
+        return ResponseEntity.noContent().build(); // 204 ✅
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        positionService.delete(id);
+    public ResponseEntity<Void> deletePosition(@PathVariable Long id) {
+        positionService.deletePosition(id);
         return ResponseEntity.noContent().build(); // 204 ✅
     }
 }
