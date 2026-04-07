@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { PositionFormModel } from '@app/shared/types/position-form-model';
 
 @Injectable({
   providedIn: 'root',
@@ -71,5 +72,50 @@ export class UtilsService {
   parseLocalizedNumber(value: string): number {
     const normalized = (value || '').replace(/\./g, '').replace(',', '.').trim();
     return normalized ? Number(normalized) : 0;
+  }
+
+  isValidDate(value: string): boolean {
+    return !!value?.trim();
+  }
+
+  isValidPositiveNumber(value: string): boolean {
+    if (!value?.trim()) return false;
+    return this.toNumber(value) > 0;
+  }
+
+  isValidSellQuantity(form: PositionFormModel, quantity: number): boolean {
+    if (!form.quantity?.trim()) return false;
+    return this.toNumber(form.quantity) > quantity && form.mode === 'close';
+  }
+
+  toNumber(value: string): number {
+    return Number(value.replace(',', '.'));
+  }
+
+  getQuantityMsgError(form: PositionFormModel, quantity: number): string {
+    if (!form.quantity?.trim()) {
+      return 'La cantidad es obligatoria';
+    }
+
+    if (this.toNumber(form.quantity) <= 0) {
+      return 'La cantidad solo puede ser un número positivo';
+    }
+
+    if (this.toNumber(form.quantity) > quantity && form.mode === 'close') {
+      return 'No es posible cerrar más cantidad de la que actualmente tiene';
+    }
+
+    return '';
+  }
+
+  getPriceMsgError(form: PositionFormModel): string {
+    if (!form.price?.trim()) {
+      return 'La cantidad es obligatoria';
+    }
+
+    if (this.toNumber(form.price) <= 0) {
+      return 'La cantidad solo puede ser un número positivo';
+    }
+    return '';
   }
 }

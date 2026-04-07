@@ -91,7 +91,7 @@
     <div class="panelTop">
       <div class="addSymbol">
         <label class="addSymbolLabel">
-          {{ this.portfolioType == WATCHLIST ? 'Añadir posición' : 'Añadir símbolo' }}
+          {{ this.portfolioType == WATCHLIST ? 'Añadir símbolo' : 'Añadir posición' }}
         </label>
         <app-search-instrument
           [portfolioType]="portfolioType"
@@ -172,6 +172,7 @@
         <app-position-close-table
           [positionsClosed]="positionsClosed"
           [portfolioId]="portfolioId"
+          (deletePositionClose)="onDeletePositionClose($event)"
         ></app-position-close-table>
       </mat-tab>
     </mat-tab-group>

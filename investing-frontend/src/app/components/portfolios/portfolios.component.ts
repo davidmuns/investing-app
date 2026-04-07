@@ -374,12 +374,23 @@ export class PortfoliosComponent implements OnInit {
   onClosePosition(position: UpdatePositionRequest) {
     this.positionSvc.close(position).subscribe({
       next: (resp) => {
+        console.log('Position closed: ', resp);
         this.positionsClosed = [...this.positionsClosed, resp];
-        console.log(this.positionsClosed);
         this.reloadPositions();
       },
       error: (err) => {
-        console.error('Error deleting position', err);
+        this.utilsSvc.showSnackBar(err.error.message, 3000);
+      },
+    });
+  }
+
+  onDeletePositionClose(id: number) {
+    this.positionSvc.deletePositionClose(id).subscribe({
+      next: () => {
+        this.positionsClosed = this.positionsClosed.filter((p) => p.id != id);
+      },
+      error: (err) => {
+        this.utilsSvc.showSnackBar(err.error.message, 3000);
       },
     });
   }

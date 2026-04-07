@@ -31,9 +31,9 @@
           [(ngModel)]="form.quantity"
           (keydown)="blockInvalidNumberKey($event)"
           [disabled]="isViewMode(form)"
+          [class.input-error]="!!getQuantityMsgError(form)"
         />
       </div>
-
       <div class="field field-price">
         <label [for]="'price-' + form.id">{{ isCloseMode(form) ? 'Precio cierre' : 'Precio entrada' }}:</label>
         <input
@@ -44,6 +44,7 @@
           [(ngModel)]="form.price"
           (keydown)="blockInvalidNumberKey($event)"
           [disabled]="isViewMode(form)"
+          [class.input-error]="!!getPriceMsgError(form)"
         />
       </div>
 
@@ -95,5 +96,13 @@
         </ng-container>
       </div>
     </form>
+  </div>
+  <div class="error-message" *ngIf="getQuantityMsgError(form)">
+    <span class="error-icon">!</span>
+    <span>{{ getQuantityMsgError(form) }}</span>
+  </div>
+  <div class="error-message" *ngIf="getPriceMsgError(form)">
+    <span class="error-icon">!</span>
+    <span>{{ getPriceMsgError(form) }}</span>
   </div>
 </ng-container>

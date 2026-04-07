@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@
 import { UtilsService } from '@app/services/utils.service';
 import { InstrumentResponse } from '@app/shared/models/instrument-response';
 import { PositionRequest } from '@app/shared/models/position-request';
+import { FormMode, PositionFormModel } from '@app/shared/types/position-form-model';
 
 @Component({
   selector: 'app-add-position-form',
@@ -9,12 +10,29 @@ import { PositionRequest } from '@app/shared/models/position-request';
   styleUrls: ['./add-position-form.component.css'],
 })
 export class AddPositionFormComponent implements OnInit {
-  positionForm = {
-    operation: 'Compra',
+  // positionForm = {
+  //   operation: 'Compra',
+  //   date: '',
+  //   quantity: '',
+  //   price: '',
+  //   commission: '',
+  // };
+  mode: FormMode = 'edit';
+  positionForm: PositionFormModel = {
+    id: 0,
+    symbol: '',
     date: '',
     quantity: '',
     price: '',
     commission: '',
+    operation: 'Compra',
+    mode: this.mode,
+    original: {
+      date: '',
+      quantity: '',
+      price: '',
+      commission: '',
+    },
   };
   @Input() positionFormEnabled = false;
   @Input() selectedInstrument: InstrumentResponse | null = null;
@@ -40,31 +58,39 @@ export class AddPositionFormComponent implements OnInit {
     this.positionForm.price = this.utilsSvc.toInputNumber(this.closePrice);
   }
 
-  canSubmitPosition(): boolean {
+  canSubmitPosition(form: PositionFormModel): boolean {
     return !!(
       this.positionFormEnabled &&
       this.selectedInstrument &&
-      this.positionForm.quantity.trim() &&
-      this.positionForm.price.trim() &&
-      this.positionForm.date.trim()
+      this.utilsSvc.isValidDate(form.date) &&
+      this.utilsSvc.isValidPositiveNumber(form.quantity) &&
+      this.utilsSvc.isValidPositiveNumber(form.price)
     );
   }
 
-  submitPosition(): void {
-    if (!this.canSubmitPosition() || !this.selectedInstrument) return;
+  submitPosition(form: PositionFormModel): void {
+    if (!this.canSubmitPosition(form) || !this.selectedInstrument) return;
 
     const payload: PositionRequest = {
       name: this.instrumentName,
       portfolioId: this.portfolioId,
-      type: this.positionForm.operation,
-      date: this.positionForm.date,
+      type: form.operation,
+      date: form.date,
       exchange: this.instrumentExchange,
-      quantity: this.utilsSvc.parseLocalizedNumber(this.positionForm.quantity),
-      price: this.utilsSvc.parseLocalizedNumber(this.positionForm.price),
-      fee: this.utilsSvc.parseLocalizedNumber(this.positionForm.commission || '0'),
+      quantity: this.utilsSvc.parseLocalizedNumber(form.quantity),
+      price: this.utilsSvc.parseLocalizedNumber(form.price),
+      fee: this.utilsSvc.parseLocalizedNumber(form.commission || '0'),
       symbol: this.instrumentSymbol,
     };
     this.createPosition.emit(payload);
+  }
+
+  getQuantityMsgError(form: PositionFormModel): string {
+    return this.utilsSvc.getQuantityMsgError(form, 0);
+  }
+
+  getPriceMsgError(form: PositionFormModel): string {
+    return this.utilsSvc.getPriceMsgError(form);
   }
 
   blockInvalidNumberKey(event: KeyboardEvent) {

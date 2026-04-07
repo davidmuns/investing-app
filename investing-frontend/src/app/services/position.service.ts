@@ -33,6 +33,10 @@ export class PositionService {
     return this.http.put<PositionCloseResponse>(this.apiUrl, req);
   }
 
+  deletePositionClose(id: number): Observable<void> {
+    return this.http.delete<void>(this.apiUrl + '/closed/' + id);
+  }
+
   update(payload: UpdatePositionRequest): Observable<void> {
     return this.http.patch<void>(this.apiUrl, payload);
   }

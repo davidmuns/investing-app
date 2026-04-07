@@ -19,11 +19,24 @@ th.mat-sort-header-sorted {
 }
 
 .data-row:hover{
-  cursor: pointer;
   background-color: rgb(232, 253, 253);
 }
 
-.detail-row {
-  height: 0;
+.data-row:hover .actions-cell .delete-icon {
+   cursor: pointer;
+  opacity: 0.5;
+  visibility: visible;
+  font-size: 20px;
 }
 
+.actions-cell .delete-icon {
+  opacity: 0;
+  visibility: hidden;
+  cursor: pointer;
+  transition: opacity 0.9s ease;
+}
+
+.actions-cell {
+  width: 10px;
+  text-align: center;
+}

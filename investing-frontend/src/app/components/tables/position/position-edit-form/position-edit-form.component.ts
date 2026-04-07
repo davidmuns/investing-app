@@ -1,26 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { UtilsService } from '@app/services/utils.service';
 import { PositionResponse } from '@app/shared/models/position-response';
-import { PositionSummaryResponse } from '@app/shared/models/position-summary-response';
 import { UpdatePositionRequest } from '@app/shared/models/update-position-request';
-
-type FormMode = 'view' | 'edit' | 'close';
-
-type PositionFormModel = {
-  id: number;
-  symbol: string;
-  date: string;
-  quantity: string;
-  price: string;
-  commission: string;
-  mode: FormMode;
-  original: {
-    date: string;
-    quantity: string;
-    price: string;
-    commission: string;
-  };
-};
+import { PositionFormModel } from '@app/shared/types/position-form-model';
 
 @Component({
   selector: 'app-position-edit-form',
@@ -32,6 +14,7 @@ export class PositionEditFormComponent implements OnChanges {
   // @Input() positionsSummary: PositionSummaryResponse[] = [];
   @Output() closePosition = new EventEmitter<UpdatePositionRequest>();
   @Output() updatePosition = new EventEmitter<UpdatePositionRequest>();
+  quantity = 0;
 
   positionForms: PositionFormModel[] = [];
 
@@ -45,6 +28,7 @@ export class PositionEditFormComponent implements OnChanges {
 
   setForms(): void {
     this.positionForms = this.positions.map((p) => {
+      this.quantity = p.quantity;
       const date = p.createdAt;
       const quantity = this.utilsSvc.toInputNumber(p.quantity);
       const price = this.utilsSvc.toInputNumber(p.price);
@@ -109,7 +93,12 @@ export class PositionEditFormComponent implements OnChanges {
   }
 
   canSubmitPosition(form: PositionFormModel): boolean {
-    return !!form.date && !!form.quantity && !!form.price;
+    return (
+      this.utilsSvc.isValidDate(form.date) &&
+      this.utilsSvc.isValidPositiveNumber(form.quantity) &&
+      this.utilsSvc.isValidPositiveNumber(form.price) &&
+      !this.utilsSvc.isValidSellQuantity(form, this.quantity)
+    );
   }
 
   blockInvalidNumberKey(event: KeyboardEvent): void {
@@ -120,14 +109,18 @@ export class PositionEditFormComponent implements OnChanges {
     const payload: UpdatePositionRequest = {
       id: form.id,
       createdAt: form.date,
-      quantity: this.toNumber(form.quantity),
-      price: this.toNumber(form.price),
-      fee: this.toNumber(form.commission),
+      quantity: this.utilsSvc.toNumber(form.quantity),
+      price: this.utilsSvc.toNumber(form.price),
+      fee: this.utilsSvc.toNumber(form.commission),
     };
     return payload;
   }
 
-  private toNumber(value: string): number {
-    return Number(value.replace(',', '.'));
+  getQuantityMsgError(form: PositionFormModel): string {
+    return this.utilsSvc.getQuantityMsgError(form, this.quantity);
+  }
+
+  getPriceMsgError(form: PositionFormModel): string {
+    return this.utilsSvc.getPriceMsgError(form);
   }
 }

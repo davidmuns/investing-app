@@ -1,9 +1,10 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
-import { Component, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { PositionCloseResponse } from '@app/shared/models/position-close-response';
 import { PositionRow } from '../position/position-table.component';
+import { UpdatePositionRequest } from '@app/shared/models/update-position-request';
 
 @Component({
   selector: 'app-position-close-table',
@@ -23,11 +24,12 @@ export class PositionCloseTableComponent implements OnInit {
     { def: 'profitLossPercentage', label: '%Beneficio' },
     { def: 'profitLoss', label: 'B/P neto' },
   ];
-  displayedColumns = [...this.columns.map((c) => c.def)];
+  displayedColumns = [...this.columns.map((c) => c.def), 'actions'];
   dataSource = new MatTableDataSource<PositionCloseResponse>([]);
   @ViewChild(MatSort) sort!: MatSort;
   @Input() positionsClosed: PositionCloseResponse[] = [];
   @Input() portfolioId: number = 0;
+  @Output() deletePositionClose = new EventEmitter<number>();
   filtereddPositions: PositionCloseResponse[] = [];
 
   constructor(private _liveAnnouncer: LiveAnnouncer) {}
@@ -59,6 +61,10 @@ export class PositionCloseTableComponent implements OnInit {
     } else {
       this._liveAnnouncer.announce('Sorting cleared');
     }
+  }
+
+  onDeleteClicked(id: number): void {
+    this.deletePositionClose.emit(id);
   }
 
   getValueStyle(columnDef: string, element: PositionRow): { [key: string]: string } {
