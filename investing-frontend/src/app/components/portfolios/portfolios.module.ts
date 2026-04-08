@@ -8,9 +8,10 @@ import { LayoutModule } from '@app/layout/layout.module';
 import { TableModule } from '../tables/table.module';
 import { AddPositionFormComponent } from './add-position-form/add-position-form.component';
 import { PositionSummaryPanelComponent } from './position-summary-panel/position-summary-panel.component';
+import { PositionClosePanelComponent } from './position-close-panel/position-close-panel.component';
 
 @NgModule({
-  declarations: [ModalPortfolioComponent, PortfoliosComponent, SearchInstrumentComponent, AddPositionFormComponent, PositionSummaryPanelComponent],
+  declarations: [ModalPortfolioComponent, PortfoliosComponent, SearchInstrumentComponent, AddPositionFormComponent, PositionSummaryPanelComponent, PositionClosePanelComponent],
   imports: [CommonModule, SharedModule, LayoutModule, TableModule],
 })
 export class PortfoliosModule {}

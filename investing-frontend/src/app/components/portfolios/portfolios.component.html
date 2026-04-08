@@ -169,6 +169,7 @@
       </mat-tab>
       <!-- TRANSACCIONS TAB -->
       <mat-tab label="Transacciones">
+        <app-position-close-panel [positions]="positionsClosed"></app-position-close-panel>
         <app-position-close-table
           [positionsClosed]="positionsClosed"
           [portfolioId]="portfolioId"
