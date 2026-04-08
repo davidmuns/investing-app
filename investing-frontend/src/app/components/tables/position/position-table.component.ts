@@ -12,6 +12,7 @@ import {
 } from '@angular/core';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { UtilsService } from '@app/services/utils.service';
 import { PositionResponse } from '@app/shared/models/position-response';
 import { PositionSummaryResponse } from '@app/shared/models/position-summary-response';
 import { UpdatePositionRequest } from '@app/shared/models/update-position-request';
@@ -53,7 +54,10 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
   dataSource = new MatTableDataSource<PositionSummaryResponse>([]);
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private _liveAnnouncer: LiveAnnouncer) {}
+  constructor(
+    private _liveAnnouncer: LiveAnnouncer,
+    private utilsSvc: UtilsService,
+  ) {}
 
   ngOnInit(): void {
     this.setTableData();
@@ -114,26 +118,10 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
   }
 
   getValueStyle(columnDef: string, element: PositionRow): { [key: string]: string } {
-    const coloredColumns = ['dailyProfitLoss', 'netProfitLoss', 'netProfitLossPercentage'];
-
-    if (!coloredColumns.includes(columnDef)) {
-      return {};
-    }
-
-    const value = element[columnDef as keyof PositionRow] as number | null | undefined;
-
-    if (value == null) {
-      return { 'font-weight': 'bold', color: 'black' };
-    }
-
-    if (value > 0) {
-      return { 'font-weight': 'bold', color: 'green' };
-    }
-
-    if (value < 0) {
-      return { 'font-weight': 'bold', color: 'red' };
-    }
-
-    return { 'font-weight': 'bold', color: 'black' };
+    return this.utilsSvc.getValueStyle(columnDef, element as unknown as Record<string, unknown>, [
+      'dailyProfitLoss',
+      'netProfitLoss',
+      'netProfitLossPercentage',
+    ]);
   }
 }

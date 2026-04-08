@@ -12,6 +12,7 @@ import {
 } from '@angular/core';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { UtilsService } from '@app/services/utils.service';
 import { Instrument } from '@app/shared/models/instrument';
 import { InstrumentResponse } from '@app/shared/models/instrument-response';
 
@@ -40,7 +41,10 @@ export class InstrumentTableComponent implements OnInit, AfterViewInit, OnChange
   dataSource = new MatTableDataSource<InstrumentResponse>([]);
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private _liveAnnouncer: LiveAnnouncer) {}
+  constructor(
+    private _liveAnnouncer: LiveAnnouncer,
+    private utilsSvc: UtilsService,
+  ) {}
 
   ngOnInit(): void {
     this.dataSource.data = this.instruments;
@@ -69,24 +73,9 @@ export class InstrumentTableComponent implements OnInit, AfterViewInit, OnChange
   }
 
   getValueStyle(columnDef: string, element: InstrumentResponse): { [key: string]: string } {
-    if (columnDef !== 'change' && columnDef !== 'percentChange') {
-      return {};
-    }
-
-    const value = element[columnDef as keyof InstrumentResponse] as number | null | undefined;
-
-    if (value == null) {
-      return { 'font-weight': 'bold', color: 'black' };
-    }
-
-    if (value > 0) {
-      return { 'font-weight': 'bold', color: 'green' };
-    }
-
-    if (value < 0) {
-      return { 'font-weight': 'bold', color: 'red' };
-    }
-
-    return { 'font-weight': 'bold', color: 'black' };
+    return this.utilsSvc.getValueStyle(columnDef, element as unknown as Record<string, unknown>, [
+      'change',
+      'percentChange',
+    ]);
   }
 }

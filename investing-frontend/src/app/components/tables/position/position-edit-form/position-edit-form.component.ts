@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { UtilsService } from '@app/services/utils.service';
 import { PositionResponse } from '@app/shared/models/position-response';
 import { UpdatePositionRequest } from '@app/shared/models/update-position-request';
-import { PositionFormModel } from '@app/shared/types/position-form-model';
+import { EditPositionFormModel, PositionFormModel } from '@app/shared/types/position-form-model';
 
 @Component({
   selector: 'app-position-edit-form',
@@ -11,14 +11,18 @@ import { PositionFormModel } from '@app/shared/types/position-form-model';
 })
 export class PositionEditFormComponent implements OnChanges {
   @Input() positions: PositionResponse[] = [];
-  // @Input() positionsSummary: PositionSummaryResponse[] = [];
   @Output() closePosition = new EventEmitter<UpdatePositionRequest>();
   @Output() updatePosition = new EventEmitter<UpdatePositionRequest>();
   quantity = 0;
+  today = '';
 
-  positionForms: PositionFormModel[] = [];
+  positionForms: EditPositionFormModel[] = [];
 
   constructor(private utilsSvc: UtilsService) {}
+
+  ngOnInit(): void {
+    this.today = this.utilsSvc.getTodayDate();
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['positions']) {
@@ -52,27 +56,27 @@ export class PositionEditFormComponent implements OnChanges {
     });
   }
 
-  isViewMode(form: PositionFormModel): boolean {
+  isViewMode(form: EditPositionFormModel): boolean {
     return form.mode === 'view';
   }
 
-  isEditMode(form: PositionFormModel): boolean {
+  isEditMode(form: EditPositionFormModel): boolean {
     return form.mode === 'edit';
   }
 
-  isCloseMode(form: PositionFormModel): boolean {
+  isCloseMode(form: EditPositionFormModel): boolean {
     return form.mode === 'close';
   }
 
-  enableEditMode(form: PositionFormModel): void {
+  enableEditMode(form: EditPositionFormModel): void {
     form.mode = 'edit';
   }
 
-  enableCloseMode(form: PositionFormModel): void {
+  enableCloseMode(form: EditPositionFormModel): void {
     form.mode = 'close';
   }
 
-  cancel(form: PositionFormModel): void {
+  cancel(form: EditPositionFormModel): void {
     form.date = form.original.date;
     form.quantity = form.original.quantity;
     form.price = form.original.price;
@@ -80,19 +84,19 @@ export class PositionEditFormComponent implements OnChanges {
     form.mode = 'view';
   }
 
-  onSaveChanges(form: PositionFormModel): void {
+  onSaveChanges(form: EditPositionFormModel): void {
     if (!this.canSubmitPosition(form)) return;
     const payload: UpdatePositionRequest = this.toUpdatePositionRequest(form);
     this.updatePosition.emit(payload);
   }
 
-  onClosePosition(form: PositionFormModel): void {
+  onClosePosition(form: EditPositionFormModel): void {
     if (!this.canSubmitPosition(form)) return;
     const payload: UpdatePositionRequest = this.toUpdatePositionRequest(form);
     this.closePosition.emit(payload);
   }
 
-  canSubmitPosition(form: PositionFormModel): boolean {
+  canSubmitPosition(form: EditPositionFormModel): boolean {
     return (
       this.utilsSvc.isValidDate(form.date) &&
       this.utilsSvc.isValidPositiveNumber(form.quantity) &&
@@ -116,11 +120,11 @@ export class PositionEditFormComponent implements OnChanges {
     return payload;
   }
 
-  getQuantityMsgError(form: PositionFormModel): string {
-    return this.utilsSvc.getQuantityMsgError(form, this.quantity);
+  getQuantityMsgError(form: EditPositionFormModel): string {
+    return this.utilsSvc.getQuantityErrorMsgOnClose(form, this.quantity);
   }
 
-  getPriceMsgError(form: PositionFormModel): string {
-    return this.utilsSvc.getPriceMsgError(form);
+  getPriceMsgError(form: EditPositionFormModel): string {
+    return this.utilsSvc.getPriceErrorMsg(form.price);
   }
 }

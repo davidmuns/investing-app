@@ -47,7 +47,7 @@ export class PortfoliosComponent implements OnInit {
   instrumentSymbol: string = '';
   instrumentName: string = '';
   instrumentExchange: string = '';
-  closePrice = 0;
+  closePrice = 1;
   positionFormVisible = false;
   positionFormEnabled = false;
   selectedInstrument: InstrumentResponse | null = null;

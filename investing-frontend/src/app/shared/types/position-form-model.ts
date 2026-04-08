@@ -1,4 +1,5 @@
 export type FormMode = 'view' | 'edit' | 'close';
+export type PositionOperation = 'Compra' | 'Venta';
 
 export type PositionFormModel = {
   id: number;
@@ -7,7 +8,9 @@ export type PositionFormModel = {
   quantity: string;
   price: string;
   commission: string;
-  operation?: string | undefined;
+};
+
+export type EditPositionFormModel = PositionFormModel & {
   mode: FormMode;
   original: {
     date: string;
@@ -15,4 +18,8 @@ export type PositionFormModel = {
     price: string;
     commission: string;
   };
+};
+
+export type AddPositionFormModel = PositionFormModel & {
+  operation: PositionOperation;
 };

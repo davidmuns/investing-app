@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@
 import { UtilsService } from '@app/services/utils.service';
 import { InstrumentResponse } from '@app/shared/models/instrument-response';
 import { PositionRequest } from '@app/shared/models/position-request';
-import { FormMode, PositionFormModel } from '@app/shared/types/position-form-model';
+import { AddPositionFormModel, PositionFormModel } from '@app/shared/types/position-form-model';
 
 @Component({
   selector: 'app-add-position-form',
@@ -10,29 +10,14 @@ import { FormMode, PositionFormModel } from '@app/shared/types/position-form-mod
   styleUrls: ['./add-position-form.component.css'],
 })
 export class AddPositionFormComponent implements OnInit {
-  // positionForm = {
-  //   operation: 'Compra',
-  //   date: '',
-  //   quantity: '',
-  //   price: '',
-  //   commission: '',
-  // };
-  mode: FormMode = 'edit';
-  positionForm: PositionFormModel = {
+  form: AddPositionFormModel = {
     id: 0,
     symbol: '',
     date: '',
-    quantity: '',
-    price: '',
+    quantity: '1',
+    price: '1',
     commission: '',
     operation: 'Compra',
-    mode: this.mode,
-    original: {
-      date: '',
-      quantity: '',
-      price: '',
-      commission: '',
-    },
   };
   @Input() positionFormEnabled = false;
   @Input() selectedInstrument: InstrumentResponse | null = null;
@@ -40,12 +25,15 @@ export class AddPositionFormComponent implements OnInit {
   @Input() portfolioId: number = 0;
   @Input() instrumentExchange: string = '';
   @Input() instrumentSymbol: string = '';
-  @Input() closePrice = 0;
+  @Input() closePrice = 1;
   @Output() createPosition = new EventEmitter<PositionRequest>();
+  today = '';
 
   constructor(private utilsSvc: UtilsService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.today = this.utilsSvc.getTodayDate();
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['positionFormEnabled'] || changes['selectedInstrument'] || changes['closePrice']) {
@@ -54,11 +42,11 @@ export class AddPositionFormComponent implements OnInit {
   }
 
   setPositionForm() {
-    this.positionForm.date = this.utilsSvc.getTodayDate();
-    this.positionForm.price = this.utilsSvc.toInputNumber(this.closePrice);
+    this.form.date = this.utilsSvc.getTodayDate();
+    this.form.price = this.utilsSvc.toInputNumber(this.closePrice);
   }
 
-  canSubmitPosition(form: PositionFormModel): boolean {
+  canSubmitPosition(form: AddPositionFormModel): boolean {
     return !!(
       this.positionFormEnabled &&
       this.selectedInstrument &&
@@ -68,7 +56,7 @@ export class AddPositionFormComponent implements OnInit {
     );
   }
 
-  submitPosition(form: PositionFormModel): void {
+  submitPosition(form: AddPositionFormModel): void {
     if (!this.canSubmitPosition(form) || !this.selectedInstrument) return;
 
     const payload: PositionRequest = {
@@ -86,11 +74,11 @@ export class AddPositionFormComponent implements OnInit {
   }
 
   getQuantityMsgError(form: PositionFormModel): string {
-    return this.utilsSvc.getQuantityMsgError(form, 0);
+    return this.utilsSvc.getQuantityErrorMsg(form.quantity);
   }
 
   getPriceMsgError(form: PositionFormModel): string {
-    return this.utilsSvc.getPriceMsgError(form);
+    return this.utilsSvc.getPriceErrorMsg(form.price);
   }
 
   blockInvalidNumberKey(event: KeyboardEvent) {

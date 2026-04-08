@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { PositionFormModel } from '@app/shared/types/position-form-model';
+import { EditPositionFormModel } from '@app/shared/types/position-form-model';
 
 @Injectable({
   providedIn: 'root',
@@ -83,7 +83,7 @@ export class UtilsService {
     return this.toNumber(value) > 0;
   }
 
-  isValidSellQuantity(form: PositionFormModel, quantity: number): boolean {
+  isValidSellQuantity(form: EditPositionFormModel, quantity: number): boolean {
     if (!form.quantity?.trim()) return false;
     return this.toNumber(form.quantity) > quantity && form.mode === 'close';
   }
@@ -92,14 +92,22 @@ export class UtilsService {
     return Number(value.replace(',', '.'));
   }
 
-  getQuantityMsgError(form: PositionFormModel, quantity: number): string {
-    if (!form.quantity?.trim()) {
-      return 'La cantidad es obligatoria';
+  getPriceErrorMsg(price: string): string {
+    if (!price.trim() || this.toNumber(price) <= 0) {
+      return 'El precio introducido es incorrecto. Por favor, revise sus cifras';
     }
+    return '';
+  }
 
-    if (this.toNumber(form.quantity) <= 0) {
-      return 'La cantidad solo puede ser un número positivo';
-    }
+  getQuantityErrorMsg(quantity: string): string {
+    const errorMsg = this.getBaseQuantityErrorMsg(quantity);
+    if (errorMsg) return errorMsg;
+    return '';
+  }
+
+  getQuantityErrorMsgOnClose(form: EditPositionFormModel, quantity: number): string {
+    const errorMsg = this.getBaseQuantityErrorMsg(form.quantity);
+    if (errorMsg) return errorMsg;
 
     if (this.toNumber(form.quantity) > quantity && form.mode === 'close') {
       return 'No es posible cerrar más cantidad de la que actualmente tiene';
@@ -108,14 +116,41 @@ export class UtilsService {
     return '';
   }
 
-  getPriceMsgError(form: PositionFormModel): string {
-    if (!form.price?.trim()) {
+  private getBaseQuantityErrorMsg(quantity: string): string {
+    if (!quantity.trim()) {
       return 'La cantidad es obligatoria';
     }
 
-    if (this.toNumber(form.price) <= 0) {
+    if (this.toNumber(quantity) <= 0) {
       return 'La cantidad solo puede ser un número positivo';
     }
+
     return '';
+  }
+
+  getValueStyle(
+    columnDef: string,
+    element: Record<string, unknown>,
+    coloredColumns: string[],
+  ): { [key: string]: string } {
+    if (!coloredColumns.includes(columnDef)) {
+      return {};
+    }
+
+    const value = element[columnDef] as number | null | undefined;
+
+    if (value == null) {
+      return { 'font-weight': 'bold', color: 'black' };
+    }
+
+    if (value > 0) {
+      return { 'font-weight': 'bold', color: 'green' };
+    }
+
+    if (value < 0) {
+      return { 'font-weight': 'bold', color: 'red' };
+    }
+
+    return { 'font-weight': 'bold', color: 'black' };
   }
 }

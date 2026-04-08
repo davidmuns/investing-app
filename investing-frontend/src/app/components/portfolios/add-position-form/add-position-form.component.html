@@ -1,13 +1,13 @@
 <div class="add-position is-open" [class.is-disabled]="!positionFormEnabled">
   <div class="position-details">
-    <form class="add-position-form" (ngSubmit)="submitPosition(positionForm)" #positionNgForm="ngForm">
+    <form class="add-position-form" (ngSubmit)="submitPosition(form)" #positionNgForm="ngForm">
       <div class="field field-type">
         <label for="operation">Tipo:</label>
         <select
           name="operation"
           id="operation"
           class="new-input select-box"
-          [(ngModel)]="positionForm.operation"
+          [(ngModel)]="form.operation"
           [disabled]="!positionFormEnabled"
         >
           <option value="Compra">Compra</option>
@@ -24,8 +24,9 @@
             id="position-date"
             name="positionDate"
             class="native-date-input"
-            [(ngModel)]="positionForm.date"
+            [(ngModel)]="form.date"
             [disabled]="!positionFormEnabled"
+            [max]="today"
           />
 
           <div class="date-picker-icon-wrap" aria-hidden="true">
@@ -41,10 +42,10 @@
           name="quantity"
           type="text"
           class="new-input input-text-box amount"
-          [(ngModel)]="positionForm.quantity"
+          [(ngModel)]="form.quantity"
           [disabled]="!positionFormEnabled"
           (keydown)="blockInvalidNumberKey($event)"
-          [class.input-error]="!!getQuantityMsgError(positionForm)"
+          [class.input-error]="getQuantityMsgError(form)"
         />
       </div>
 
@@ -55,10 +56,10 @@
           name="price"
           type="text"
           class="new-input input-text-box"
-          [(ngModel)]="positionForm.price"
+          [(ngModel)]="form.price"
           [disabled]="!positionFormEnabled"
           (keydown)="blockInvalidNumberKey($event)"
-          [class.input-error]="!!getPriceMsgError(positionForm)"
+          [class.input-error]="getPriceMsgError(form)"
         />
       </div>
 
@@ -70,7 +71,7 @@
             name="commission"
             type="text"
             class="form-control form-control-enabled"
-            [(ngModel)]="positionForm.commission"
+            [(ngModel)]="form.commission"
             [disabled]="!positionFormEnabled"
             (keydown)="blockInvalidNumberKey($event)"
           />
@@ -78,19 +79,17 @@
         </div>
       </div>
 
-      <button type="submit" class="add-position-btn" [disabled]="!canSubmitPosition(positionForm)">
-        Añadir posición
-      </button>
+      <button type="submit" class="add-position-btn" [disabled]="!canSubmitPosition(form)">Añadir posición</button>
     </form>
   </div>
   <ng-container *ngIf="positionFormEnabled">
-    <div class="error-message" *ngIf="getQuantityMsgError(positionForm)">
+    <div class="error-message" *ngIf="!!getQuantityMsgError(form)">
       <span class="error-icon">!</span>
-      <span>{{ getQuantityMsgError(positionForm) }}</span>
+      <span>{{ getQuantityMsgError(form) }}</span>
     </div>
-    <div class="error-message" *ngIf="getPriceMsgError(positionForm)">
+    <div class="error-message" *ngIf="!!getPriceMsgError(form)">
       <span class="error-icon">!</span>
-      <span>{{ getPriceMsgError(positionForm) }}</span>
+      <span>{{ getPriceMsgError(form) }}</span>
     </div>
   </ng-container>
 </div>

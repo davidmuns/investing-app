@@ -14,6 +14,7 @@
             class="native-date-input"
             [(ngModel)]="form.date"
             [disabled]="isViewMode(form)"
+            [max]="today"
           />
           <div class="date-picker-icon-wrap" aria-hidden="true">
             <span class="date-picker-icon"></span>
@@ -31,7 +32,7 @@
           [(ngModel)]="form.quantity"
           (keydown)="blockInvalidNumberKey($event)"
           [disabled]="isViewMode(form)"
-          [class.input-error]="!!getQuantityMsgError(form)"
+          [class.input-error]="getQuantityMsgError(form)"
         />
       </div>
       <div class="field field-price">
@@ -44,7 +45,7 @@
           [(ngModel)]="form.price"
           (keydown)="blockInvalidNumberKey($event)"
           [disabled]="isViewMode(form)"
-          [class.input-error]="!!getPriceMsgError(form)"
+          [class.input-error]="getPriceMsgError(form)"
         />
       </div>
 
@@ -97,11 +98,11 @@
       </div>
     </form>
   </div>
-  <div class="error-message" *ngIf="getQuantityMsgError(form)">
+  <div class="error-message" *ngIf="!!getQuantityMsgError(form)">
     <span class="error-icon">!</span>
     <span>{{ getQuantityMsgError(form) }}</span>
   </div>
-  <div class="error-message" *ngIf="getPriceMsgError(form)">
+  <div class="error-message" *ngIf="!!getPriceMsgError(form)">
     <span class="error-icon">!</span>
     <span>{{ getPriceMsgError(form) }}</span>
   </div>
