@@ -385,6 +385,9 @@ export class PortfoliosComponent implements OnInit {
   }
 
   onDeletePositionClose(id: number) {
+    const position = this.positionsClosed.find((p) => p.id == id);
+    const ok = confirm(`¿Está seguro de querer eliminar permanentemente su posición "${position?.name}"?`);
+    if (!ok) return;
     this.positionSvc.deletePositionClose(id).subscribe({
       next: () => {
         this.positionsClosed = this.positionsClosed.filter((p) => p.id != id);

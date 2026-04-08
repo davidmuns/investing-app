@@ -4,7 +4,6 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { PositionCloseResponse } from '@app/shared/models/position-close-response';
 import { PositionRow } from '../position/position-table.component';
-import { UpdatePositionRequest } from '@app/shared/models/update-position-request';
 
 @Component({
   selector: 'app-position-close-table',
