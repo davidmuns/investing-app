@@ -103,6 +103,7 @@ public class PositionService {
 
     public PositionCloseResponse close(UpdatePositionRequest req) {
         Position position = getPosition(req.id());
+
         Double requestedQuantity = req.quantity();
         Double currentQuantity = position.getQuantity();
 
@@ -112,33 +113,40 @@ public class PositionService {
             );
         }
 
-        if (Double.compare(requestedQuantity, currentQuantity) == 0) {
-            deletePosition(position.getId());
-            return null;
-        }
         PositionClose positionClose = buildPositionClose(position, req);
-        return toPositionCloseResponse(positionCloseRepository.save(positionClose));
-    }
+        PositionClose savedClose = positionCloseRepository.save(positionClose);
 
-    private PositionClose buildPositionClose(Position position, UpdatePositionRequest req) {
-        PositionClose positionClose = new PositionClose();
-        Double netPurchasePrice = (position.getPrice() * position.getQuantity() + position.getFee()) / position.getQuantity();
-        Double totalNetPurchasePrice = req.quantity() * netPurchasePrice;
-        Double totalNetSellingPrice = (req.quantity() * req.price()) - req.fee() ;
-        Double profitLoss = totalNetSellingPrice - totalNetPurchasePrice;
-        Double profitLossPercentage = ((totalNetSellingPrice/(totalNetPurchasePrice)-1)) * 100;
-        Double remainingShares = position.getQuantity() - req.quantity();
-        if (remainingShares > 0) {
+        Double remainingShares = currentQuantity - requestedQuantity;
+
+        if (Double.compare(remainingShares, 0.0) == 0) {
+            deletePosition(position.getId());
+        } else {
+            Double feePerShare = position.getFee() / currentQuantity;
+            Double remainingFee = feePerShare * remainingShares;
+
             UpdatePositionRequest update = new UpdatePositionRequest(
                     position.getId(),
                     remainingShares,
                     position.getPrice(),
-                    position.getFee(),
-                    position.getCreatedAt());
+                    remainingFee,
+                    position.getCreatedAt()
+            );
+
             edit(update);
-        }else{
-            deletePositionClose(position.getId());
         }
+
+        return toPositionCloseResponse(savedClose);
+    }
+
+    private PositionClose buildPositionClose(Position position, UpdatePositionRequest req) {
+        PositionClose positionClose = new PositionClose();
+
+        Double feePerShare = position.getFee() / position.getQuantity();
+        Double totalNetPurchasePrice = req.quantity() * (position.getPrice() + feePerShare);
+        Double totalNetSellingPrice = (req.quantity() * req.price()) - req.fee();
+        Double profitLoss = totalNetSellingPrice - totalNetPurchasePrice;
+        Double profitLossPercentage = ((totalNetSellingPrice / totalNetPurchasePrice) - 1) * 100;
+
         positionClose.setName(position.getName());
         positionClose.setSymbol(position.getSymbol());
         positionClose.setOpenedAt(position.getCreatedAt());
