@@ -169,11 +169,16 @@
       </mat-tab>
       <!-- TRANSACCIONS TAB -->
       <mat-tab label="Transacciones">
-        <app-position-close-panel [positions]="positionsClosed"></app-position-close-panel>
+        <app-position-close-panel
+          [positions]="positionsClosed"
+          (selectedSymbol)="onSymbolSelected($event)"
+          [symbol]="symbol"
+        ></app-position-close-panel>
         <app-position-close-table
           [positionsClosed]="positionsClosed"
           [portfolioId]="portfolioId"
           (deletePositionClose)="onDeletePositionClose($event)"
+          [symbol]="symbol"
         ></app-position-close-table>
       </mat-tab>
     </mat-tab-group>

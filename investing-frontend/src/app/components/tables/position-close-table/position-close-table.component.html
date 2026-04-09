@@ -27,7 +27,7 @@
             <span *ngSwitchCase="'closedPrice'">
               {{ element[column.def] | number: '1.2-2' }}
             </span>
-            <span *ngSwitchCase="'profitLoss'">{{ element[column.def] | number: '1.2-2' }}$</span>
+            <span *ngSwitchCase="'profitLoss'">{{ element[column.def] | number: '1.2-2' }}€</span>
 
             <span *ngSwitchCase="'profitLossPercentage'">{{ element[column.def] | number: '1.2-2' }}%</span>
 

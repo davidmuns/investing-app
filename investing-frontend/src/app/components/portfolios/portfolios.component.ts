@@ -56,6 +56,7 @@ export class PortfoliosComponent implements OnInit {
   positionsSummary: PositionSummaryResponse[] = [];
   WATCHLIST = environment.WATCHLIST_PORTFOLIO;
   POSITIONS = environment.POSITION_PORTFOLIO;
+  symbol = '';
 
   constructor(
     private portfolioService: PortfolioService,
@@ -374,7 +375,6 @@ export class PortfoliosComponent implements OnInit {
   onClosePosition(position: UpdatePositionRequest) {
     this.positionSvc.close(position).subscribe({
       next: (resp) => {
-        console.log('Position closed: ', resp);
         this.positionsClosed = [...this.positionsClosed, resp];
         this.reloadPositions();
       },
@@ -418,6 +418,10 @@ export class PortfoliosComponent implements OnInit {
         console.error('Error updating position', err);
       },
     });
+  }
+
+  onSymbolSelected(symbol: string) {
+    this.symbol = symbol || '';
   }
 
   private reloadPositions() {

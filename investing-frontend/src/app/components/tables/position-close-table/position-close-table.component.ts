@@ -30,7 +30,8 @@ export class PositionCloseTableComponent implements OnInit {
   @Input() positionsClosed: PositionCloseResponse[] = [];
   @Input() portfolioId: number = 0;
   @Output() deletePositionClose = new EventEmitter<number>();
-  filtereddPositions: PositionCloseResponse[] = [];
+  @Input() symbol: string = '';
+  filteredPositions: PositionCloseResponse[] = [];
 
   constructor(
     private _liveAnnouncer: LiveAnnouncer,
@@ -44,18 +45,29 @@ export class PositionCloseTableComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['positionsClosed'] || changes['portfolioId']) {
-      this.filterByPorfolioId();
+    if (changes['positionsClosed'] || changes['portfolioId'] || changes['symbol']) {
+      this.applyFilters();
     }
   }
 
-  filterByPorfolioId() {
-    this.filtereddPositions = this.positionsClosed.filter((p) => p.portfolioId == this.portfolioId);
+  private applyFilters(): void {
+    let result = this.positionsClosed;
+
+    // 1. Filtrar por portfolio
+    result = result.filter((p) => p.portfolioId === this.portfolioId);
+
+    // 2. Filtrar por símbolo solo si hay símbolo seleccionado
+    if (this.symbol && this.symbol.trim() !== '') {
+      result = result.filter((p) => p.symbol === this.symbol);
+    }
+
+    // 3. Pintar resultado final
+    this.filteredPositions = result;
     this.setTableData();
   }
 
   private setTableData(): void {
-    this.dataSource.data = this.filtereddPositions;
+    this.dataSource.data = this.filteredPositions;
   }
 
   announceSortChange(sortState: Sort): void {

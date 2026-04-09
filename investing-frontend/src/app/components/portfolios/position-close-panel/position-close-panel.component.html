@@ -1,13 +1,16 @@
-<div class="panel">
-  <div class="panelTop">
-    <div class="addSymbol">
+<div class="main-container">
+  <div class="panel">
+    <div class="filter">
       <label class="middle">Símbolo:</label>
-      <select>
-        <option value="" data="ALLSYMBOLS">Todos los símbolos</option>
+      <select (change)="onSymbolClicked($event)">
+        <option value="">Todos los símbolos</option>
         <optgroup label="Símbolo"></optgroup>
-        <option *ngFor="let p of positions">{{ p.symbol }}</option>
+        <option *ngFor="let symbol of uniqueSymbols" [value]="symbol">
+          {{ symbol }}
+        </option>
       </select>
     </div>
+
     <div>
       <span style="padding-right: 5px">B/P Neto:</span>
       <span *ngIf="sum == 0" style="color: black; font-weight: bold">{{ sum | number: '1.1-2' }}€</span>
