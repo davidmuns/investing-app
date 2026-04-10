@@ -26,7 +26,7 @@
         mat-align-tabs="center"
         animationDuration="500ms"
         [selectedIndex]="selectedIndex"
-        (selectedIndexChange)="selectTab($event)"
+        (selectedIndexChange)="selectPortfolioTab($event)"
       >
         <mat-tab
           *ngFor="let portfolio of portfolios | searchBar: this.symbolQuery; let i = index; trackBy: trackByPortfolio"
@@ -155,7 +155,7 @@
     </mat-tab-group>
   </ng-container>
   <ng-template #positionTable>
-    <mat-tab-group mat-align-tabs="start" animationDuration="1000ms">
+    <mat-tab-group mat-align-tabs="start" animationDuration="1000ms" (selectedIndexChange)="selectPositionTab($event)">
       <!-- POSITIONS TAB -->
       <mat-tab label="Posiciones">
         <!-- POSITIONS TABLE -->
@@ -175,6 +175,7 @@
           [symbol]="symbol"
         ></app-position-close-panel>
         <app-position-close-table
+          *ngIf="positionsClosed.length"
           [positionsClosed]="positionsClosed"
           [portfolioId]="portfolioId"
           (deletePositionClose)="onDeletePositionClose($event)"
@@ -195,7 +196,11 @@
     Gestione su cartera aquí añadiendo acciones, bonos, materias primas, índices o monedas.
   </p>
 </div>
-<div *ngIf="!positions.length && portfolioType === POSITIONS" class="panel" style="text-align: center; font-size: 17px">
+<div
+  *ngIf="!positions.length && portfolioType === POSITIONS && selectedPositionTab === 'Posiciones'"
+  class="panel"
+  style="text-align: center; font-size: 17px"
+>
   <p style="color: rgb(114, 118, 118)">
     No tiene ninguna posición abierta. Vaya a Añadir posición para abrir una nueva posición.
   </p>
@@ -204,7 +209,7 @@
 <!-- PORTFOLIO MENU -->
 <mat-menu #portfolio>
   <ng-container *ngFor="let portfolio of portfolios; index as i">
-    <button mat-menu-item (click)="selectTab(i)">
+    <button mat-menu-item (click)="selectPortfolioTab(i)">
       <mat-icon>
         {{ portfolio.type === WATCHLIST ? 'remove_red_eye' : 'business_center' }}
       </mat-icon>

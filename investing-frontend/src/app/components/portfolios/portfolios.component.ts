@@ -57,6 +57,7 @@ export class PortfoliosComponent implements OnInit {
   WATCHLIST = environment.WATCHLIST_PORTFOLIO;
   POSITIONS = environment.POSITION_PORTFOLIO;
   symbol = '';
+  selectedPositionTab = 'Posiciones';
 
   constructor(
     private portfolioService: PortfolioService,
@@ -97,12 +98,14 @@ export class PortfoliosComponent implements OnInit {
           this.portfolioId = this.portfolios[0].id;
           this.portfolioType = this.portfolios[0].type;
 
-          this.loadInstruments();
+          // this.loadInstruments();
+          // this.loadInstrumentsByPortfolioId(this.portfolioId);
 
           if (this.portfolioType !== this.WATCHLIST) {
             this.loadAllPositionsByPortfolioId(this.portfolioId);
           } else {
-            this.filterPortfolioInstruments();
+            // this.filterPortfolioInstruments();
+            this.loadInstrumentsByPortfolioId(this.portfolioId);
           }
         }
         console.log('Portfolio ID on init portfolio component: ', this.portfolioId);
@@ -247,7 +250,7 @@ export class PortfoliosComponent implements OnInit {
     }
   }
 
-  selectTab(i: number) {
+  selectPortfolioTab(i: number) {
     if (this.editingIndex !== null && this.editingIndex !== i) {
       this.saveEdit(this.editingIndex);
     }
@@ -255,10 +258,15 @@ export class PortfoliosComponent implements OnInit {
     this.setActivePortfolio(this.portfolios[i]);
     console.log('Portfolio ID on select tab: ', this.portfolioId);
     if (this.portfolioType === this.WATCHLIST) {
-      this.filterPortfolioInstruments();
+      // this.filterPortfolioInstruments();
+      this.loadInstrumentsByPortfolioId(this.portfolioId);
       return;
     }
     this.loadAllPositionsByPortfolioId(this.portfolioId);
+  }
+
+  selectPositionTab(index: number): void {
+    this.selectedPositionTab = index === 0 ? 'Posiciones' : 'Transacciones';
   }
 
   private setActivePortfolio(portfolio: PortfolioResponse): void {
