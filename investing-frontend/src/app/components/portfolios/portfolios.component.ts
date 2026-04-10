@@ -50,7 +50,7 @@ export class PortfoliosComponent implements OnInit {
   closePrice = 1;
   positionFormVisible = false;
   positionFormEnabled = false;
-  selectedInstrument: InstrumentResponse | null = null;
+  selectedInstrument: InstrumentRequest | null = null;
   positions: PositionResponse[] = [];
   positionsClosed: PositionCloseResponse[] = [];
   positionsSummary: PositionSummaryResponse[] = [];
@@ -195,7 +195,15 @@ export class PortfoliosComponent implements OnInit {
     }
   }
 
-  onInstrumentEmitted(instrument: InstrumentRequest): void {
+  onInstrumentSelected(instrument: InstrumentRequest) {
+    if (this.portfolioType === this.WATCHLIST) {
+      this.loadInstrumentByPortfolioId(instrument);
+      return;
+    }
+    this.searchQuote(instrument);
+  }
+
+  loadInstrumentByPortfolioId(instrument: InstrumentRequest): void {
     this.instrumentSvc.create(instrument, this.portfolioId).subscribe({
       next: (resp) => {
         this.instruments = [...this.instruments, resp];
@@ -203,6 +211,23 @@ export class PortfoliosComponent implements OnInit {
       },
       error: (err) => {
         console.log(err.error.message);
+      },
+    });
+  }
+
+  searchQuote(instrument: InstrumentRequest): void {
+    this.selectedInstrument = instrument;
+    this.positionFormVisible = true;
+    this.positionFormEnabled = true;
+    this.instrumentSvc.searchQuote(instrument.symbol).subscribe({
+      next: (data) => {
+        this.closePrice = data.close;
+        this.instrumentSymbol = data.symbol;
+        this.instrumentName = data.name;
+        this.instrumentExchange = data.exchange;
+      },
+      error: () => {
+        alert('No se pudo recibir la cotización.');
       },
     });
   }
@@ -368,24 +393,7 @@ export class PortfoliosComponent implements OnInit {
     this.selectedInstrument = null;
   }
 
-  onInstrumentSelectedFromPositionPortfolio(instrument: InstrumentResponse): void {
-    this.selectedInstrument = instrument;
-    this.positionFormVisible = true;
-    this.positionFormEnabled = true;
-    this.instrumentSvc.searchQuote(instrument.symbol).subscribe({
-      next: (data) => {
-        this.closePrice = data.close;
-        this.instrumentSymbol = data.symbol;
-        this.instrumentName = data.name;
-        this.instrumentExchange = data.exchange;
-      },
-      error: () => {
-        alert('No se pudo recibir la cotización.');
-      },
-    });
-  }
-
-  onCreatePosition(position: PositionRequest) {
+  onAddPosition(position: PositionRequest) {
     this.positionSvc.create(position).subscribe({
       next: () => {
         this.loadAllPositionsByPortfolioId(this.portfolioId);
@@ -450,12 +458,6 @@ export class PortfoliosComponent implements OnInit {
     this.symbol = symbol || '';
   }
 
-  private loadAllPositionsByPortfolioId(id: number) {
-    this.listPositionsByPortfolioId(id);
-    this.listPositionSummaryByPortfolioId(id);
-    this.listPositionCloseByPortfolioId(id);
-  }
-
   listPositionsByPortfolioId(id: number) {
     this.positionSvc.listByPortfolioId(id).subscribe({
       next: (resp) => {
@@ -476,5 +478,11 @@ export class PortfoliosComponent implements OnInit {
         console.error('Error al crear summary', err);
       },
     });
+  }
+
+  private loadAllPositionsByPortfolioId(id: number) {
+    this.listPositionsByPortfolioId(id);
+    this.listPositionSummaryByPortfolioId(id);
+    this.listPositionCloseByPortfolioId(id);
   }
 }

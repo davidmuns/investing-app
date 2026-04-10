@@ -5,8 +5,6 @@ import { SearchResponse } from '@app/shared/models/search-response';
 import { debounceTime, map, Observable, of, switchMap } from 'rxjs';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { InstrumentRequest } from '@app/shared/models/instrument-request';
-import { InstrumentResponse } from '@app/shared/models/instrument-response';
-import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-search-instrument',
@@ -14,14 +12,12 @@ import { environment } from '@env/environment';
   styleUrls: ['./search-instrument.component.css'],
 })
 export class SearchInstrumentComponent implements OnInit {
-  form = this.fb.control<string | InstrumentResponse>('', [Validators.minLength(1)]);
-  @Output() instrumentEmitted = new EventEmitter<InstrumentRequest>();
+  form = this.fb.control<string | InstrumentRequest>('', [Validators.minLength(1)]);
+  @Output() instrumentSelected = new EventEmitter<InstrumentRequest>();
   @Output() searchFocused = new EventEmitter<void>();
-  @Output() instrumentSelectedFromPositionPortfolio = new EventEmitter<InstrumentResponse>();
-  @Input() portfolioType = '';
-  instruments: InstrumentResponse[] = [];
-  filteredOptions!: Observable<InstrumentResponse[]>;
-  displayInstrument = (instrument: InstrumentResponse | null): string => {
+  instruments: InstrumentRequest[] = [];
+  filteredOptions!: Observable<InstrumentRequest[]>;
+  displayInstrument = (instrument: InstrumentRequest | null): string => {
     return instrument ? instrument.symbol : '';
   };
 
@@ -38,6 +34,16 @@ export class SearchInstrumentComponent implements OnInit {
     this.form.reset();
   }
 
+  onInstrumentClicked(event: MatAutocompleteSelectedEvent): void {
+    const instrument = event.option.value as InstrumentRequest;
+    this.instrumentSelected.emit(instrument);
+    this.form.reset();
+  }
+
+  onFocusSearch(): void {
+    this.searchFocused.emit();
+  }
+
   private initFilteredOptions(): void {
     this.filteredOptions = this.form.valueChanges.pipe(
       debounceTime(200),
@@ -46,7 +52,7 @@ export class SearchInstrumentComponent implements OnInit {
     );
   }
 
-  private normalizeQuery(value: string | InstrumentResponse | null): string {
+  private normalizeQuery(value: string | InstrumentRequest | null): string {
     if (typeof value === 'string') {
       return value.trim();
     }
@@ -58,7 +64,7 @@ export class SearchInstrumentComponent implements OnInit {
     return '';
   }
 
-  private searchInstruments(value: string): Observable<InstrumentResponse[]> {
+  private searchInstruments(value: string): Observable<InstrumentRequest[]> {
     if (!value) {
       this.instruments = [];
       return of([]);
@@ -66,22 +72,8 @@ export class SearchInstrumentComponent implements OnInit {
     return this.instrumentSvc.search(value).pipe(map((response) => this.handleSearchResults(response)));
   }
 
-  private handleSearchResults(response: SearchResponse<InstrumentResponse>): InstrumentResponse[] {
+  private handleSearchResults(response: SearchResponse<InstrumentRequest>): InstrumentRequest[] {
     this.instruments = response.data;
     return response.data.map((response) => response);
-  }
-
-  onInstrumentClicked(event: MatAutocompleteSelectedEvent): void {
-    const instrument = event.option.value as InstrumentResponse;
-    if (this.portfolioType === environment.POSITION_PORTFOLIO) {
-      this.instrumentSelectedFromPositionPortfolio.emit(instrument);
-      return;
-    }
-    this.instrumentEmitted.emit(instrument);
-    this.form.reset();
-  }
-
-  onFocusSearch(): void {
-    this.searchFocused.emit();
   }
 }

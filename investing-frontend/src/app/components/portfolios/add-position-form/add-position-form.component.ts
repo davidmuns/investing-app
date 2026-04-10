@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { UtilsService } from '@app/services/utils.service';
-import { InstrumentResponse } from '@app/shared/models/instrument-response';
+import { InstrumentRequest } from '@app/shared/models/instrument-request';
 import { PositionRequest } from '@app/shared/models/position-request';
 import { AddPositionFormModel, PositionFormModel } from '@app/shared/types/position-form-model';
 
@@ -20,13 +20,10 @@ export class AddPositionFormComponent implements OnInit {
     operation: 'Compra',
   };
   @Input() positionFormEnabled = false;
-  @Input() selectedInstrument: InstrumentResponse | null = null;
-  @Input() instrumentName: string = '';
+  @Input() selectedInstrument: InstrumentRequest | null = null;
   @Input() portfolioId: number = 0;
-  @Input() instrumentExchange: string = '';
-  @Input() instrumentSymbol: string = '';
   @Input() closePrice = 1;
-  @Output() createPosition = new EventEmitter<PositionRequest>();
+  @Output() addPosition = new EventEmitter<PositionRequest>();
   today = '';
 
   constructor(private utilsSvc: UtilsService) {}
@@ -58,19 +55,18 @@ export class AddPositionFormComponent implements OnInit {
 
   submitPosition(form: AddPositionFormModel): void {
     if (!this.canSubmitPosition(form) || !this.selectedInstrument) return;
-
-    const payload: PositionRequest = {
-      name: this.instrumentName,
-      portfolioId: this.portfolioId,
+    const position: PositionRequest = {
+      name: this.selectedInstrument.name,
+      symbol: this.selectedInstrument.symbol,
       type: form.operation,
       date: form.date,
-      exchange: this.instrumentExchange,
+      exchange: this.selectedInstrument.exchange,
       quantity: this.utilsSvc.parseLocalizedNumber(form.quantity),
       price: this.utilsSvc.parseLocalizedNumber(form.price),
       fee: this.utilsSvc.parseLocalizedNumber(form.commission || '0'),
-      symbol: this.instrumentSymbol,
+      portfolioId: this.portfolioId,
     };
-    this.createPosition.emit(payload);
+    this.addPosition.emit(position);
   }
 
   getQuantityMsgError(form: PositionFormModel): string {

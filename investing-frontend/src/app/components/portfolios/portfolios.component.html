@@ -94,10 +94,8 @@
           {{ this.portfolioType == WATCHLIST ? 'Añadir símbolo' : 'Añadir posición' }}
         </label>
         <app-search-instrument
-          [portfolioType]="portfolioType"
           (searchFocused)="onInstrumentSearchFocus()"
-          (instrumentSelectedFromPositionPortfolio)="onInstrumentSelectedFromPositionPortfolio($event)"
-          (instrumentEmitted)="onInstrumentEmitted($event)"
+          (instrumentSelected)="onInstrumentSelected($event)"
         ></app-search-instrument>
       </div>
       <div>
@@ -128,12 +126,9 @@
     *ngIf="!isWatchlist && positionFormVisible"
     [positionFormEnabled]="positionFormEnabled"
     [selectedInstrument]="selectedInstrument"
-    [instrumentExchange]="instrumentExchange"
-    [instrumentSymbol]="instrumentSymbol"
-    [instrumentName]="instrumentName"
     [closePrice]="closePrice"
     [portfolioId]="portfolioId"
-    (createPosition)="onCreatePosition($event)"
+    (addPosition)="onAddPosition($event)"
   ></app-add-position-form>
 
   <div *ngIf="!loading && !portfolios.length" class="hint">No hay carteras. Crea una con el botón “+”.</div>
