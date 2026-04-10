@@ -44,4 +44,8 @@ export class PositionService {
   listPositionClose(): Observable<SearchResponse<PositionCloseResponse>> {
     return this.http.get<SearchResponse<PositionCloseResponse>>(this.apiUrl + '/closed');
   }
+
+  listPositionCloseByPortfolioId(id: number): Observable<SearchResponse<PositionCloseResponse>> {
+    return this.http.get<SearchResponse<PositionCloseResponse>>(this.apiUrl + '/closed/' + id);
+  }
 }

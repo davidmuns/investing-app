@@ -68,8 +68,6 @@ export class PortfoliosComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPortfolios();
-    this.loadInstruments();
-    this.listPositionClose();
   }
 
   toggleActions(): void {
@@ -90,8 +88,30 @@ export class PortfoliosComponent implements OnInit {
     return this.portfolioType === this.WATCHLIST;
   }
 
-  get isEmptyPortfolio(): boolean {
-    return this.isWatchlist ? this.instruments.length === 0 : this.positions.length === 0;
+  loadPortfolios(): void {
+    this.portfolioService.list().subscribe({
+      next: (resp) => {
+        this.portfolios = resp.data;
+        if (this.portfolios.length > 0) {
+          this.selectedIndex = 0;
+          this.portfolioId = this.portfolios[0].id;
+          this.portfolioType = this.portfolios[0].type;
+
+          this.loadInstruments();
+
+          if (this.portfolioType !== this.WATCHLIST) {
+            this.loadAllPositionsByPortfolioId(this.portfolioId);
+          } else {
+            this.filterPortfolioInstruments();
+          }
+        }
+        console.log('Portfolio ID on init portfolio component: ', this.portfolioId);
+      },
+      error: () => {
+        this.errorMsg = 'No se pudo cargar la lista de carteras.';
+        this.loading = false;
+      },
+    });
   }
 
   onAddPortfolioClicked(): void {
@@ -110,6 +130,9 @@ export class PortfoliosComponent implements OnInit {
       next: (p) => {
         this.portfolios = [...this.portfolios, p];
         this.setPortfolioTab(p.id);
+        this.selectedIndex = this.portfolios.findIndex((x) => x.id === p.id);
+        this.setActivePortfolio(p);
+        console.log('Portfolio ID on create portfolio: ', this.portfolioId);
       },
       error: (err) => {
         if (err?.status === 409) {
@@ -153,6 +176,8 @@ export class PortfoliosComponent implements OnInit {
         if (deletedIndex >= 0 && deletedIndex < this.selectedIndex) {
           this.selectedIndex = this.selectedIndex - 1;
         }
+        this.loadPortfolios();
+        console.log('Portfolio ID on delete porfolio: ', this.portfolioId);
       },
       error: () => {
         this.errorMsg = 'No se pudo eliminar la cartera.';
@@ -179,7 +204,7 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
-  uploadInstrumentsByPortfolioId(id: number) {
+  loadInstrumentsByPortfolioId(id: number) {
     this.instrumentSvc.listByPortfolioId(id).subscribe({
       next: (resp) => {
         this.instruments = resp.data;
@@ -216,18 +241,6 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
-  loadPortfolios(): void {
-    this.portfolioService.list().subscribe({
-      next: (resp) => {
-        this.portfolios = resp.data;
-      },
-      error: () => {
-        this.errorMsg = 'No se pudo cargar la lista de carteras.';
-        this.loading = false;
-      },
-    });
-  }
-
   closeEditIfOpen() {
     if (this.editingIndex !== null) {
       this.saveEdit(this.editingIndex);
@@ -235,21 +248,26 @@ export class PortfoliosComponent implements OnInit {
   }
 
   selectTab(i: number) {
-    // si estás editando otra pestaña, guarda (o cancela) antes
-    this.positionFormVisible = false;
-    this.selectedInstrument = null;
     if (this.editingIndex !== null && this.editingIndex !== i) {
       this.saveEdit(this.editingIndex);
     }
     this.selectedIndex = i;
-    this.portfolioType = this.portfolios[this.selectedIndex].type;
-    this.portfolioId = this.portfolios[this.selectedIndex].id;
-
+    this.setActivePortfolio(this.portfolios[i]);
+    console.log('Portfolio ID on select tab: ', this.portfolioId);
     if (this.portfolioType === this.WATCHLIST) {
       this.filterPortfolioInstruments();
       return;
     }
-    this.reloadPositions();
+    this.loadAllPositionsByPortfolioId(this.portfolioId);
+  }
+
+  private setActivePortfolio(portfolio: PortfolioResponse): void {
+    this.portfolioId = portfolio.id;
+    this.portfolioType = portfolio.type;
+    this.symbol = '';
+    this.positionFormVisible = false;
+    this.positionFormEnabled = false;
+    this.selectedInstrument = null;
   }
 
   filterPortfolioInstruments() {
@@ -362,7 +380,7 @@ export class PortfoliosComponent implements OnInit {
   onCreatePosition(position: PositionRequest) {
     this.positionSvc.create(position).subscribe({
       next: () => {
-        this.reloadPositions();
+        this.loadAllPositionsByPortfolioId(this.portfolioId);
       },
       error: (err) => {
         console.error('Error al crear la posición', err);
@@ -375,8 +393,8 @@ export class PortfoliosComponent implements OnInit {
   onClosePosition(position: UpdatePositionRequest) {
     this.positionSvc.close(position).subscribe({
       next: (resp) => {
-        this.positionsClosed = [...this.positionsClosed, resp];
-        this.reloadPositions();
+        // this.positionsClosed = [...this.positionsClosed, resp];
+        this.loadAllPositionsByPortfolioId(this.portfolioId);
       },
       error: (err) => {
         this.utilsSvc.showSnackBar(err.error.message, 3000);
@@ -398,13 +416,13 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
-  listPositionClose() {
-    this.positionSvc.listPositionClose().subscribe({
+  listPositionCloseByPortfolioId(portfolioId: number) {
+    this.positionSvc.listPositionCloseByPortfolioId(portfolioId).subscribe({
       next: (resp) => {
-        this.positionsClosed = resp.data;
+        this.positionsClosed = [...resp.data];
       },
       error: (err) => {
-        console.error('Error al crear la posición', err);
+        console.error('Error al cargar posiciones cerradas por portfolio ID ', err);
       },
     });
   }
@@ -412,7 +430,7 @@ export class PortfoliosComponent implements OnInit {
   onUpdatePosition(event: UpdatePositionRequest) {
     this.positionSvc.update(event).subscribe({
       next: () => {
-        this.reloadPositions();
+        this.loadAllPositionsByPortfolioId(this.portfolioId);
       },
       error: (err) => {
         console.error('Error updating position', err);
@@ -424,9 +442,10 @@ export class PortfoliosComponent implements OnInit {
     this.symbol = symbol || '';
   }
 
-  private reloadPositions() {
-    this.listPositionsByPortfolioId(this.portfolioId);
-    this.listPositionSummaryByPortfolioId(this.portfolioId);
+  private loadAllPositionsByPortfolioId(id: number) {
+    this.listPositionsByPortfolioId(id);
+    this.listPositionSummaryByPortfolioId(id);
+    this.listPositionCloseByPortfolioId(id);
   }
 
   listPositionsByPortfolioId(id: number) {
