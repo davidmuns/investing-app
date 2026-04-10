@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 @Slf4j
 public class PositionService {
@@ -43,28 +45,35 @@ public class PositionService {
         List<PositionCloseResponse> dtoList = positionCloseRepository.findAll()
                 .stream()
                 .map(this::toPositionCloseResponse)
-                .collect(Collectors.toList());
+                .collect(toList());
         return new SearchResponse<>(dtoList, dtoList.size());
+    }
+
+    public SearchResponse<PositionCloseResponse> findAllClosedByPortfolioId(Long portfolioId) {
+        Portfolio portfolio = getPortfolio(portfolioId);
+
+        List<PositionCloseResponse> resp = positionCloseRepository.findByPortfolio(portfolio)
+                .stream()
+                .map(this::toPositionCloseResponse)
+                .collect(toList());
+
+        return new SearchResponse<>(resp, resp.size());
     }
 
     public SearchResponse<PositionResponse> findAllByPortfolioID(Long portfolioId) {
         Portfolio portfolio = getPortfolio(portfolioId);
-        List<Position> positions = null;
 
-        Optional<List<Position>> optionalPosition = positionRepository.findByPortfolio(portfolio);
-        positions = optionalPosition.get();
-        List<PositionResponse> resp = positions
+        List<PositionResponse> resp = positionRepository.findByPortfolio(portfolio)
                 .stream()
                 .map(this::toPositionResponse)
-                .toList();
-        return new SearchResponse<>(resp, positions.size());
+                .collect(toList());
+        return new SearchResponse<>(resp, resp.size());
     }
 
     public SearchResponse<PositionSummaryResponse> findSummaryByPortfolioId(Long portfolioId) {
         Portfolio portfolio = getPortfolio(portfolioId);
 
-        List<Position> positions = positionRepository.findByPortfolio(portfolio)
-                .orElse(List.of());
+        List<Position> positions = positionRepository.findByPortfolio(portfolio);
 
         Map<String, List<Position>> grouped = positions.stream()
                 .collect(Collectors.groupingBy(position ->

@@ -12,6 +12,6 @@ import java.util.Optional;
 @Repository
 public interface PositionRepository extends JpaRepository<Position, Long> {
     Optional<List<Position>> findBySymbolIgnoreCase(String symbol);
-    Optional<List<Position>>findByPortfolio(Portfolio portfolio);
+    List<Position>findByPortfolio(Portfolio portfolio);
     void deleteByPortfolioId(Long portfolioId);
 }

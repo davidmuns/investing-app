@@ -52,6 +52,12 @@ public class PositionController {
         return positionService.findAllClosed();
     }
 
+    @GetMapping("/closed/{portfolioId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public SearchResponse<PositionCloseResponse> listByPortfolioId(@PathVariable Long portfolioId) {
+        return positionService.findAllClosedByPortfolioId(portfolioId);
+    }
+
     @GetMapping("/{portfolioId}/summary")
     @ResponseStatus(HttpStatus.OK)
     public SearchResponse<PositionSummaryResponse> summaryByPortfolioId(@PathVariable Long portfolioId) {
