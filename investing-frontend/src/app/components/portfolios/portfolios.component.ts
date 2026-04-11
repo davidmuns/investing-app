@@ -94,17 +94,11 @@ export class PortfoliosComponent implements OnInit {
       next: (resp) => {
         this.portfolios = resp.data;
         if (this.portfolios.length > 0) {
-          this.selectedIndex = 0;
-          this.portfolioId = this.portfolios[0].id;
-          this.portfolioType = this.portfolios[0].type;
-
-          // this.loadInstruments();
-          // this.loadInstrumentsByPortfolioId(this.portfolioId);
-
+          this.portfolioId = this.portfolios[this.selectedIndex].id;
+          this.portfolioType = this.portfolios[this.selectedIndex].type;
           if (this.portfolioType !== this.WATCHLIST) {
             this.loadAllPositionsByPortfolioId(this.portfolioId);
           } else {
-            // this.filterPortfolioInstruments();
             this.loadInstrumentsByPortfolioId(this.portfolioId);
           }
         }
@@ -151,6 +145,7 @@ export class PortfoliosComponent implements OnInit {
 
   onDeletePortfolio(): void {
     const selected = this.portfolios[this.selectedIndex];
+    // const previous: PortfolioResponse | undefined = this.portfolios[this.selectedIndex - 1];
     if (!selected) return;
 
     const ok = confirm(`¿Eliminar la cartera "${selected.name}"?`);
@@ -161,10 +156,6 @@ export class PortfoliosComponent implements OnInit {
     this.portfolioService.delete(deletingId).subscribe({
       next: () => {
         const deletedIndex = this.portfolios.findIndex((p) => p.id === deletingId);
-        this.portfolios = this.portfolios.filter((p) => p.id !== deletingId);
-        this.positionsClosed = this.positionsClosed.filter((p) => p.portfolioId != deletingId);
-        this.positions = this.positions.filter((p) => p.portfolioId != deletingId);
-        this.positionsSummary = this.positionsSummary.filter((p) => p.portfolioId != deletingId);
         if (this.portfolios.length === 0) {
           const defaultPortfolio = { name: 'Mi cartera', type: 'POSITIONS' } as PortfolioRequest;
           this.createPortfolio(defaultPortfolio);
@@ -179,6 +170,7 @@ export class PortfoliosComponent implements OnInit {
         if (deletedIndex >= 0 && deletedIndex < this.selectedIndex) {
           this.selectedIndex = this.selectedIndex - 1;
         }
+
         this.loadPortfolios();
         console.log('Portfolio ID on delete porfolio: ', this.portfolioId);
       },
@@ -406,6 +398,17 @@ export class PortfoliosComponent implements OnInit {
     this.positionFormVisible = false;
   }
 
+  onUpdatePosition(event: UpdatePositionRequest) {
+    this.positionSvc.update(event).subscribe({
+      next: () => {
+        this.loadAllPositionsByPortfolioId(this.portfolioId);
+      },
+      error: (err) => {
+        console.error('Error updating position', err);
+      },
+    });
+  }
+
   onClosePosition(position: UpdatePositionRequest) {
     this.positionSvc.close(position).subscribe({
       next: (resp) => {
@@ -439,17 +442,6 @@ export class PortfoliosComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar posiciones cerradas por portfolio ID ', err);
-      },
-    });
-  }
-
-  onUpdatePosition(event: UpdatePositionRequest) {
-    this.positionSvc.update(event).subscribe({
-      next: () => {
-        this.loadAllPositionsByPortfolioId(this.portfolioId);
-      },
-      error: (err) => {
-        console.error('Error updating position', err);
       },
     });
   }
