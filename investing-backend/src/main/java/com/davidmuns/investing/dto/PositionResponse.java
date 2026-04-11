@@ -1,7 +1,5 @@
 package com.davidmuns.investing.dto;
 
-import com.davidmuns.investing.entity.Portfolio;
-
 import java.time.LocalDate;
 
 public record PositionResponse(
@@ -19,4 +17,7 @@ public record PositionResponse(
         Double netAmount,
         Double grossAmount
 ) {
+    public PositionResponse(Long id, String symbol, Double quantity, Long portfolioId, Double price, Double fee, LocalDate createdAt) {
+        this(id, null, symbol, null, quantity, portfolioId, price, null, null, fee, createdAt, null, null);
+    }
 }

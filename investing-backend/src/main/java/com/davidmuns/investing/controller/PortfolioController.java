@@ -29,6 +29,11 @@ public class PortfolioController {
         return service.findAll();
     }
 
+    @GetMapping("/{id}")
+    public PortfolioResponse one(@PathVariable Long id) {
+        return service.findById(id);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public PortfolioResponse create(@Valid @RequestBody CreatePortfolioRequest req) {

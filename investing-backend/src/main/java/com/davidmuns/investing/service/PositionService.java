@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -190,33 +189,18 @@ public class PositionService {
     }
 
     private PositionResponse toPositionResponse(Position position) {
-        TwelveDataQuoteResponse quote = null;
-
-        try {
-            quote = twelveDataClient.getQuote(position.getSymbol());
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-
         return new PositionResponse(
                 position.getId(),
-                position.getName(),
                 position.getSymbol(),
-                position.getType(),
                 position.getQuantity(),
                 position.getPortfolio().getId(),
                 position.getPrice(),
-                quote != null? quote.close(): 0.0,
-                quote != null? quote.previousClose(): 0.0,
                 position.getFee(),
-                position.getCreatedAt(),
-                position.getNetAmount(),
-                position.getGrossAmount()
+                position.getCreatedAt()
         );
     }
 
     private PositionCloseResponse  toPositionCloseResponse(PositionClose positionClose) {
-
         return new PositionCloseResponse(
                 positionClose.getId(),
                 positionClose.getName(),

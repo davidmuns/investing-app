@@ -42,6 +42,11 @@ public class PortfolioService {
         return new SearchResponse<PortfolioResponse>(dtoList, dtoList.size());
     }
 
+    public PortfolioResponse findById(Long portfolioId) {
+        Portfolio portfolio = getPortfolio(portfolioId);
+        return toResponse(portfolio);
+    }
+
     @Transactional
     public PortfolioResponse create(CreatePortfolioRequest req) {
         String name = req.name().trim();
@@ -76,5 +81,10 @@ public class PortfolioService {
 
     private static PortfolioResponse toResponse(Portfolio p) {
         return new PortfolioResponse(p.getId(), p.getName(), p.getType());
+    }
+
+    private Portfolio getPortfolio(Long portfolioId) {
+        return portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
     }
 }
