@@ -13,8 +13,8 @@ export class PositionEditFormComponent implements OnChanges {
   @Input() positions: PositionResponse[] = [];
   @Output() closePosition = new EventEmitter<UpdatePositionRequest>();
   @Output() updatePosition = new EventEmitter<UpdatePositionRequest>();
-  quantity = 0;
   today = '';
+  originalQuantity = 0;
 
   positionForms: EditPositionFormModel[] = [];
 
@@ -32,7 +32,6 @@ export class PositionEditFormComponent implements OnChanges {
 
   setForms(): void {
     this.positionForms = this.positions.map((p) => {
-      this.quantity = p.quantity;
       const date = p.createdAt;
       const quantity = this.utilsSvc.toInputNumber(p.quantity);
       const price = this.utilsSvc.toInputNumber(p.price);
@@ -97,11 +96,12 @@ export class PositionEditFormComponent implements OnChanges {
   }
 
   canSubmitPosition(form: EditPositionFormModel): boolean {
+    this.originalQuantity = this.utilsSvc.toNumber(form.original.quantity);
     return (
       this.utilsSvc.isValidDate(form.date) &&
       this.utilsSvc.isValidPositiveNumber(form.quantity) &&
       this.utilsSvc.isValidPositiveNumber(form.price) &&
-      !this.utilsSvc.isValidSellQuantity(form, this.quantity)
+      !this.utilsSvc.isValidSellQuantity(form, this.originalQuantity)
     );
   }
 
@@ -121,7 +121,7 @@ export class PositionEditFormComponent implements OnChanges {
   }
 
   getQuantityMsgError(form: EditPositionFormModel): string {
-    return this.utilsSvc.getQuantityErrorMsgOnClose(form, this.quantity);
+    return this.utilsSvc.getQuantityErrorMsgOnClose(form, this.originalQuantity);
   }
 
   getPriceMsgError(form: EditPositionFormModel): string {
