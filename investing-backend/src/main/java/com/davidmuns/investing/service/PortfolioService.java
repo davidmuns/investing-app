@@ -1,6 +1,6 @@
 package com.davidmuns.investing.service;
 
-import com.davidmuns.investing.dto.CreatePortfolioRequest;
+import com.davidmuns.investing.dto.PortfolioRequest;
 import com.davidmuns.investing.dto.PortfolioResponse;
 import com.davidmuns.investing.dto.SearchResponse;
 import com.davidmuns.investing.entity.Portfolio;
@@ -12,9 +12,7 @@ import com.davidmuns.investing.repo.PositionCloseRepository;
 import com.davidmuns.investing.repo.PositionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PortfolioService {
@@ -32,14 +30,12 @@ public class PortfolioService {
     }
 
     public SearchResponse<PortfolioResponse> findAll() {
-        List<PortfolioResponse> dtoList = portfolioRepository.findAll()
+        List<PortfolioResponse> dtoList = portfolioRepository
+                .findAllByOrderByDisplayOrderAsc()
                 .stream()
-                .map(pr -> new PortfolioResponse(
-                        pr.getId(),
-                        pr.getName(),
-                        pr.getType()
-                )).collect(Collectors.toList());
-        return new SearchResponse<PortfolioResponse>(dtoList, dtoList.size());
+                .map(this::toResponse)
+                .toList();
+        return new SearchResponse<>(dtoList, dtoList.size());
     }
 
     public PortfolioResponse findById(Long portfolioId) {
@@ -48,7 +44,7 @@ public class PortfolioService {
     }
 
     @Transactional
-    public PortfolioResponse create(CreatePortfolioRequest req) {
+    public PortfolioResponse create(PortfolioRequest req) {
         String name = req.name().trim();
 
         if (portfolioRepository.existsByNameIgnoreCaseAndType(name, req.type())) {
@@ -79,12 +75,22 @@ public class PortfolioService {
         return toResponse(portfolioRepository.save(portfolio));
     }
 
-    private static PortfolioResponse toResponse(Portfolio p) {
-        return new PortfolioResponse(p.getId(), p.getName(), p.getType());
+    @Transactional
+    public SearchResponse<PortfolioResponse> reorder(List<PortfolioRequest> request) {
+        request.forEach(req -> {
+           Portfolio portfolio = getPortfolio(req.id());
+           portfolio.setDisplayOrder(req.displayOrder());
+           portfolioRepository.save(portfolio);
+       });
+        return findAll();
+    }
+
+    private PortfolioResponse toResponse(Portfolio p) {
+        return new PortfolioResponse(p.getId(), p.getName(), p.getType(), p.getDisplayOrder());
     }
 
     private Portfolio getPortfolio(Long portfolioId) {
         return portfolioRepository.findById(portfolioId)
-                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+                .orElseThrow(() -> new NotFoundException(portfolioId, "Portfolio not found with id: "));
     }
 }

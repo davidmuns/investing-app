@@ -26,4 +26,9 @@ public interface InstrumentRepository extends JpaRepository<Instrument, Long> {
     void deleteByPortfolioId(Long portfolioId);
     Optional<List<Instrument>>findByPortfolio(Portfolio portfolio);
     Optional<Instrument> findBySymbolIgnoreCaseAndExchangeIgnoreCase(String symbol, String exchange);
+    Optional<Instrument> findByPortfolioAndSymbolIgnoreCaseAndExchangeIgnoreCase(
+            Portfolio portfolio,
+            String symbol,
+            String exchange
+    );
 }

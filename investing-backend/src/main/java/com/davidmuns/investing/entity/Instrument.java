@@ -8,7 +8,7 @@ import lombok.Data;
 @Table(
         name = "instruments",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"symbol", "exchange"})
+                @UniqueConstraint(columnNames = {"portfolio_id", "symbol", "exchange"})
         }
 )
 @Data

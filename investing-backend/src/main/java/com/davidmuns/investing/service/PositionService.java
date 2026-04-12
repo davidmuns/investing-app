@@ -86,16 +86,19 @@ public class PositionService {
         return new SearchResponse<>(summaries, summaries.size());
     }
 
+    @Transactional
     public void deletePosition(Long id) {
         Position position = getPosition(id);
         positionRepository.delete(position);
     }
 
+    @Transactional
     public void deletePositionClose(Long id) {
         PositionClose position = getPositionClose(id);
         positionCloseRepository.delete(position);
     }
 
+    @Transactional
     public void edit(UpdatePositionRequest req) {
         Position position = getPosition(req.id());
         position.setQuantity(req.quantity());
@@ -109,6 +112,7 @@ public class PositionService {
         positionRepository.save(position);
     }
 
+    @Transactional
     public PositionCloseResponse close(UpdatePositionRequest req) {
         Position position = getPosition(req.id());
 
@@ -278,7 +282,7 @@ public class PositionService {
 
     private Portfolio getPortfolio(Long portfolioId) {
         return portfolioRepository.findById(portfolioId)
-                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+                .orElseThrow(() -> new NotFoundException(portfolioId, "Portfolio not found with id: "));
     }
 
     private Position getPosition(Long positionId) {

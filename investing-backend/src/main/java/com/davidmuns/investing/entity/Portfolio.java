@@ -27,6 +27,9 @@ public class Portfolio {
     @Column(nullable = false)
     private PortfolioType type;
 
+    @Column
+    private Integer displayOrder;
+
     @CreationTimestamp // This annotation generates current local date and time
     private LocalDateTime createdAt;
 

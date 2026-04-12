@@ -1,15 +1,17 @@
 package com.davidmuns.investing.controller;
 
-import com.davidmuns.investing.dto.CreatePortfolioRequest;
+
+import com.davidmuns.investing.dto.PortfolioRequest;
 import com.davidmuns.investing.dto.PortfolioResponse;
 import com.davidmuns.investing.dto.SearchResponse;
-import com.davidmuns.investing.entity.Portfolio;
 import com.davidmuns.investing.service.PortfolioService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -36,10 +38,16 @@ public class PortfolioController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PortfolioResponse create(@Valid @RequestBody CreatePortfolioRequest req) {
+    public PortfolioResponse create(@Valid @RequestBody PortfolioRequest req) {
 //        public PortfolioResponse create(@RequestBody CreatePortfolioRequest req) {
         log.debug("Create Portfolio Request: {}", req);
         return service.create(req);
+    }
+
+    @PutMapping("/reorder")
+    public SearchResponse<PortfolioResponse> reorder(@Valid @RequestBody List<PortfolioRequest> req) {
+        SearchResponse<PortfolioResponse> resp = service.reorder(req);
+        return resp;
     }
 
     @DeleteMapping("/{id}")

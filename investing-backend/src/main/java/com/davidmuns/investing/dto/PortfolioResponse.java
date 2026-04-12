@@ -5,5 +5,6 @@ import com.davidmuns.investing.entity.PortfolioType;
 public record PortfolioResponse(
         Long id,
         String name,
-        PortfolioType type
+        PortfolioType type,
+        Integer displayOrder
 ){}

@@ -25,13 +25,11 @@ public class InstrumentController {
         return instrumentService.findAll();
     }
 
-
     @GetMapping("/{portfolioId}")
     @ResponseStatus(HttpStatus.CREATED)
     public SearchResponse<InstrumentResponse> listByPortfolioID(@PathVariable Long portfolioId) {
         return instrumentService.findAllByPortfolioId(portfolioId);
     }
-
 
     @GetMapping("/search")
     public SearchResponse<InstrumentResponse> search(@RequestParam String q) {

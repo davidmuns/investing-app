@@ -38,7 +38,7 @@ public class InstrumentService {
         String symbol = normalize(req.symbol().toUpperCase());
         String type = normalize(req.type());
         String exchange = normalize(req.exchange().toUpperCase());
-        return instrumentRepository.findBySymbolIgnoreCaseAndExchangeIgnoreCase(symbol, exchange)
+        return instrumentRepository.findByPortfolioAndSymbolIgnoreCaseAndExchangeIgnoreCase(portfolio, symbol, exchange)
                 .map(this::toResponse)
                 .orElseGet(() -> {
                     Instrument instrument = buildInstrument(name, symbol, type, exchange, portfolio);
@@ -46,6 +46,7 @@ public class InstrumentService {
                 });
     }
 
+    @Transactional
     public void delete(Long id) {
         Instrument instrument = instrumentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(id, "Instrument not found with id: "));
