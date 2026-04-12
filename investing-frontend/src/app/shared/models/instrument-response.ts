@@ -10,5 +10,5 @@ export interface InstrumentResponse {
   low: number;
   change: number;
   percentChange: number;
-  portfolioId?: number;
+  portfolioId: number;
 }

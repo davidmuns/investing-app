@@ -11,7 +11,7 @@
       </button>
     </div>
     <div class="headerActions">
-      <button mat-button (click)="loadInstruments()">
+      <button mat-button (click)="reloadInstruments()">
         <mat-icon matTooltip="Actualizar precios">refresh</mat-icon>
       </button>
     </div>
@@ -141,7 +141,7 @@
         <!-- WATCHLIST TABLE -->
         <app-instrument-table
           *ngIf="instruments.length"
-          [instruments]="portfolioInstruments"
+          [instruments]="instruments"
           (instrumentDeleted)="onDeleteInstrument($event)"
         ></app-instrument-table>
       </mat-tab>

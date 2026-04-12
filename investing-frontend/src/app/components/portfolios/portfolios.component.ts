@@ -101,8 +101,8 @@ export class PortfoliosComponent implements OnInit {
           } else {
             this.loadInstrumentsByPortfolioId(this.portfolioId);
           }
+          this.reorderPortfolios(this.portfolios);
         }
-        console.log('Portfolio ID on init portfolio component: ', this.portfolioId);
       },
       error: () => {
         this.errorMsg = 'No se pudo cargar la lista de carteras.';
@@ -129,7 +129,7 @@ export class PortfoliosComponent implements OnInit {
         this.setPortfolioTab(p.id);
         this.selectedIndex = this.portfolios.findIndex((x) => x.id === p.id);
         this.setActivePortfolio(p);
-        console.log('Portfolio ID on create portfolio: ', this.portfolioId);
+        this.reorderPortfolios(this.portfolios);
       },
       error: (err) => {
         if (err?.status === 409) {
@@ -170,9 +170,7 @@ export class PortfoliosComponent implements OnInit {
         if (deletedIndex >= 0 && deletedIndex < this.selectedIndex) {
           this.selectedIndex = this.selectedIndex - 1;
         }
-
         this.loadPortfolios();
-        console.log('Portfolio ID on delete porfolio: ', this.portfolioId);
       },
       error: () => {
         this.errorMsg = 'No se pudo eliminar la cartera.';
@@ -189,17 +187,16 @@ export class PortfoliosComponent implements OnInit {
 
   onInstrumentSelected(instrument: InstrumentRequest) {
     if (this.portfolioType === this.WATCHLIST) {
-      this.loadInstrumentByPortfolioId(instrument);
+      this.saveInstrument(instrument);
       return;
     }
     this.searchQuote(instrument);
   }
 
-  loadInstrumentByPortfolioId(instrument: InstrumentRequest): void {
+  saveInstrument(instrument: InstrumentRequest): void {
     this.instrumentSvc.create(instrument, this.portfolioId).subscribe({
       next: (resp) => {
-        this.instruments = [...this.instruments, resp];
-        this.filterPortfolioInstruments();
+        this.loadInstrumentsByPortfolioId(resp.portfolioId);
       },
       error: (err) => {
         console.log(err.error.message);
@@ -235,24 +232,15 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
-  loadInstruments(): void {
-    this.instrumentSvc.list().subscribe({
-      next: (data) => {
-        this.instruments = data.data;
-        this.filterPortfolioInstruments();
-      },
-      error: (err) => {
-        console.log(err);
-      },
-    });
+  reloadInstruments(): void {
+    this.loadInstrumentsByPortfolioId(this.portfolioId);
   }
 
   onDeleteInstrument(instrument: Instrument): void {
     this.instrumentSvc.deleteById(instrument.id).subscribe({
       next: () => {
+        this.loadInstrumentsByPortfolioId(instrument.portfolioId);
         this.utilsSvc.showSnackBar(`Instrument ${instrument.name} deleted`, 3000);
-        this.instruments = this.instruments.filter((i) => i.id !== instrument.id);
-        this.filterPortfolioInstruments();
       },
       error: (err) => {
         console.error('Error deleting instrument', err);
@@ -273,9 +261,7 @@ export class PortfoliosComponent implements OnInit {
     }
     this.selectedIndex = i;
     this.setActivePortfolio(this.portfolios[i]);
-    console.log('Portfolio ID on select tab: ', this.portfolioId);
     if (this.portfolioType === this.WATCHLIST) {
-      // this.filterPortfolioInstruments();
       this.loadInstrumentsByPortfolioId(this.portfolioId);
       return;
     }
@@ -293,10 +279,6 @@ export class PortfoliosComponent implements OnInit {
     this.positionFormVisible = false;
     this.positionFormEnabled = false;
     this.selectedInstrument = null;
-  }
-
-  filterPortfolioInstruments() {
-    this.portfolioInstruments = this.instruments.filter((i) => i.portfolioId == this.portfolioId);
   }
 
   startEdit(i: number) {
@@ -353,12 +335,11 @@ export class PortfoliosComponent implements OnInit {
     this.symbolQuery = '';
   }
 
-  dropTab(event: CdkDragDrop<any>) {
+  dropTab(event: CdkDragDrop<PortfolioResponse[]>): void {
     if (event.previousIndex === event.currentIndex) return;
 
     moveItemInArray(this.portfolios, event.previousIndex, event.currentIndex);
 
-    // Ajuste del selectedIndex para que no “salte” a otra pestaña
     if (this.selectedIndex === event.previousIndex) {
       this.selectedIndex = event.currentIndex;
     } else if (this.selectedIndex > event.previousIndex && this.selectedIndex <= event.currentIndex) {
@@ -367,8 +348,27 @@ export class PortfoliosComponent implements OnInit {
       this.selectedIndex++;
     }
 
-    // (Opcional) Persistir orden:
-    // this.saveOrder(this.portfolios.map(p => p.id));
+    this.reorderPortfolios(this.portfolios);
+  }
+
+  reorderPortfolios(portfolios: PortfolioResponse[]): void {
+    const payload: PortfolioRequest[] = portfolios.map((p, index) => ({
+      id: p.id,
+      name: p.name,
+      type: p.type,
+      displayOrder: index,
+    }));
+
+    this.portfolioService.reorder(payload).subscribe({
+      next: (resp) => {
+        this.portfolios = [...resp.data];
+        this.portfolioId = this.portfolios[this.selectedIndex]?.id;
+        this.portfolioType = this.portfolios[this.selectedIndex].type;
+      },
+      error: () => {
+        console.log('No se pudo reordenar la lista');
+      },
+    });
   }
 
   onCloseFormClicked() {
@@ -412,7 +412,6 @@ export class PortfoliosComponent implements OnInit {
   onClosePosition(position: UpdatePositionRequest) {
     this.positionSvc.close(position).subscribe({
       next: (resp) => {
-        // this.positionsClosed = [...this.positionsClosed, resp];
         this.loadAllPositionsByPortfolioId(this.portfolioId);
       },
       error: (err) => {
