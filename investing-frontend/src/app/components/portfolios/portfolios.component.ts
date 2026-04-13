@@ -261,6 +261,8 @@ export class PortfoliosComponent implements OnInit {
     if (this.editingIndex !== null && this.editingIndex !== i) {
       this.saveEdit(this.editingIndex);
     }
+    const selected = this.portfolios[i];
+    if (!selected) return;
     this.selectedIndex = i;
     this.setActivePortfolio(this.portfolios[i]);
     if (this.portfolioType === this.WATCHLIST) {
@@ -275,6 +277,7 @@ export class PortfoliosComponent implements OnInit {
   }
 
   private setActivePortfolio(portfolio: PortfolioResponse): void {
+    if (!portfolio) return;
     this.portfolioId = portfolio.id;
     this.portfolioType = portfolio.type;
     this.symbol = '';
