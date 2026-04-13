@@ -38,7 +38,7 @@
               [class.selected]="i === selectedIndex"
               cdkDrag
               cdkDragLockAxis="x"
-              matTooltip="Arrstra para ordenar"
+              matTooltip="Arrastra para ordenar"
               [matTooltipDisabled]="i !== selectedIndex"
             >
               <ng-container *ngIf="editingIndex !== i; else editMode">
@@ -135,7 +135,7 @@
 
   <!-- TABLES -->
   <ng-container *ngIf="isWatchlist; else positionTable">
-    <mat-tab-group mat-align-tabs="start" animationDuration="500ms">
+    <mat-tab-group mat-align-tabs="start" animationDuration="500ms" [(selectedIndex)]="subTabIndex">
       <!-- RESUMEN TAB -->
       <mat-tab label="Resumen">
         <!-- WATCHLIST TABLE -->
@@ -150,7 +150,12 @@
     </mat-tab-group>
   </ng-container>
   <ng-template #positionTable>
-    <mat-tab-group mat-align-tabs="start" animationDuration="1000ms" (selectedIndexChange)="selectPositionTab($event)">
+    <mat-tab-group
+      mat-align-tabs="start"
+      animationDuration="1000ms"
+      [(selectedIndex)]="subTabIndex"
+      (selectedIndexChange)="selectPositionTab($event)"
+    >
       <!-- POSITIONS TAB -->
       <mat-tab label="Posiciones">
         <!-- POSITIONS TABLE -->

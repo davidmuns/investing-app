@@ -58,6 +58,7 @@ export class PortfoliosComponent implements OnInit {
   POSITIONS = environment.POSITION_PORTFOLIO;
   symbol = '';
   selectedPositionTab = 'Posiciones';
+  subTabIndex = 0;
 
   constructor(
     private portfolioService: PortfolioService,
@@ -156,13 +157,13 @@ export class PortfoliosComponent implements OnInit {
     this.portfolioService.delete(deletingId).subscribe({
       next: () => {
         const deletedIndex = this.portfolios.findIndex((p) => p.id === deletingId);
+        this.portfolios = this.portfolios.filter((p) => p.id !== deletingId);
         if (this.portfolios.length === 0) {
+          this.selectedIndex = 0;
           const defaultPortfolio = { name: 'Mi cartera', type: 'POSITIONS' } as PortfolioRequest;
           this.createPortfolio(defaultPortfolio);
-          this.selectedIndex = 0;
           return;
         }
-
         // Mantener “posición” si existe; si borraste la última, selecciona la nueva última
         this.selectedIndex = Math.min(this.selectedIndex, this.portfolios.length - 1);
 
@@ -256,6 +257,7 @@ export class PortfoliosComponent implements OnInit {
   }
 
   selectPortfolioTab(i: number) {
+    this.subTabIndex = 0;
     if (this.editingIndex !== null && this.editingIndex !== i) {
       this.saveEdit(this.editingIndex);
     }
