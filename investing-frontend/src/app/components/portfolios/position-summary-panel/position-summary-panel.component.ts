@@ -20,7 +20,7 @@ export class PositionSummaryPanelComponent {
   constructor() {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['positionsSummary'] || changes['transactionTab'] || changes['closedPositionsSum']) {
+    if (changes['positionsSummary'] || changes['transactionTab']) {
       this.updateSummary();
     }
   }
@@ -48,5 +48,17 @@ export class PositionSummaryPanelComponent {
     this.dailyProfitLossValue = dailyProfitLossValue;
     this.dailyProfitLossPercentage =
       previousPortfolioValue !== 0 ? (dailyProfitLossValue / previousPortfolioValue) * 100 : 0;
+  }
+
+  getValueStyle(value: number): { color: string } {
+    if (value > 0) {
+      return { color: 'green' };
+    }
+
+    if (value < 0) {
+      return { color: 'red' };
+    }
+
+    return { color: 'black' };
   }
 }

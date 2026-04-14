@@ -3,44 +3,28 @@
     <label>Val. mercado:</label>
     <span>{{ marketValue | number: '1.1-2' }} $</span>
   </div>
+
   <div class="summaryItem">
     <label>B/P posic. abiertas:</label>
-    <span *ngIf="totalProfitLossValue == 0" style="color: black">
-      {{ totalProfitLossValue | number: '1.1-2' }} $ / {{ totalProfitLossPercentage | number: '1.1-2' }}%
-    </span>
-    <span *ngIf="totalProfitLossValue < 0" style="color: red">
-      {{ totalProfitLossValue | number: '1.1-2' }} $ / {{ totalProfitLossPercentage | number: '1.1-2' }}%
-    </span>
-    <span *ngIf="totalProfitLossValue > 0" style="color: green">
+    <span [ngStyle]="getValueStyle(totalProfitLossValue)">
       {{ totalProfitLossValue | number: '1.1-2' }} $ / {{ totalProfitLossPercentage | number: '1.1-2' }}%
     </span>
   </div>
+
   <div class="summaryItem" *ngIf="transactionTab === 'closed'">
     <label>B/P posic. cerradas:</label>
-    <span *ngIf="closedPositionsSum == 0" style="color: black">{{ closedPositionsSum | number: '1.1-2' }} $</span>
-    <span *ngIf="closedPositionsSum < 0" style="color: red">{{ closedPositionsSum | number: '1.1-2' }} $</span>
-    <span *ngIf="closedPositionsSum > 0" style="color: green">{{ closedPositionsSum | number: '1.1-2' }} $</span>
+    <span [ngStyle]="getValueStyle(closedPositionsSum)">{{ closedPositionsSum | number: '1.1-2' }} $</span>
   </div>
+
   <div class="summaryItem" *ngIf="transactionTab === 'open'">
     <label>B/P diario:</label>
-    <span *ngIf="dailyProfitLossValue == 0" style="color: black">
-      {{ dailyProfitLossValue | number: '1.1-2' }} $ / {{ dailyProfitLossPercentage | number: '1.1-2' }}%
-    </span>
-    <span *ngIf="dailyProfitLossValue < 0" style="color: red">
-      {{ dailyProfitLossValue | number: '1.1-2' }} $ / {{ dailyProfitLossPercentage | number: '1.1-2' }}%
-    </span>
-    <span *ngIf="dailyProfitLossValue > 0" style="color: green">
+    <span [ngStyle]="getValueStyle(dailyProfitLossValue)">
       {{ dailyProfitLossValue | number: '1.1-2' }} $ / {{ dailyProfitLossPercentage | number: '1.1-2' }}%
     </span>
   </div>
+
   <div class="summaryItem" *ngIf="transactionTab === 'closed'">
     <label>B/P total:</label>
-    <span *ngIf="openClosedPositionsSum == 0" style="color: black">
-      {{ openClosedPositionsSum | number: '1.1-2' }} $
-    </span>
-    <span *ngIf="openClosedPositionsSum < 0" style="color: red">{{ openClosedPositionsSum | number: '1.1-2' }} $</span>
-    <span *ngIf="openClosedPositionsSum > 0" style="color: green">
-      {{ openClosedPositionsSum | number: '1.1-2' }} $
-    </span>
+    <span [ngStyle]="getValueStyle(openClosedPositionsSum)">{{ openClosedPositionsSum | number: '1.1-2' }} $</span>
   </div>
 </div>
