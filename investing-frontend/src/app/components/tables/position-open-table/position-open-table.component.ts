@@ -16,6 +16,7 @@ import { UtilsService } from '@app/services/utils.service';
 import { PositionOpenResponse } from '@app/shared/models/position-open-response';
 import { UpdatePositionRequest } from '@app/shared/models/update-position-request';
 import { PositionRow } from '../position-table/position-table.component';
+import { PositionResponse } from '@app/shared/models/position-response';
 
 @Component({
   selector: 'app-position-open-table',
@@ -40,9 +41,13 @@ export class PositionOpenTableComponent implements OnInit, AfterViewInit, OnChan
   displayedColumns = [...this.positionSummaryColumns.map((c) => c.def)];
 
   @Input() positions: PositionOpenResponse[] = [];
+  positionsResponse: PositionResponse[] = [];
   @Output() closePosition = new EventEmitter<UpdatePositionRequest>();
+  @Output() updatePosition = new EventEmitter<UpdatePositionRequest>();
   dataSource = new MatTableDataSource<PositionOpenResponse>([]);
   @ViewChild(MatSort) sort!: MatSort;
+  positionSelected: PositionOpenResponse | null = null;
+  filteredPositions: PositionResponse[] = [];
 
   constructor(
     private _liveAnnouncer: LiveAnnouncer,
@@ -60,6 +65,7 @@ export class PositionOpenTableComponent implements OnInit, AfterViewInit, OnChan
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['positions']) {
       this.setTableData();
+      this.toPositionResponse(this.positions);
     }
   }
 
@@ -67,8 +73,35 @@ export class PositionOpenTableComponent implements OnInit, AfterViewInit, OnChan
     this.closePosition.emit(event);
   }
 
+  onUpdatePosition(event: UpdatePositionRequest) {
+    this.updatePosition.emit(event);
+  }
+
+  onRowClick(row: PositionOpenResponse): void {
+    this.positionSelected = this.positionSelected?.symbol === row.symbol ? null : row;
+    this.filteredPositions = this.positionsResponse.filter((p) => p.id == row.id);
+  }
+
   private setTableData(): void {
     this.dataSource.data = this.positions;
+  }
+
+  private toPositionResponse(positions: PositionOpenResponse[]) {
+    this.positionsResponse = this.positions.map((p) => ({
+      id: p.id,
+      name: p.name,
+      type: p.type,
+      symbol: p.symbol,
+      fee: 0,
+      price: p.price,
+      createdAt: p.createdAt,
+      quantity: p.quantity,
+      portfolioId: p.portfolioId,
+      close: p.close,
+      previousClose: 0,
+      netAmount: 0,
+      grossAmount: 0,
+    }));
   }
 
   announceSortChange(sortState: Sort): void {

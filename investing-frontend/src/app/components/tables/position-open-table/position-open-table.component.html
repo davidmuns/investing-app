@@ -36,7 +36,18 @@
         </p>
       </td>
     </ng-container>
+    <ng-container matColumnDef="expandedDetail">
+      <td mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns.length">
+        <app-position-edit-form
+          *ngIf="positionSelected?.id === row.id"
+          [positions]="filteredPositions"
+          (closePosition)="onClosePosition($event)"
+          (updatePosition)="onUpdatePosition($event)"
+        ></app-position-edit-form>
+      </td>
+    </ng-container>
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr class="data-row" mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    <tr class="data-row" mat-row *matRowDef="let row; columns: displayedColumns" (click)="onRowClick(row)"></tr>
+    <tr class="detail-row" mat-row *matRowDef="let row; columns: ['expandedDetail']"></tr>
   </table>
 </div>

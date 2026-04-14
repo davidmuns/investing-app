@@ -61,6 +61,7 @@ export class PortfoliosComponent implements OnInit {
   selectedPositionTab = 'Posiciones';
   subTabIndex = 0;
   transactionTab: 'open' | 'closed' = 'open';
+  positionsOpened: PositionOpenResponse[] = [];
 
   constructor(
     private portfolioService: PortfolioService,
@@ -463,12 +464,11 @@ export class PortfoliosComponent implements OnInit {
       },
     });
   }
-  positionsOpened: PositionOpenResponse[] = [];
+
   listPositionOpenByPortfolioId(portfolioId: number) {
     this.positionSvc.listPositionOpenByPortfolioId(portfolioId).subscribe({
       next: (resp) => {
         this.positionsOpened = [...resp.data];
-        console.log(resp.data);
       },
       error: (err) => {
         console.error('Error al cargar posiciones abiertas por portfolio ID ', err);

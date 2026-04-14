@@ -192,6 +192,8 @@
         <app-position-open-table
           *ngIf="transactionTab === 'open'"
           [positions]="positionsOpened"
+          (closePosition)="onClosePosition($event)"
+          (updatePosition)="onUpdatePosition($event)"
         ></app-position-open-table>
         <ng-container *ngIf="transactionTab === 'closed'">
           <!-- CLOSE POSITIONS PANEL-FILTER -->
