@@ -13,6 +13,9 @@ import com.davidmuns.investing.repo.PositionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,13 +62,50 @@ public class PositionService {
         return new SearchResponse<>(resp, resp.size());
     }
 
-    public SearchResponse<PositionResponse> findAllByPortfolioID(Long portfolioId) {
+    public SearchResponse<PositionResponse> findAllByPortfolioId(Long portfolioId) {
         Portfolio portfolio = getPortfolio(portfolioId);
 
         List<PositionResponse> resp = positionRepository.findByPortfolio(portfolio)
                 .stream()
                 .map(this::toPositionResponse)
                 .collect(toList());
+        return new SearchResponse<>(resp, resp.size());
+    }
+
+    public SearchResponse<PositionOpenResponse> findAllOpenByPortfolioId1(Long portfolioId) {
+        Portfolio portfolio = getPortfolio(portfolioId);
+        List<Position> positions = positionRepository.findByPortfolio(portfolio);
+        Map<String, TwelveDataQuoteResponse> quotesBySymbol = positions.stream()
+                .map(Position::getSymbol)
+                .distinct()
+                .collect(Collectors.toMap(
+                        symbol -> symbol,
+                        this::getTwelveDataQuoteResponse
+                ));
+        List<PositionOpenResponse> resp = positions.stream()
+                .map(position -> toPositionOpenResponse(position, quotesBySymbol))
+                .collect(toList());
+        return new SearchResponse<>(resp, resp.size());
+    }
+
+    public SearchResponse<PositionOpenResponse> findAllOpenByPortfolioId(Long portfolioId) {
+        Portfolio portfolio = getPortfolio(portfolioId);
+        List<Position> positions = positionRepository.findByPortfolio(portfolio);
+
+        Map<String, TwelveDataQuoteResponse> quotesBySymbol = new HashMap<>();
+
+        for (Position position : positions) {
+            String symbol = position.getSymbol();
+            if (!quotesBySymbol.containsKey(symbol)) {
+                quotesBySymbol.put(symbol, getTwelveDataQuoteResponse(symbol));
+            }
+        }
+
+        List<PositionOpenResponse> resp = new ArrayList<>();
+        for (Position position : positions) {
+            resp.add(toPositionOpenResponse(position, quotesBySymbol));
+        }
+
         return new SearchResponse<>(resp, resp.size());
     }
 
@@ -204,6 +244,33 @@ public class PositionService {
         );
     }
 
+    private PositionOpenResponse toPositionOpenResponse(Position position, Map<String, TwelveDataQuoteResponse> quotesBySymbol) {
+        TwelveDataQuoteResponse quote = quotesBySymbol.get(position.getSymbol());
+
+        double currentPrice = quote != null ? quote.close() : 0.0;
+        double previousClose = quote != null ? quote.previousClose() : 0.0;
+        double marketValue = position.getQuantity() * currentPrice;
+        double netProfitLossValue = marketValue - position.getNetAmount();
+        double netProfitLossPercentage = position.getNetAmount() != 0 ? ((marketValue / position.getNetAmount()) - 1) * 100 : 0.0;
+        double dailyProfitLoss = (currentPrice - previousClose) * position.getQuantity();
+
+        return new PositionOpenResponse(
+                position.getId(),
+                position.getName(),
+                position.getSymbol(),
+                position.getType(),
+                position.getQuantity(),
+                position.getPortfolio().getId(),
+                position.getPrice(),
+                currentPrice,
+                marketValue,
+                position.getCreatedAt(),
+                netProfitLossValue,
+                netProfitLossPercentage,
+                dailyProfitLoss
+        );
+    }
+
     private PositionCloseResponse  toPositionCloseResponse(PositionClose positionClose) {
         return new PositionCloseResponse(
                 positionClose.getId(),
@@ -239,13 +306,7 @@ public class PositionService {
         double averagePrice = totalQuantity != 0 ? totalGrossCost / totalQuantity : 0.0;
         double totalNetCost = totalGrossCost + totalFees;
 
-        TwelveDataQuoteResponse quote = null;
-
-        try {
-            quote = twelveDataClient.getQuote(first.getSymbol());
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
+        TwelveDataQuoteResponse quote = getTwelveDataQuoteResponse(first.getSymbol());
 
         double currentPrice = quote != null ? quote.close() : 0.0;
         double previousClose = quote != null ? quote.previousClose() : 0.0;
@@ -293,6 +354,17 @@ public class PositionService {
     private PositionClose getPositionClose(Long positionId) {
         return positionCloseRepository.findById(positionId)
                 .orElseThrow(() -> new NotFoundException(positionId, "Position not found with id: "));
+    }
+
+    private TwelveDataQuoteResponse getTwelveDataQuoteResponse(String symbol) {
+        log.info("inside getTwelveDataQuoteResponse method");
+        TwelveDataQuoteResponse quote = null;
+        try {
+            quote = twelveDataClient.getQuote(symbol);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return quote;
     }
 
 

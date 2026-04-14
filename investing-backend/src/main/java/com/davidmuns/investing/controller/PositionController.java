@@ -8,8 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/positions")
 @CrossOrigin
@@ -42,8 +40,8 @@ public class PositionController {
 
     @GetMapping("/{portfolioId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public SearchResponse<PositionResponse> listByPortfolioID(@PathVariable Long portfolioId) {
-        return positionService.findAllByPortfolioID(portfolioId);
+    public SearchResponse<PositionResponse> listByPortfolioId(@PathVariable Long portfolioId) {
+        return positionService.findAllByPortfolioId(portfolioId);
     }
 
     @GetMapping("/closed")
@@ -54,8 +52,14 @@ public class PositionController {
 
     @GetMapping("/closed/{portfolioId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public SearchResponse<PositionCloseResponse> listByPortfolioId(@PathVariable Long portfolioId) {
+    public SearchResponse<PositionCloseResponse> listClosedByPortfolioId(@PathVariable Long portfolioId) {
         return positionService.findAllClosedByPortfolioId(portfolioId);
+    }
+
+    @GetMapping("/opened/{portfolioId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public SearchResponse<PositionOpenResponse> listOpenedByPortfolioId(@PathVariable Long portfolioId) {
+        return positionService.findAllOpenByPortfolioId(portfolioId);
     }
 
     @GetMapping("/{portfolioId}/summary")
