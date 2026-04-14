@@ -15,7 +15,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { UtilsService } from '@app/services/utils.service';
 import { PositionOpenResponse } from '@app/shared/models/position-open-response';
 import { UpdatePositionRequest } from '@app/shared/models/update-position-request';
-import { PositionRow } from '../position/position-table.component';
+import { PositionRow } from '../position-table/position-table.component';
 
 @Component({
   selector: 'app-position-open-table',

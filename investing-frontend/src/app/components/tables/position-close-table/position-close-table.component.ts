@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChil
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { PositionCloseResponse } from '@app/shared/models/position-close-response';
-import { PositionRow } from '../position/position-table.component';
+import { PositionRow } from '../position-table/position-table.component';
 import { UtilsService } from '@app/services/utils.service';
 
 @Component({
