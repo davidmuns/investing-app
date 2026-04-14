@@ -31,7 +31,6 @@ export class PositionClosePanelComponent implements OnInit {
 
   private sumPositions(): void {
     const filtered = this.symbol ? this.positions.filter((p) => p.symbol === this.symbol) : this.positions;
-
     this.sum = filtered.reduce((acc, p) => acc + p.profitLoss, 0);
   }
 

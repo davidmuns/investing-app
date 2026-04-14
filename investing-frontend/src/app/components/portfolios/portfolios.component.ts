@@ -62,6 +62,7 @@ export class PortfoliosComponent implements OnInit {
   subTabIndex = 0;
   transactionTab: 'open' | 'closed' = 'open';
   positionsOpened: PositionOpenResponse[] = [];
+  closedPositionsSum = 0;
 
   constructor(
     private portfolioService: PortfolioService,
@@ -265,6 +266,9 @@ export class PortfoliosComponent implements OnInit {
 
   showClosedTransactions(): void {
     this.transactionTab = 'closed';
+    this.closedPositionsSum = this.positionsClosed
+      .filter((p) => p.portfolioId === this.portfolioId)
+      .reduce((acc, p) => acc + p.profitLoss, 0);
   }
 
   selectPortfolioTab(i: number) {

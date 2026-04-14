@@ -8,16 +8,19 @@ import { PositionSummaryResponse } from '@app/shared/models/position-summary-res
 })
 export class PositionSummaryPanelComponent {
   @Input() positionsSummary: PositionSummaryResponse[] = [];
+  @Input() transactionTab = '';
+  @Input() closedPositionsSum = 0;
   marketValue = 0;
   totalProfitLossValue = 0;
   totalProfitLossPercentage = 0;
   dailyProfitLossValue = 0;
   dailyProfitLossPercentage = 0;
+  openClosedPositionsSum = 0;
 
   constructor() {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['positionsSummary']) {
+    if (changes['positionsSummary'] || changes['transactionTab'] || changes['closedPositionsSum']) {
       this.updateSummary();
     }
   }
@@ -40,6 +43,7 @@ export class PositionSummaryPanelComponent {
     this.marketValue = marketValue;
     this.totalProfitLossValue = totalProfitLossValue;
     this.totalProfitLossPercentage = costBasis !== 0 ? (totalProfitLossValue / costBasis) * 100 : 0;
+    this.openClosedPositionsSum = this.totalProfitLossValue + this.closedPositionsSum;
 
     this.dailyProfitLossValue = dailyProfitLossValue;
     this.dailyProfitLossPercentage =
