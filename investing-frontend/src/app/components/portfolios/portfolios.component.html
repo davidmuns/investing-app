@@ -190,7 +190,7 @@
         </div>
         <!-- OPEN POSITIONS TABLE -->
         <app-position-open-table
-          *ngIf="transactionTab === 'open'"
+          *ngIf="transactionTab === 'open' && positions.length"
           [positions]="positionsOpened"
           (closePosition)="onClosePosition($event)"
           (updatePosition)="onUpdatePosition($event)"

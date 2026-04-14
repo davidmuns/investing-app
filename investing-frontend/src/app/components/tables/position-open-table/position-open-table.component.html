@@ -7,6 +7,10 @@
       <td mat-cell *matCellDef="let element">
         <p [ngStyle]="getValueStyle(column.def, element)">
           <ng-container [ngSwitch]="column.def">
+            <span *ngSwitchCase="'createdAt'">
+              {{ element[column.def] | date: 'dd/MM/yyyy' }}
+            </span>
+
             <span *ngSwitchCase="'quantity'">
               {{ element[column.def] | number: '1.0-4' }}
             </span>

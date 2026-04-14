@@ -93,10 +93,12 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
   }
 
   onClosePosition(event: UpdatePositionRequest) {
+    this.positionSelected = null;
     this.closePosition.emit(event);
   }
 
   onUpdatePosition(event: UpdatePositionRequest) {
+    this.positionSelected = null;
     this.updatePosition.emit(event);
   }
 
