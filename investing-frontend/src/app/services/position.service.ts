@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PositionCloseResponse } from '@app/shared/models/position-close-response';
+import { PositionOpenResponse } from '@app/shared/models/position-open-response';
 import { PositionRequest } from '@app/shared/models/position-request';
 import { PositionResponse } from '@app/shared/models/position-response';
 import { PositionSummaryResponse } from '@app/shared/models/position-summary-response';
@@ -47,5 +48,9 @@ export class PositionService {
 
   listPositionCloseByPortfolioId(id: number): Observable<SearchResponse<PositionCloseResponse>> {
     return this.http.get<SearchResponse<PositionCloseResponse>>(this.apiUrl + '/closed/' + id);
+  }
+
+  listPositionOpenByPortfolioId(id: number): Observable<SearchResponse<PositionOpenResponse>> {
+    return this.http.get<SearchResponse<PositionOpenResponse>>(this.apiUrl + '/opened/' + id);
   }
 }

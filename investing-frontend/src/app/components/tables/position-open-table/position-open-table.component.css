@@ -1,0 +1,22 @@
+.container {
+  height: 900px;
+  margin: 0px;
+}
+
+table {
+  width: 100%;
+}
+
+th.mat-sort-header-sorted {
+  color: black;
+}
+
+.data-row:hover{
+  cursor: pointer;
+  background-color: rgb(232, 253, 253);
+}
+
+.detail-row {
+  height: 0;
+}
+

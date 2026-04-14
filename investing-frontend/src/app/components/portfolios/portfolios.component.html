@@ -133,8 +133,8 @@
 
   <div *ngIf="!loading && !portfolios.length" class="hint">No hay carteras. Crea una con el botón “+”.</div>
 
-  <!-- TABLES -->
-  <ng-container *ngIf="isWatchlist; else positionTable">
+  <!-- INSTRUMENTS TABLE -->
+  <ng-container *ngIf="isWatchlist; else positionsTable">
     <mat-tab-group mat-align-tabs="start" animationDuration="500ms" [(selectedIndex)]="subTabIndex">
       <!-- RESUMEN TAB -->
       <mat-tab label="Resumen">
@@ -149,10 +149,11 @@
       <mat-tab label="Gráficos"></mat-tab>
     </mat-tab-group>
   </ng-container>
-  <ng-template #positionTable>
+  <!-- POSITIONS TABLE -->
+  <ng-template #positionsTable>
     <mat-tab-group
       mat-align-tabs="start"
-      animationDuration="1000ms"
+      animationDuration="0ms"
       [(selectedIndex)]="subTabIndex"
       (selectedIndexChange)="selectPositionTab($event)"
     >
@@ -169,18 +170,45 @@
       </mat-tab>
       <!-- TRANSACCIONS TAB -->
       <mat-tab label="Transacciones">
-        <app-position-close-panel
-          [positions]="positionsClosed"
-          (selectedSymbol)="onSymbolSelected($event)"
-          [symbol]="symbol"
-        ></app-position-close-panel>
-        <app-position-close-table
-          *ngIf="positionsClosed.length"
-          [positionsClosed]="positionsClosed"
-          [portfolioId]="portfolioId"
-          (deletePositionClose)="onDeletePositionClose($event)"
-          [symbol]="symbol"
-        ></app-position-close-table>
+        <div class="transaction-selector">
+          <button
+            type="button"
+            class="transaction-selector__item"
+            [class.active]="transactionTab === 'open'"
+            (click)="showOpenTransactions()"
+          >
+            Posiciones abiertas
+          </button>
+          <button
+            type="button"
+            class="transaction-selector__item"
+            [class.active]="transactionTab === 'closed'"
+            (click)="showClosedTransactions()"
+          >
+            Posiciones cerradas
+          </button>
+        </div>
+        <!-- OPEN POSITIONS TABLE -->
+        <app-position-open-table
+          *ngIf="transactionTab === 'open'"
+          [positions]="positionsOpened"
+        ></app-position-open-table>
+        <ng-container *ngIf="transactionTab === 'closed'">
+          <!-- CLOSE POSITIONS PANEL-FILTER -->
+          <app-position-close-panel
+            [positions]="positionsClosed"
+            (selectedSymbol)="onSymbolSelected($event)"
+            [symbol]="symbol"
+          ></app-position-close-panel>
+          <!-- CLOSE POSITIONS TABLE -->
+          <app-position-close-table
+            *ngIf="positionsClosed.length"
+            [positionsClosed]="positionsClosed"
+            [portfolioId]="portfolioId"
+            (deletePositionClose)="onDeletePositionClose($event)"
+            [symbol]="symbol"
+          ></app-position-close-table>
+        </ng-container>
       </mat-tab>
     </mat-tab-group>
   </ng-template>

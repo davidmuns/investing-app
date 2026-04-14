@@ -18,6 +18,7 @@ import { PositionSummaryResponse } from '@app/shared/models/position-summary-res
 import { environment } from '@env/environment';
 import { UpdatePositionRequest } from '@app/shared/models/update-position-request';
 import { PositionCloseResponse } from '@app/shared/models/position-close-response';
+import { PositionOpenResponse } from '@app/shared/models/position-open-response';
 type ApiError = { error?: string; message?: string };
 
 @Component({
@@ -59,6 +60,7 @@ export class PortfoliosComponent implements OnInit {
   symbol = '';
   selectedPositionTab = 'Posiciones';
   subTabIndex = 0;
+  transactionTab: 'open' | 'closed' = 'open';
 
   constructor(
     private portfolioService: PortfolioService,
@@ -256,8 +258,17 @@ export class PortfoliosComponent implements OnInit {
     }
   }
 
+  showOpenTransactions(): void {
+    this.transactionTab = 'open';
+  }
+
+  showClosedTransactions(): void {
+    this.transactionTab = 'closed';
+  }
+
   selectPortfolioTab(i: number) {
     this.subTabIndex = 0;
+    this.transactionTab = 'open';
     if (this.editingIndex !== null && this.editingIndex !== i) {
       this.saveEdit(this.editingIndex);
     }
@@ -274,6 +285,9 @@ export class PortfoliosComponent implements OnInit {
 
   selectPositionTab(index: number): void {
     this.selectedPositionTab = index === 0 ? 'Posiciones' : 'Transacciones';
+    if (index === 1) {
+      this.transactionTab = 'open';
+    }
   }
 
   private setActivePortfolio(portfolio: PortfolioResponse): void {
@@ -449,6 +463,18 @@ export class PortfoliosComponent implements OnInit {
       },
     });
   }
+  positionsOpened: PositionOpenResponse[] = [];
+  listPositionOpenByPortfolioId(portfolioId: number) {
+    this.positionSvc.listPositionOpenByPortfolioId(portfolioId).subscribe({
+      next: (resp) => {
+        this.positionsOpened = [...resp.data];
+        console.log(resp.data);
+      },
+      error: (err) => {
+        console.error('Error al cargar posiciones abiertas por portfolio ID ', err);
+      },
+    });
+  }
 
   onSymbolSelected(symbol: string) {
     this.symbol = symbol || '';
@@ -480,5 +506,6 @@ export class PortfoliosComponent implements OnInit {
     this.listPositionsByPortfolioId(id);
     this.listPositionSummaryByPortfolioId(id);
     this.listPositionCloseByPortfolioId(id);
+    this.listPositionOpenByPortfolioId(id);
   }
 }
