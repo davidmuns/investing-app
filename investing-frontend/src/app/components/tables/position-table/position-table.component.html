@@ -1,4 +1,4 @@
-<div class="container">
+<div class="table-container">
   <table mat-table [dataSource]="dataSource" matSort multiTemplateDataRows (matSortChange)="announceSortChange($event)">
     <ng-container *ngFor="let column of positionSummaryColumns" [matColumnDef]="column.def">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>

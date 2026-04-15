@@ -19,6 +19,7 @@ import { environment } from '@env/environment';
 import { UpdatePositionRequest } from '@app/shared/models/update-position-request';
 import { PositionCloseResponse } from '@app/shared/models/position-close-response';
 import { PositionOpenResponse } from '@app/shared/models/position-open-response';
+import { SearchInstrumentComponent } from './search-instrument/search-instrument.component';
 type ApiError = { error?: string; message?: string };
 
 @Component({
@@ -42,6 +43,7 @@ export class PortfoliosComponent implements OnInit {
   formError = '';
   @ViewChild('nameInput') nameInput?: ElementRef<HTMLInputElement>;
   @ViewChildren('editInput') editInputs!: QueryList<ElementRef<HTMLInputElement>>;
+  @ViewChild('searchInstrument') searchInstrumentComponent!: SearchInstrumentComponent;
   instruments: InstrumentResponse[] = [];
   portfolioInstruments: InstrumentResponse[] = [];
   portfolioType: string = '';
@@ -419,9 +421,12 @@ export class PortfoliosComponent implements OnInit {
     if (this.portfolioType === this.WATCHLIST) return;
     // Si ya hay un instrumento seleccionado, no volver a deshabilitar el formulario
     if (this.selectedInstrument) return;
-    this.positionFormVisible = !this.positionFormVisible;
+    this.positionFormVisible = true;
     this.positionFormEnabled = false;
     this.selectedInstrument = null;
+    setTimeout(() => {
+      this.searchInstrumentComponent?.focusInput();
+    });
   }
 
   onAddPosition(position: PositionRequest) {

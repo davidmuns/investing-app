@@ -1,33 +1,8 @@
-.container {
-  height: 900px;
-  margin: 0px;
-}
-
-table {
-  width: 100%;
-}
-
-th.mat-header-cell,
-.mat-header-cell {
-  color: black;
-  font-weight: bold;
-}
-
-th.mat-sort-header-sorted {
-  color: black;
-}
-
-.data-row:hover{
-  cursor: pointer;
-  background-color: rgb(232, 253, 253);
-}
-
 .detail-row {
   height: 0;
 }
 
-.link-cell {
-  color: #092f75;
+/* .link-cell {
+  color: #1256a0;
   font-weight: 450;
-}
-
+} */

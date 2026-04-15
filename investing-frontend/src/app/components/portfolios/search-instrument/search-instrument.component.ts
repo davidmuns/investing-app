@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { InstrumentService } from '@app/services/instrument.service';
 import { SearchResponse } from '@app/shared/models/search-response';
@@ -12,6 +12,7 @@ import { InstrumentRequest } from '@app/shared/models/instrument-request';
   styleUrls: ['./search-instrument.component.css'],
 })
 export class SearchInstrumentComponent implements OnInit {
+  @ViewChild('searchInstrumentInput') searchInput!: ElementRef<HTMLInputElement>;
   form = this.fb.control<string | InstrumentRequest>('', [Validators.minLength(1)]);
   @Output() instrumentSelected = new EventEmitter<InstrumentRequest>();
   @Output() searchFocused = new EventEmitter<void>();
@@ -32,6 +33,10 @@ export class SearchInstrumentComponent implements OnInit {
 
   ngOnChanges() {
     this.form.reset();
+  }
+
+  focusInput(): void {
+    this.searchInput?.nativeElement.focus();
   }
 
   onInstrumentClicked(event: MatAutocompleteSelectedEvent): void {

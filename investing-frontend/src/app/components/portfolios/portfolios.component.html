@@ -100,6 +100,7 @@
             {{ this.portfolioType == WATCHLIST ? 'Añadir símbolo' : 'Añadir posición' }}
           </label>
           <app-search-instrument
+            #searchInstrument
             (searchFocused)="onInstrumentSearchFocus()"
             (instrumentSelected)="onInstrumentSelected($event)"
           ></app-search-instrument>
@@ -141,7 +142,7 @@
 
     <!-- INSTRUMENTS TABLE -->
     <ng-container *ngIf="isWatchlist; else positionsTable">
-      <mat-tab-group mat-align-tabs="start" animationDuration="500ms" [(selectedIndex)]="subTabIndex">
+      <mat-tab-group mat-align-tabs="start" animationDuration="0ms" [(selectedIndex)]="subTabIndex">
         <!-- RESUMEN TAB -->
         <mat-tab label="Resumen">
           <!-- WATCHLIST TABLE -->
@@ -236,7 +237,11 @@
       style="text-align: center; font-size: 17px"
     >
       <p style="color: rgb(114, 118, 118)">
-        No tiene ninguna posición abierta. Vaya a Añadir posición para abrir una nueva posición.
+        No tiene ninguna posición abierta. Vaya a
+        <span style="cursor: pointer; color: #1256a0; font-weight: bold" (click)="onInstrumentSearchFocus()">
+          Añadir posición
+        </span>
+        para abrir una nueva posición.
       </p>
     </div>
   </div>

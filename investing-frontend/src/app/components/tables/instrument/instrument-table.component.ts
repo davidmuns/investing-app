@@ -72,6 +72,14 @@ export class InstrumentTableComponent implements OnInit, AfterViewInit, OnChange
     this.instrumentDeleted.emit(instrument);
   }
 
+  getCellClass(columnDef: string): string {
+    if (columnDef === 'name' || columnDef === 'symbol') {
+      return 'link-cell';
+    }
+
+    return '';
+  }
+
   getValueStyle(columnDef: string, element: InstrumentResponse): { [key: string]: string } {
     return this.utilsSvc.getValueStyle(columnDef, element as unknown as Record<string, unknown>, [
       'change',
