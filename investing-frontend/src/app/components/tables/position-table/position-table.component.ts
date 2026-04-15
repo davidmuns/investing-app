@@ -119,6 +119,14 @@ export class PositionTableComponent implements OnInit, AfterViewInit, OnChanges 
     }
   }
 
+  getCellClass(columnDef: string): string {
+    if (columnDef === 'name' || columnDef === 'symbol') {
+      return 'link-cell';
+    }
+
+    return '';
+  }
+
   getValueStyle(columnDef: string, element: PositionRow): { [key: string]: string } {
     return this.utilsSvc.getValueStyle(columnDef, element as unknown as Record<string, unknown>, [
       'dailyProfitLoss',

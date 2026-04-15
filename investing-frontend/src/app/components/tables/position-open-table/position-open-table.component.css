@@ -7,6 +7,12 @@ table {
   width: 100%;
 }
 
+th.mat-header-cell,
+.mat-header-cell {
+  color: black;
+  font-weight: bold;
+}
+
 th.mat-sort-header-sorted {
   color: black;
 }
@@ -18,5 +24,10 @@ th.mat-sort-header-sorted {
 
 .detail-row {
   height: 0;
+}
+
+.link-cell {
+  color: #092f75;
+  font-weight: 450;
 }
 

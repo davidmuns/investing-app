@@ -1,17 +1,19 @@
 .container {
-  height: 900px;
-  margin: 0px;
-
-  /* @media(max-width: 800px) {
-    left: 0px;
-    min-width: 90%;
-    background-color: white;
-    margin: 0px 5%;
-  } */
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 table {
   width: 100%;
+}
+
+th.mat-header-cell,
+.mat-header-cell {
+  color: black;
+  font-weight: bold;
 }
 
 th.mat-sort-header-sorted {
@@ -39,4 +41,9 @@ th.mat-sort-header-sorted {
 .actions-cell {
   width: 10px;
   text-align: center;
+}
+
+.link-cell {
+  color: #092f75;
+  font-weight: 450;
 }

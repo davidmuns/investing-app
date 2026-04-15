@@ -11,234 +11,235 @@
       </button>
     </div>
     <div class="headerActions">
-      <button mat-button (click)="reloadInstruments()">
-        <mat-icon matTooltip="Actualizar precios">refresh</mat-icon>
+      <button mat-button *ngIf="portfolioType" (click)="reloadCurrentPortfolio()">
+        <mat-icon matTooltip="Reload portfolio">refresh</mat-icon>
       </button>
     </div>
   </div>
   <p></p>
   <p *ngIf="loading">Cargando…</p>
   <p *ngIf="errorMsg" class="error">{{ errorMsg }}</p>
-  <div *ngIf="!loading" class="tabBar">
-    <!-- ✅ DropList en el contenedor de tabs -->
-    <div class="tabs" cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="dropTab($event)">
-      <mat-tab-group
-        mat-align-tabs="center"
-        animationDuration="500ms"
-        [selectedIndex]="selectedIndex"
-        (selectedIndexChange)="selectPortfolioTab($event)"
-      >
-        <mat-tab
-          *ngFor="let portfolio of portfolios | searchBar: this.symbolQuery; let i = index; trackBy: trackByPortfolio"
+  <div class="portfolio-shell">
+    <div *ngIf="!loading" class="tabBar">
+      <!-- ✅ DropList en el contenedor de tabs -->
+      <div class="tabs" cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="dropTab($event)">
+        <mat-tab-group
+          mat-align-tabs="center"
+          animationDuration="500ms"
+          [selectedIndex]="selectedIndex"
+          (selectedIndexChange)="selectPortfolioTab($event)"
         >
-          <ng-template mat-tab-label>
-            <!-- ✅ Drag SOLO en el label -->
-            <div
-              class="tabLabelContainer"
-              [class.selected]="i === selectedIndex"
-              cdkDrag
-              cdkDragLockAxis="x"
-              matTooltip="Arrastra para ordenar"
-              [matTooltipDisabled]="i !== selectedIndex"
-            >
-              <ng-container *ngIf="editingIndex !== i; else editMode">
-                <mat-icon class="dragHint" aria-hidden="true">drag_indicator</mat-icon>
-                <mat-icon>
-                  {{ portfolio.type == WATCHLIST ? 'remove_red_eye' : 'business_center' }}
-                </mat-icon>
-                <span class="tabLabelText">
-                  {{ portfolio.name }}
-                </span>
-                <button
-                  class="editButton"
-                  mat-icon-button
-                  type="button"
-                  (click)="startEdit(i); $event.stopPropagation()"
-                  aria-label="Renombrar"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
-              </ng-container>
+          <mat-tab
+            *ngFor="let portfolio of portfolios | searchBar: this.symbolQuery; let i = index; trackBy: trackByPortfolio"
+          >
+            <ng-template mat-tab-label>
+              <!-- ✅ Drag SOLO en el label -->
+              <div
+                class="tabLabelContainer"
+                [class.selected]="i === selectedIndex"
+                cdkDrag
+                cdkDragLockAxis="x"
+                matTooltip="Arrastra para ordenar"
+                [matTooltipDisabled]="i !== selectedIndex"
+              >
+                <ng-container *ngIf="editingIndex !== i; else editMode">
+                  <mat-icon class="dragHint" aria-hidden="true">drag_indicator</mat-icon>
+                  <mat-icon>
+                    {{ portfolio.type == WATCHLIST ? 'remove_red_eye' : 'business_center' }}
+                  </mat-icon>
+                  <span class="tabLabelText">
+                    {{ portfolio.name }}
+                  </span>
+                  <button
+                    class="editButton"
+                    mat-icon-button
+                    type="button"
+                    (click)="startEdit(i); $event.stopPropagation()"
+                    aria-label="Renombrar"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                </ng-container>
 
-              <ng-template #editMode>
-                <!-- ✅ mientras editas, mejor no arrastrar -->
-                <input
-                  #editInput
-                  class="editInput"
-                  [(ngModel)]="editName"
-                  (keydown.enter)="saveEdit(i)"
-                  (keydown.escape)="cancelEdit()"
-                  (click)="$event.stopPropagation()"
-                  (blur)="saveEdit(i)"
-                  (mousedown)="$event.stopPropagation()"
-                />
-              </ng-template>
-            </div>
+                <ng-template #editMode>
+                  <!-- ✅ mientras editas, mejor no arrastrar -->
+                  <input
+                    #editInput
+                    class="editInput"
+                    [(ngModel)]="editName"
+                    (keydown.enter)="saveEdit(i)"
+                    (keydown.escape)="cancelEdit()"
+                    (click)="$event.stopPropagation()"
+                    (blur)="saveEdit(i)"
+                    (mousedown)="$event.stopPropagation()"
+                  />
+                </ng-template>
+              </div>
+            </ng-template>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+      <button mat-button color="primary" (click)="onAddPortfolioClicked()">
+        <mat-icon matTooltip="Crear nueva cartera">add</mat-icon>
+      </button>
+    </div>
+
+    <!-- Position summary panel -->
+    <app-position-summary-panel
+      *ngIf="!isWatchlist"
+      [positionsSummary]="positionsSummary"
+      [transactionTab]="transactionTab"
+      [closedPositionsSum]="closedPositionsSum"
+    ></app-position-summary-panel>
+
+    <!-- Search bar -->
+    <div *ngIf="!loading && portfolios.length" class="panel">
+      <div class="panelTop">
+        <div class="addSymbol">
+          <label class="addSymbolLabel">
+            {{ this.portfolioType == WATCHLIST ? 'Añadir símbolo' : 'Añadir posición' }}
+          </label>
+          <app-search-instrument
+            (searchFocused)="onInstrumentSearchFocus()"
+            (instrumentSelected)="onInstrumentSelected($event)"
+          ></app-search-instrument>
+        </div>
+        <div>
+          <ng-container *ngIf="!positionFormVisible; else close">
+            <button
+              mat-icon-button
+              aria-label="Example icon button with a vertical three dot icon"
+              [matMenuTriggerFor]="delete_portfolio"
+            >
+              <mat-icon matTooltip="Eliminar/descargar cartera">more_vert</mat-icon>
+            </button>
+          </ng-container>
+          <ng-template #close>
+            <mat-icon style="cursor: pointer" (click)="onCloseFormClicked()" matTooltip="Cerrar formulario">
+              close
+            </mat-icon>
           </ng-template>
+        </div>
+      </div>
+
+      <p *ngIf="symbolError" class="error">{{ symbolError }}</p>
+
+      <div class="panelHeader"></div>
+    </div>
+
+    <!-- Add Position form -->
+    <app-add-position-form
+      *ngIf="!isWatchlist && positionFormVisible"
+      [positionFormEnabled]="positionFormEnabled"
+      [selectedInstrument]="selectedInstrument"
+      [closePrice]="closePrice"
+      [portfolioId]="portfolioId"
+      (addPosition)="onAddPosition($event)"
+    ></app-add-position-form>
+
+    <div *ngIf="!loading && !portfolios.length" class="hint">No hay carteras. Crea una con el botón “+”.</div>
+
+    <!-- INSTRUMENTS TABLE -->
+    <ng-container *ngIf="isWatchlist; else positionsTable">
+      <mat-tab-group mat-align-tabs="start" animationDuration="500ms" [(selectedIndex)]="subTabIndex">
+        <!-- RESUMEN TAB -->
+        <mat-tab label="Resumen">
+          <!-- WATCHLIST TABLE -->
+          <app-instrument-table
+            *ngIf="instruments.length"
+            [instruments]="instruments"
+            (instrumentDeleted)="onDeleteInstrument($event)"
+          ></app-instrument-table>
+        </mat-tab>
+        <!-- GRAFICOS TAB -->
+        <mat-tab label="Gráficos"></mat-tab>
+      </mat-tab-group>
+    </ng-container>
+    <!-- POSITIONS TABLE -->
+    <ng-template #positionsTable>
+      <mat-tab-group
+        mat-align-tabs="start"
+        animationDuration="0ms"
+        [(selectedIndex)]="subTabIndex"
+        (selectedIndexChange)="selectPositionTab($event)"
+      >
+        <!-- POSITIONS TAB -->
+        <mat-tab label="Posiciones">
+          <!-- POSITIONS TABLE -->
+          <app-position-table
+            *ngIf="positions.length"
+            [positionsSummary]="positionsSummary"
+            [positions]="positions"
+            (closePosition)="onClosePosition($event)"
+            (updatePosition)="onUpdatePosition($event)"
+          ></app-position-table>
+        </mat-tab>
+        <!-- TRANSACCIONS TAB -->
+        <mat-tab label="Transacciones">
+          <div class="transaction-selector">
+            <button
+              type="button"
+              class="transaction-selector__item"
+              [class.active]="transactionTab === 'open'"
+              (click)="showOpenTransactions()"
+            >
+              Posiciones abiertas
+            </button>
+            <button
+              type="button"
+              class="transaction-selector__item"
+              [class.active]="transactionTab === 'closed'"
+              (click)="showClosedTransactions()"
+            >
+              Posiciones cerradas
+            </button>
+          </div>
+          <!-- OPEN POSITIONS TABLE -->
+          <app-position-open-table
+            *ngIf="transactionTab === 'open' && positions.length"
+            [positions]="positionsOpened"
+            (closePosition)="onClosePosition($event)"
+            (updatePosition)="onUpdatePosition($event)"
+          ></app-position-open-table>
+          <ng-container *ngIf="transactionTab === 'closed'">
+            <!-- CLOSE POSITIONS PANEL-FILTER -->
+            <app-position-close-panel
+              [positions]="positionsClosed"
+              (selectedSymbol)="onSymbolSelected($event)"
+              [symbol]="symbol"
+            ></app-position-close-panel>
+            <!-- CLOSE POSITIONS TABLE -->
+            <app-position-close-table
+              *ngIf="positionsClosed.length"
+              [positionsClosed]="positionsClosed"
+              [portfolioId]="portfolioId"
+              (deletePositionClose)="onDeletePositionClose($event)"
+              [symbol]="symbol"
+            ></app-position-close-table>
+          </ng-container>
         </mat-tab>
       </mat-tab-group>
-    </div>
-    <button mat-button color="primary" (click)="onAddPortfolioClicked()">
-      <mat-icon matTooltip="Crear nueva cartera">add</mat-icon>
-    </button>
-  </div>
-
-  <!-- Position summary panel -->
-  <app-position-summary-panel
-    *ngIf="!isWatchlist"
-    [positionsSummary]="positionsSummary"
-    [transactionTab]="transactionTab"
-    [closedPositionsSum]="closedPositionsSum"
-  ></app-position-summary-panel>
-
-  <!-- Search bar -->
-  <div *ngIf="!loading && portfolios.length" class="panel">
-    <div class="panelTop">
-      <div class="addSymbol">
-        <label class="addSymbolLabel">
-          {{ this.portfolioType == WATCHLIST ? 'Añadir símbolo' : 'Añadir posición' }}
-        </label>
-        <app-search-instrument
-          (searchFocused)="onInstrumentSearchFocus()"
-          (instrumentSelected)="onInstrumentSelected($event)"
-        ></app-search-instrument>
-      </div>
-      <div>
-        <ng-container *ngIf="!positionFormVisible; else close">
-          <button
-            mat-icon-button
-            aria-label="Example icon button with a vertical three dot icon"
-            [matMenuTriggerFor]="delete_portfolio"
-          >
-            <mat-icon matTooltip="Eliminar/descargar cartera">more_vert</mat-icon>
-          </button>
-        </ng-container>
-        <ng-template #close>
-          <mat-icon style="cursor: pointer" (click)="onCloseFormClicked()" matTooltip="Cerrar formulario">
-            close
-          </mat-icon>
-        </ng-template>
-      </div>
-    </div>
-
-    <p *ngIf="symbolError" class="error">{{ symbolError }}</p>
-
-    <div class="panelHeader"></div>
-  </div>
-
-  <!-- Add Position form -->
-  <app-add-position-form
-    *ngIf="!isWatchlist && positionFormVisible"
-    [positionFormEnabled]="positionFormEnabled"
-    [selectedInstrument]="selectedInstrument"
-    [closePrice]="closePrice"
-    [portfolioId]="portfolioId"
-    (addPosition)="onAddPosition($event)"
-  ></app-add-position-form>
-
-  <div *ngIf="!loading && !portfolios.length" class="hint">No hay carteras. Crea una con el botón “+”.</div>
-
-  <!-- INSTRUMENTS TABLE -->
-  <ng-container *ngIf="isWatchlist; else positionsTable">
-    <mat-tab-group mat-align-tabs="start" animationDuration="500ms" [(selectedIndex)]="subTabIndex">
-      <!-- RESUMEN TAB -->
-      <mat-tab label="Resumen">
-        <!-- WATCHLIST TABLE -->
-        <app-instrument-table
-          *ngIf="instruments.length"
-          [instruments]="instruments"
-          (instrumentDeleted)="onDeleteInstrument($event)"
-        ></app-instrument-table>
-      </mat-tab>
-      <!-- GRAFICOS TAB -->
-      <mat-tab label="Gráficos"></mat-tab>
-    </mat-tab-group>
-  </ng-container>
-  <!-- POSITIONS TABLE -->
-  <ng-template #positionsTable>
-    <mat-tab-group
-      mat-align-tabs="start"
-      animationDuration="0ms"
-      [(selectedIndex)]="subTabIndex"
-      (selectedIndexChange)="selectPositionTab($event)"
+    </ng-template>
+    <!-- TEXT IF NO TABLE -->
+    <div
+      *ngIf="!instruments.length && portfolioType === WATCHLIST"
+      class="panel"
+      style="text-align: center; font-size: 17px"
     >
-      <!-- POSITIONS TAB -->
-      <mat-tab label="Posiciones">
-        <!-- POSITIONS TABLE -->
-        <app-position-table
-          *ngIf="positions.length"
-          [positionsSummary]="positionsSummary"
-          [positions]="positions"
-          (closePosition)="onClosePosition($event)"
-          (updatePosition)="onUpdatePosition($event)"
-        ></app-position-table>
-      </mat-tab>
-      <!-- TRANSACCIONS TAB -->
-      <mat-tab label="Transacciones">
-        <div class="transaction-selector">
-          <button
-            type="button"
-            class="transaction-selector__item"
-            [class.active]="transactionTab === 'open'"
-            (click)="showOpenTransactions()"
-          >
-            Posiciones abiertas
-          </button>
-          <button
-            type="button"
-            class="transaction-selector__item"
-            [class.active]="transactionTab === 'closed'"
-            (click)="showClosedTransactions()"
-          >
-            Posiciones cerradas
-          </button>
-        </div>
-        <!-- OPEN POSITIONS TABLE -->
-        <app-position-open-table
-          *ngIf="transactionTab === 'open' && positions.length"
-          [positions]="positionsOpened"
-          (closePosition)="onClosePosition($event)"
-          (updatePosition)="onUpdatePosition($event)"
-        ></app-position-open-table>
-        <ng-container *ngIf="transactionTab === 'closed'">
-          <!-- CLOSE POSITIONS PANEL-FILTER -->
-          <app-position-close-panel
-            [positions]="positionsClosed"
-            (selectedSymbol)="onSymbolSelected($event)"
-            [symbol]="symbol"
-          ></app-position-close-panel>
-          <!-- CLOSE POSITIONS TABLE -->
-          <app-position-close-table
-            *ngIf="positionsClosed.length"
-            [positionsClosed]="positionsClosed"
-            [portfolioId]="portfolioId"
-            (deletePositionClose)="onDeletePositionClose($event)"
-            [symbol]="symbol"
-          ></app-position-close-table>
-        </ng-container>
-      </mat-tab>
-    </mat-tab-group>
-  </ng-template>
-</div>
-
-<!-- TEXT IF NO TABLE -->
-<div
-  *ngIf="!instruments.length && portfolioType === WATCHLIST"
-  class="panel"
-  style="text-align: center; font-size: 17px"
->
-  <p style="color: rgb(114, 118, 118)">
-    Gestione su cartera aquí añadiendo acciones, bonos, materias primas, índices o monedas.
-  </p>
-</div>
-<div
-  *ngIf="!positions.length && portfolioType === POSITIONS && selectedPositionTab === 'Posiciones'"
-  class="panel"
-  style="text-align: center; font-size: 17px"
->
-  <p style="color: rgb(114, 118, 118)">
-    No tiene ninguna posición abierta. Vaya a Añadir posición para abrir una nueva posición.
-  </p>
+      <p style="color: rgb(114, 118, 118)">
+        Gestione su cartera aquí añadiendo acciones, bonos, materias primas, índices o monedas.
+      </p>
+    </div>
+    <div
+      *ngIf="!positions.length && portfolioType === POSITIONS && selectedPositionTab === 'Posiciones'"
+      class="panel"
+      style="text-align: center; font-size: 17px"
+    >
+      <p style="color: rgb(114, 118, 118)">
+        No tiene ninguna posición abierta. Vaya a Añadir posición para abrir una nueva posición.
+      </p>
+    </div>
+  </div>
 </div>
 
 <!-- PORTFOLIO MENU -->

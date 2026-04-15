@@ -82,6 +82,14 @@ export class PositionCloseTableComponent implements OnInit {
     this.deletePositionClose.emit(id);
   }
 
+  getCellClass(columnDef: string): string {
+    if (columnDef === 'name' || columnDef === 'symbol') {
+      return 'link-cell';
+    }
+
+    return '';
+  }
+
   getValueStyle(columnDef: string, element: PositionRow): { [key: string]: string } {
     return this.utilsSvc.getValueStyle(columnDef, element as unknown as Record<string, unknown>, [
       'profitLoss',

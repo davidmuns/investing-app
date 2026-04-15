@@ -237,8 +237,23 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
+  reloadCurrentPortfolio(): void {
+    if (this.portfolioType === this.WATCHLIST) {
+      this.reloadInstruments();
+      return;
+    }
+
+    if (this.portfolioType === this.POSITIONS) {
+      this.reloadPositions();
+    }
+  }
+
   reloadInstruments(): void {
     this.loadInstrumentsByPortfolioId(this.portfolioId);
+  }
+
+  reloadPositions(): void {
+    this.loadAllPositionsByPortfolioId(this.portfolioId);
   }
 
   onDeleteInstrument(instrument: Instrument): void {
@@ -404,7 +419,7 @@ export class PortfoliosComponent implements OnInit {
     if (this.portfolioType === this.WATCHLIST) return;
     // Si ya hay un instrumento seleccionado, no volver a deshabilitar el formulario
     if (this.selectedInstrument) return;
-    this.positionFormVisible = true;
+    this.positionFormVisible = !this.positionFormVisible;
     this.positionFormEnabled = false;
     this.selectedInstrument = null;
   }
