@@ -14,6 +14,10 @@ export class PortfolioService {
   list(): Observable<SearchResponse<PortfolioResponse>> {
     return this.http.get<SearchResponse<PortfolioResponse>>(this.apiUrl);
   }
+
+  listByUsername(username: string | null): Observable<SearchResponse<PortfolioResponse>> {
+    return this.http.get<SearchResponse<PortfolioResponse>>(`${this.apiUrl}/user/${username}`);
+  }
   create(req: PortfolioRequest): Observable<PortfolioResponse> {
     return this.http.post<PortfolioResponse>(this.apiUrl, req);
   }

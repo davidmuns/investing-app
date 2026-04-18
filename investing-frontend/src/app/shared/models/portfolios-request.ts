@@ -3,4 +3,5 @@ export interface PortfolioRequest {
   name: string;
   type: PortfolioType;
   displayOrder: number;
+  username: string | null;
 }

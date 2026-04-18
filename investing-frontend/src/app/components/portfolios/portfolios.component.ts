@@ -20,6 +20,7 @@ import { UpdatePositionRequest } from '@app/shared/models/update-position-reques
 import { PositionCloseResponse } from '@app/shared/models/position-close-response';
 import { PositionOpenResponse } from '@app/shared/models/position-open-response';
 import { SearchInstrumentComponent } from './search-instrument/search-instrument.component';
+import { TokenService } from '@app/services/token.service';
 type ApiError = { error?: string; message?: string };
 
 @Component({
@@ -63,6 +64,7 @@ export class PortfoliosComponent implements OnInit {
   transactionTab: 'open' | 'closed' = 'open';
   positionsOpened: PositionOpenResponse[] = [];
   closedPositionsSum = 0;
+  username: string | null = null;
 
   constructor(
     private portfolioService: PortfolioService,
@@ -70,10 +72,13 @@ export class PortfoliosComponent implements OnInit {
     private instrumentSvc: InstrumentService,
     private utilsSvc: UtilsService,
     private positionSvc: PositionService,
+    private tokenSvc: TokenService,
   ) {}
 
   ngOnInit(): void {
-    this.loadPortfolios();
+    this.username = this.tokenSvc.getUsername();
+    this.portfolios = [];
+    this.loadPortfoliosByUsername();
   }
 
   toggleActions(): void {
@@ -116,6 +121,31 @@ export class PortfoliosComponent implements OnInit {
     });
   }
 
+  loadPortfoliosByUsername(): void {
+    this.portfolioService.listByUsername(this.username).subscribe({
+      next: (resp) => {
+        if (resp.data.length === 0) {
+          this.setDefaultPortfolio();
+        }
+        this.portfolios = resp.data;
+        if (this.portfolios.length > 0) {
+          this.portfolioId = this.portfolios[this.selectedIndex].id;
+          this.portfolioType = this.portfolios[this.selectedIndex].type;
+          if (this.portfolioType !== this.WATCHLIST) {
+            this.loadAllPositionsByPortfolioId(this.portfolioId);
+          } else {
+            this.loadInstrumentsByPortfolioId(this.portfolioId);
+          }
+          this.reorderPortfolios(this.portfolios);
+        }
+      },
+      error: () => {
+        this.errorMsg = 'No se pudo cargar la lista de carteras.';
+        this.loading = false;
+      },
+    });
+  }
+
   onAddPortfolioClicked(): void {
     const dialogRef = this.dialog.open(ModalPortfolioComponent, {
       width: '380px',
@@ -128,6 +158,7 @@ export class PortfoliosComponent implements OnInit {
   }
 
   createPortfolio(newPortfolio: PortfolioRequest) {
+    newPortfolio.username = this.username;
     this.portfolioService.create(newPortfolio).subscribe({
       next: (p) => {
         this.portfolios = [...this.portfolios, p];
@@ -164,8 +195,7 @@ export class PortfoliosComponent implements OnInit {
         this.portfolios = this.portfolios.filter((p) => p.id !== deletingId);
         if (this.portfolios.length === 0) {
           this.selectedIndex = 0;
-          const defaultPortfolio = { name: 'Mi cartera', type: 'POSITIONS' } as PortfolioRequest;
-          this.createPortfolio(defaultPortfolio);
+          this.setDefaultPortfolio();
           return;
         }
         // Mantener “posición” si existe; si borraste la última, selecciona la nueva última
@@ -175,12 +205,20 @@ export class PortfoliosComponent implements OnInit {
         if (deletedIndex >= 0 && deletedIndex < this.selectedIndex) {
           this.selectedIndex = this.selectedIndex - 1;
         }
-        this.loadPortfolios();
+        this.loadPortfoliosByUsername();
       },
       error: () => {
         this.errorMsg = 'No se pudo eliminar la cartera.';
       },
     });
+  }
+
+  setDefaultPortfolio() {
+    const defaultPortfolio = {
+      name: 'Mi cartera',
+      type: 'POSITIONS',
+    } as PortfolioRequest;
+    this.createPortfolio(defaultPortfolio);
   }
 
   setPortfolioTab(createdId: number) {
@@ -396,6 +434,7 @@ export class PortfoliosComponent implements OnInit {
       name: p.name,
       type: p.type,
       displayOrder: index,
+      username: this.username,
     }));
 
     this.portfolioService.reorder(payload).subscribe({
