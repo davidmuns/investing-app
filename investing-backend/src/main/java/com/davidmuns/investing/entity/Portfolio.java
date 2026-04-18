@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(
         name = "portfolios",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uq_portfolio_name_type", columnNames = {"name", "type"})
+                @UniqueConstraint(name = "uq_portfolio_name_type", columnNames = {"name", "type", "username"})
         }
 )
 @Data
@@ -33,10 +33,19 @@ public class Portfolio {
     @CreationTimestamp // This annotation generates current local date and time
     private LocalDateTime createdAt;
 
+    @Column
+    private String username;
+
     protected Portfolio() {}
 
     public Portfolio(String name, PortfolioType type) {
         this.name = name;
         this.type = type;
+    }
+
+    public Portfolio(String name, PortfolioType type, String username) {
+        this.name = name;
+        this.type = type;
+        this.username = username;
     }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
-    boolean existsByNameIgnoreCaseAndType(String name, PortfolioType type);
-    List<Portfolio> findAllByOrderByDisplayOrderAsc();
+    boolean existsByNameIgnoreCaseAndTypeAndUsername(String name, PortfolioType type, String username);
+    List<Portfolio> findAllByUsernameOrderByDisplayOrderAsc(String username);
 
 }

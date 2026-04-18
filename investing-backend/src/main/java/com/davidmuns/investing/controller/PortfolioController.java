@@ -26,9 +26,9 @@ public class PortfolioController {
         this.service = service;
     }
 
-    @GetMapping
-    public SearchResponse<PortfolioResponse> list() {
-        return service.findAll();
+    @GetMapping("/user/{username}")
+    public SearchResponse<PortfolioResponse> listByUsername(@PathVariable String username) {
+        return service.findAllByUsername(username);
     }
 
     @GetMapping("/{id}")
@@ -39,7 +39,6 @@ public class PortfolioController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public PortfolioResponse create(@Valid @RequestBody PortfolioRequest req) {
-//        public PortfolioResponse create(@RequestBody CreatePortfolioRequest req) {
         log.debug("Create Portfolio Request: {}", req);
         return service.create(req);
     }

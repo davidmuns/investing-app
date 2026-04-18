@@ -29,9 +29,9 @@ public class PortfolioService {
         this.positionCloseRepository = positionCloseRepository;
     }
 
-    public SearchResponse<PortfolioResponse> findAll() {
+    public SearchResponse<PortfolioResponse> findAllByUsername(String username) {
         List<PortfolioResponse> dtoList = portfolioRepository
-                .findAllByOrderByDisplayOrderAsc()
+                .findAllByUsernameOrderByDisplayOrderAsc(username)
                 .stream()
                 .map(this::toResponse)
                 .toList();
@@ -47,11 +47,12 @@ public class PortfolioService {
     public PortfolioResponse create(PortfolioRequest req) {
         String name = req.name().trim();
 
-        if (portfolioRepository.existsByNameIgnoreCaseAndType(name, req.type())) {
+        if (portfolioRepository.existsByNameIgnoreCaseAndTypeAndUsername(name, req.type(), req.username())) {
             throw new DuplicatePortfolioException("Ya existe una cartera '" + name + "' de tipo " + req.type());
         }
 
-        return toResponse(portfolioRepository.save(new Portfolio(name, req.type())));
+//        return toResponse(portfolioRepository.save(new Portfolio(name, req.type())));
+        return toResponse(portfolioRepository.save(new Portfolio(name, req.type(), req.username())));
     }
 
     @Transactional
@@ -77,12 +78,13 @@ public class PortfolioService {
 
     @Transactional
     public SearchResponse<PortfolioResponse> reorder(List<PortfolioRequest> request) {
+        String username = request.get(0).username().trim();
         request.forEach(req -> {
-           Portfolio portfolio = getPortfolio(req.id());
-           portfolio.setDisplayOrder(req.displayOrder());
-           portfolioRepository.save(portfolio);
-       });
-        return findAll();
+            Portfolio portfolio = getPortfolio(req.id());
+            portfolio.setDisplayOrder(req.displayOrder());
+            portfolioRepository.save(portfolio);
+        });
+        return findAllByUsername(username);
     }
 
     private PortfolioResponse toResponse(Portfolio p) {

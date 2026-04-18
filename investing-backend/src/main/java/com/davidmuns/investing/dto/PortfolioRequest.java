@@ -10,5 +10,6 @@ public record PortfolioRequest(
         String name,
         @NotNull
         PortfolioType type,
-        Integer displayOrder
+        Integer displayOrder,
+        String username
 ) {}
