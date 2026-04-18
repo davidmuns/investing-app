@@ -20,69 +20,21 @@
   <p *ngIf="loading">Cargando…</p>
   <p *ngIf="errorMsg" class="error">{{ errorMsg }}</p>
   <div class="portfolio-shell">
-    <div *ngIf="!loading" class="tabBar">
-      <!-- ✅ DropList en el contenedor de tabs -->
-      <div class="tabs" cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="dropTab($event)">
-        <mat-tab-group
-          mat-align-tabs="center"
-          animationDuration="500ms"
-          [selectedIndex]="selectedIndex"
-          (selectedIndexChange)="selectPortfolioTab($event)"
-        >
-          <mat-tab
-            *ngFor="let portfolio of portfolios | searchBar: this.symbolQuery; let i = index; trackBy: trackByPortfolio"
-          >
-            <ng-template mat-tab-label>
-              <!-- ✅ Drag SOLO en el label -->
-              <div
-                class="tabLabelContainer"
-                [class.selected]="i === selectedIndex"
-                cdkDrag
-                cdkDragLockAxis="x"
-                matTooltip="Arrastra para ordenar"
-                [matTooltipDisabled]="i !== selectedIndex"
-              >
-                <ng-container *ngIf="editingIndex !== i; else editMode">
-                  <mat-icon class="dragHint" aria-hidden="true">drag_indicator</mat-icon>
-                  <mat-icon>
-                    {{ portfolio.type == WATCHLIST ? 'remove_red_eye' : 'business_center' }}
-                  </mat-icon>
-                  <span class="tabLabelText">
-                    {{ portfolio.name }}
-                  </span>
-                  <button
-                    class="editButton"
-                    mat-icon-button
-                    type="button"
-                    (click)="startEdit(i); $event.stopPropagation()"
-                    aria-label="Renombrar"
-                  >
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                </ng-container>
-
-                <ng-template #editMode>
-                  <!-- ✅ mientras editas, mejor no arrastrar -->
-                  <input
-                    #editInput
-                    class="editInput"
-                    [(ngModel)]="editName"
-                    (keydown.enter)="saveEdit(i)"
-                    (keydown.escape)="cancelEdit()"
-                    (click)="$event.stopPropagation()"
-                    (blur)="saveEdit(i)"
-                    (mousedown)="$event.stopPropagation()"
-                  />
-                </ng-template>
-              </div>
-            </ng-template>
-          </mat-tab>
-        </mat-tab-group>
-      </div>
-      <button mat-button color="primary" (click)="onAddPortfolioClicked()">
-        <mat-icon matTooltip="Crear nueva cartera">add</mat-icon>
-      </button>
-    </div>
+    <app-portfolio-tabs
+      *ngIf="!loading"
+      [portfolios]="portfolios"
+      [selectedIndex]="selectedIndex"
+      [editingIndex]="editingIndex"
+      [editName]="editName"
+      [watchlistType]="WATCHLIST"
+      (addPortfolio)="onAddPortfolioClicked()"
+      (dropTab)="dropTab($event)"
+      (editNameChange)="editName = $event"
+      (saveEdit)="saveEdit($event)"
+      (cancelEdit)="cancelEdit()"
+      (selectPortfolioTab)="selectPortfolioTab($event)"
+      (startEdit)="startEdit($event)"
+    ></app-portfolio-tabs>
 
     <!-- Position summary panel -->
     <app-position-summary-panel

@@ -1,0 +1,59 @@
+<div class="tabBar">
+  <div class="tabs" cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="onDropTab($event)">
+    <mat-tab-group
+      mat-align-tabs="center"
+      animationDuration="500ms"
+      [selectedIndex]="selectedIndex"
+      (selectedIndexChange)="selectPortfolioTab.emit($event)"
+    >
+      <mat-tab *ngFor="let portfolio of portfolios; let i = index; trackBy: trackByPortfolio">
+        <ng-template mat-tab-label>
+          <div
+            class="tabLabelContainer"
+            [class.selected]="i === selectedIndex"
+            cdkDrag
+            cdkDragLockAxis="x"
+            matTooltip="Arrastra para ordenar"
+            [matTooltipDisabled]="i !== selectedIndex"
+          >
+            <ng-container *ngIf="editingIndex !== i; else editMode">
+              <mat-icon class="dragHint" aria-hidden="true">drag_indicator</mat-icon>
+              <mat-icon>
+                {{ portfolio.type == watchlistType ? 'remove_red_eye' : 'business_center' }}
+              </mat-icon>
+              <span class="tabLabelText">
+                {{ portfolio.name }}
+              </span>
+              <button
+                class="editButton"
+                mat-icon-button
+                type="button"
+                (click)="onStartEdit(i); $event.stopPropagation()"
+                aria-label="Renombrar"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+            </ng-container>
+
+            <ng-template #editMode>
+              <input
+                #editInput
+                class="editInput"
+                [ngModel]="editName"
+                (ngModelChange)="onEditNameChange($event)"
+                (keydown.enter)="onSaveEdit(i)"
+                (keydown.escape)="onCancelEdit()"
+                (click)="$event.stopPropagation()"
+                (blur)="onSaveEdit(i)"
+                (mousedown)="$event.stopPropagation()"
+              />
+            </ng-template>
+          </div>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+  <button mat-button color="primary" (click)="addPortfolio.emit()">
+    <mat-icon matTooltip="Crear nueva cartera">add</mat-icon>
+  </button>
+</div>

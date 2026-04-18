@@ -1,6 +1,6 @@
-import { Component, ElementRef, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { HostListener } from '@angular/core';
-import { PortfolioService } from '../../services/portfolio.service';
+import { PortfolioService } from '@app/services/portfolio.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { PortfolioResponse } from '@app/shared/models/portfolios-response';
 import { MatDialog } from '@angular/material/dialog';
@@ -38,10 +38,8 @@ export class PortfoliosComponent implements OnInit {
   symbolQuery = '';
   symbolError = '';
   actionsOpen = false;
-  trackByPortfolio = (_: number, p: any) => p.id ?? p.name;
   formLoading = false;
   formError = '';
-  @ViewChild('nameInput') nameInput?: ElementRef<HTMLInputElement>;
   @ViewChildren('editInput') editInputs!: QueryList<ElementRef<HTMLInputElement>>;
   @ViewChild('searchInstrument') searchInstrumentComponent!: SearchInstrumentComponent;
   instruments: InstrumentResponse[] = [];

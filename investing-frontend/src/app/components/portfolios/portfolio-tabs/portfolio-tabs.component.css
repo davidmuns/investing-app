@@ -1,0 +1,65 @@
+.tabBar {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.tabs {
+  display: flex;
+  flex-direction: row;
+  gap: 1px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.tabLabelContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+}
+
+.tabLabelContainer.selected {
+  cursor: grab;
+}
+
+.tabLabelContainer.selected:active {
+  cursor: grabbing;
+}
+
+.tabLabelContainer.selected:hover .editButton {
+  opacity: 0.5;
+  transform: translateX(0);
+}
+
+.dragHint {
+  opacity: 0;
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  margin-right: 4px;
+  transition: opacity 160ms ease, transform 160ms ease;
+  transform: translateX(-2px);
+}
+
+.tabLabelContainer.selected:hover .dragHint {
+  opacity: 0.6;
+  transform: translateX(0);
+}
+
+.tabLabelContainer .editInput ~ .dragHint {
+  display: none;
+}
+
+.tabLabelText {
+  flex: 1;
+  white-space: nowrap;
+}
+
+.editButton {
+  opacity: 0;
+  transform: translateX(4px);
+  transition: opacity 150ms ease, transform 150ms ease;
+}
