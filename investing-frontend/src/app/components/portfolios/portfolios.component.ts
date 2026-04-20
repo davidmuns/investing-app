@@ -102,9 +102,6 @@ export class PortfoliosComponent implements OnInit {
   loadPortfoliosByUsername(): void {
     this.portfolioService.listByUsername(this.username).subscribe({
       next: (resp) => {
-        if (resp.data.length === 0) {
-          this.setDefaultPortfolio();
-        }
         this.portfolios = resp.data;
         if (this.portfolios.length > 0) {
           this.portfolioId = this.portfolios[this.selectedIndex].id;
@@ -173,7 +170,7 @@ export class PortfoliosComponent implements OnInit {
         this.portfolios = this.portfolios.filter((p) => p.id !== deletingId);
         if (this.portfolios.length === 0) {
           this.selectedIndex = 0;
-          this.setDefaultPortfolio();
+          this.loadPortfoliosByUsername();
           return;
         }
         // Mantener “posición” si existe; si borraste la última, selecciona la nueva última
@@ -189,14 +186,6 @@ export class PortfoliosComponent implements OnInit {
         this.errorMsg = 'No se pudo eliminar la cartera.';
       },
     });
-  }
-
-  setDefaultPortfolio() {
-    const defaultPortfolio = {
-      name: 'Mi cartera',
-      type: 'POSITIONS',
-    } as PortfolioRequest;
-    this.createPortfolio(defaultPortfolio);
   }
 
   setPortfolioTab(createdId: number) {
