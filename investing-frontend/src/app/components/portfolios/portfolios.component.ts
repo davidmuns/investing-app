@@ -99,28 +99,6 @@ export class PortfoliosComponent implements OnInit {
     return this.portfolioType === this.WATCHLIST;
   }
 
-  loadPortfolios(): void {
-    this.portfolioService.list().subscribe({
-      next: (resp) => {
-        this.portfolios = resp.data;
-        if (this.portfolios.length > 0) {
-          this.portfolioId = this.portfolios[this.selectedIndex].id;
-          this.portfolioType = this.portfolios[this.selectedIndex].type;
-          if (this.portfolioType !== this.WATCHLIST) {
-            this.loadAllPositionsByPortfolioId(this.portfolioId);
-          } else {
-            this.loadInstrumentsByPortfolioId(this.portfolioId);
-          }
-          this.reorderPortfolios(this.portfolios);
-        }
-      },
-      error: () => {
-        this.errorMsg = 'No se pudo cargar la lista de carteras.';
-        this.loading = false;
-      },
-    });
-  }
-
   loadPortfoliosByUsername(): void {
     this.portfolioService.listByUsername(this.username).subscribe({
       next: (resp) => {
