@@ -4,6 +4,7 @@ import com.davidmuns.investing.dto.PortfolioRequest;
 import com.davidmuns.investing.dto.PortfolioResponse;
 import com.davidmuns.investing.dto.SearchResponse;
 import com.davidmuns.investing.entity.Portfolio;
+import com.davidmuns.investing.entity.PortfolioType;
 import com.davidmuns.investing.exception.DuplicatePortfolioException;
 import com.davidmuns.investing.exception.NotFoundException;
 import com.davidmuns.investing.repo.InstrumentRepository;
@@ -30,6 +31,7 @@ public class PortfolioService {
     }
 
     public SearchResponse<PortfolioResponse> findAllByUsername(String username) {
+        createDefaultPortfolio(username);
         List<PortfolioResponse> dtoList = portfolioRepository
                 .findAllByUsernameOrderByDisplayOrderAsc(username)
                 .stream()
@@ -46,12 +48,9 @@ public class PortfolioService {
     @Transactional
     public PortfolioResponse create(PortfolioRequest req) {
         String name = req.name().trim();
-
         if (portfolioRepository.existsByNameIgnoreCaseAndTypeAndUsername(name, req.type(), req.username())) {
             throw new DuplicatePortfolioException("Ya existe una cartera '" + name + "' de tipo " + req.type());
         }
-
-//        return toResponse(portfolioRepository.save(new Portfolio(name, req.type())));
         return toResponse(portfolioRepository.save(new Portfolio(name, req.type(), req.username())));
     }
 
@@ -61,11 +60,12 @@ public class PortfolioService {
         if (!portfolioRepository.existsById(id)) {
             throw new NotFoundException(id, msg);
         }
+        String username = portfolioRepository.findById(id).get().getUsername();
         instrumentRepository.deleteByPortfolioId(id);
         positionRepository.deleteByPortfolioId(id);
         positionCloseRepository.deleteByPortfolioId(id);
-
         portfolioRepository.deleteById(id);
+        createDefaultPortfolio(username);
     }
 
     public PortfolioResponse rename(Long id, String newName) {
@@ -95,4 +95,13 @@ public class PortfolioService {
         return portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new NotFoundException(portfolioId, "Portfolio not found with id: "));
     }
+
+    private void createDefaultPortfolio(String username) {
+        int size = portfolioRepository.findByUsername(username).size();
+        if (size == 0) {
+            Portfolio defaultPortfolio = new Portfolio("Mi cartera", PortfolioType.POSITIONS, username);
+            portfolioRepository.save(defaultPortfolio);
+        }
+    }
+
 }

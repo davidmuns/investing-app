@@ -11,5 +11,6 @@ import java.util.List;
 public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     boolean existsByNameIgnoreCaseAndTypeAndUsername(String name, PortfolioType type, String username);
     List<Portfolio> findAllByUsernameOrderByDisplayOrderAsc(String username);
+    List<Portfolio> findByUsername(String username);
 
 }
