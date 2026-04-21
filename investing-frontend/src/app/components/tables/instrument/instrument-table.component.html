@@ -1,10 +1,10 @@
-<div class="table-container mobile-card-container">
-  <table mat-table class="mobile-card-table" [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)">
+<div class="table-container">
+  <table mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)">
     <ng-container *ngFor="let column of instrumentColumns" [matColumnDef]="column.def">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
         {{ column.label }}
       </th>
-      <td mat-cell *matCellDef="let element" [attr.data-label]="column.label">
+      <td mat-cell *matCellDef="let element">
         <p [ngStyle]="getValueStyle(column.def, element)" [ngClass]="getCellClass(column.def)">
           <ng-container [ngSwitch]="column.def">
             <!-- Precios -->
@@ -42,7 +42,7 @@
     </ng-container>
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let element" class="actions-cell" data-label="Acciones">
+      <td mat-cell *matCellDef="let element" class="actions-cell">
         <mat-icon class="delete-icon" matTooltip="Eliminar" (click)="onDeleteClicked(element)">clear</mat-icon>
       </td>
     </ng-container>
