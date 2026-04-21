@@ -406,24 +406,25 @@ app-add-position-form {
 }
 
 .positionSummary .summaryItem {
-    height: 43px;
-    display: inline-flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding-left: 23px;
-    border-left: 1px solid #dadada;
-    margin-left: 21px;
-    vertical-align: top;
-    span {
-        font-weight: bold;
-        font-size: large;
-    }
+  height: 43px;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-left: 23px;
+  border-left: 1px solid #dadada;
+  margin-left: 21px;
+  vertical-align: top;
+}
+
+.positionSummary .summaryItem span {
+  font-weight: bold;
+  font-size: large;
 }
 
 .positionSummary .summaryItem:first-child {
-    padding: 10;
-    border: none;
-    margin: 0;
+  padding: 10px;
+  border: none;
+  margin: 0;
 }
 
 .transaction-selector {
