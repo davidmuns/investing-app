@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, Inject, OnInit, Renderer2 } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { LoginComponent } from '@app/components/auth/login/login.component';
 import { TokenService } from '@app/services/token.service';
 import { UtilsService } from '@app/services/utils.service';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -13,6 +16,9 @@ import { UtilsService } from '@app/services/utils.service';
 export class HeaderComponent implements OnInit {
   isMobile = false;
   isSolid = true;
+  isDarkMode = false;
+  isHomeRoute = false;
+  private readonly darkModeStorageKey = 'home-dark-mode';
 
   contexts = [
     {
@@ -53,9 +59,23 @@ export class HeaderComponent implements OnInit {
     public dialog: MatDialog,
     public tokenService: TokenService,
     public utilsSvc: UtilsService,
+    private readonly router: Router,
+    private readonly renderer: Renderer2,
+    @Inject(DOCUMENT) private readonly document: Document,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.isDarkMode = localStorage.getItem(this.darkModeStorageKey) === 'true';
+    this.syncRouteState(this.router.url);
+    this.applyHomeDarkModeClass();
+
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        this.syncRouteState(event.urlAfterRedirects);
+        this.applyHomeDarkModeClass();
+      });
+  }
 
   openMenu(menuTrigger: MatMenuTrigger) {
     // menuTrigger.openMenu();
@@ -72,5 +92,20 @@ export class HeaderComponent implements OnInit {
     const msg = `${'See you '} ${this.tokenService.getUsername()}!!`;
     this.utilsSvc.showSnackBar(msg, 5000);
     this.tokenService.logOut();
+  }
+
+  toggleDarkMode(): void {
+    this.isDarkMode = !this.isDarkMode;
+    localStorage.setItem(this.darkModeStorageKey, String(this.isDarkMode));
+    this.applyHomeDarkModeClass();
+  }
+
+  private syncRouteState(url: string): void {
+    this.isHomeRoute = url === '/home' || url === '/';
+  }
+
+  private applyHomeDarkModeClass(): void {
+    const method = this.isDarkMode && this.isHomeRoute ? 'addClass' : 'removeClass';
+    this.renderer[method](this.document.body, 'home-dark-mode');
   }
 }

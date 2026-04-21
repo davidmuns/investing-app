@@ -5,6 +5,9 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
   overflow-x: hidden;
+  background: #fff;
+  color: #111;
+  transition: background-color 180ms ease, color 180ms ease;
 }
 
 *,
@@ -104,6 +107,30 @@ th.mat-sort-header-sorted {
   text-align: center;
 }
 /******************************************/
+
+body.home-dark-mode {
+  background: #0d1117;
+  color: #eef3f8;
+}
+
+body.home-dark-mode .mat-mdc-menu-panel,
+body.home-dark-mode .mat-menu-panel {
+  background: #151b24;
+}
+
+body.home-dark-mode .mat-mdc-menu-item,
+body.home-dark-mode .mat-menu-item {
+  color: #eef3f8;
+}
+
+body.home-dark-mode .mat-mdc-menu-item .mat-icon,
+body.home-dark-mode .mat-menu-item .mat-icon {
+  color: #c8d4e0;
+}
+
+body.home-dark-mode .mat-divider {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
 
 @media (max-width: 768px) {
   .mat-mdc-autocomplete-panel .mat-mdc-option {

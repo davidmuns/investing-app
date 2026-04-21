@@ -1,3 +1,27 @@
-.banner{
-    width: 100%;
+.home-shell {
+  min-height: calc(100vh - 64px);
+  background: #ffffff;
+  transition: background-color 180ms ease;
+}
+
+.banner {
+  width: 100%;
+  display: block;
+}
+
+:host-context(body.home-dark-mode) .home-shell {
+  background:
+    radial-gradient(circle at top, rgba(31, 45, 60, 0.45), transparent 32%),
+    linear-gradient(180deg, #0d1117 0%, #101722 100%);
+}
+
+:host-context(body.home-dark-mode) .banner {
+  opacity: 0.86;
+  filter: saturate(0.92) brightness(0.78) contrast(1.06);
+}
+
+@media (max-width: 768px) {
+  .home-shell {
+    min-height: calc(100vh - 56px);
+  }
 }
