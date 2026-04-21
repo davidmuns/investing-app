@@ -1,0 +1,109 @@
+<ng-container *ngFor="let form of positionForms">
+  <div class="add-position is-open" [class.is-readonly]="isViewMode(form)">
+    <div class="position-details"></div>
+
+    <form class="add-position-form">
+      <div class="field field-date">
+        <label [for]="'position-date-' + form.id">{{ isCloseMode(form) ? 'Fecha cierre' : 'F. apertura' }}:</label>
+
+        <div class="calendar-date-picker">
+          <input
+            type="date"
+            [id]="'position-date-' + form.id"
+            [name]="'positionDate-' + form.id"
+            class="native-date-input"
+            [(ngModel)]="form.date"
+            [disabled]="isViewMode(form)"
+            [max]="today"
+          />
+          <div class="date-picker-icon-wrap" aria-hidden="true">
+            <span class="date-picker-icon"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="field field-amount">
+        <label [for]="'amount-' + form.id">Cantidad:</label>
+        <input
+          [id]="'amount-' + form.id"
+          [name]="'quantity-' + form.id"
+          type="text"
+          class="new-input input-text-box amount"
+          [(ngModel)]="form.quantity"
+          (keydown)="blockInvalidNumberKey($event)"
+          [disabled]="isViewMode(form)"
+          [class.input-error]="getQuantityMsgError(form)"
+        />
+      </div>
+      <div class="field field-price">
+        <label [for]="'price-' + form.id">{{ isCloseMode(form) ? 'Precio cierre' : 'Precio entrada' }}:</label>
+        <input
+          [id]="'price-' + form.id"
+          [name]="'price-' + form.id"
+          type="text"
+          class="new-input input-text-box"
+          [(ngModel)]="form.price"
+          (keydown)="blockInvalidNumberKey($event)"
+          [disabled]="isViewMode(form)"
+          [class.input-error]="getPriceMsgError(form)"
+        />
+      </div>
+
+      <div class="field field-commission">
+        <label [for]="'commission-' + form.id">Comisión total:</label>
+        <div class="input-group input-group-enabled">
+          <input
+            [id]="'commission-' + form.id"
+            [name]="'commission-' + form.id"
+            type="text"
+            class="form-control form-control-enabled"
+            [(ngModel)]="form.commission"
+            (keydown)="blockInvalidNumberKey($event)"
+            [disabled]="isViewMode(form)"
+          />
+          <span class="cur-container">€</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <ng-container *ngIf="isViewMode(form)">
+          <button mat-button type="button" (click)="enableCloseMode(form)">
+            <mat-icon>logout</mat-icon>
+            Cerrar posición
+          </button>
+
+          <button mat-button type="button" (click)="enableEditMode(form)">
+            <mat-icon>edit</mat-icon>
+            Editar posición
+          </button>
+        </ng-container>
+
+        <ng-container *ngIf="isCloseMode(form)">
+          <button mat-button type="button" [disabled]="!canSubmitPosition(form)" (click)="onClosePosition(form)">
+            <mat-icon>arrow_right_alt</mat-icon>
+            Cerrar posición
+          </button>
+
+          <button mat-button type="button" (click)="cancel(form)">Cancelar</button>
+        </ng-container>
+
+        <ng-container *ngIf="isEditMode(form)">
+          <button mat-button type="button" [disabled]="!canSubmitPosition(form)" (click)="onSaveChanges(form)">
+            <mat-icon>arrow_right_alt</mat-icon>
+            Guardar cambios
+          </button>
+
+          <button mat-button type="button" (click)="cancel(form)">Cancelar</button>
+        </ng-container>
+      </div>
+    </form>
+  </div>
+  <div class="error-message" *ngIf="!!getQuantityMsgError(form)">
+    <span class="error-icon">!</span>
+    <span>{{ getQuantityMsgError(form) }}</span>
+  </div>
+  <div class="error-message" *ngIf="!!getPriceMsgError(form)">
+    <span class="error-icon">!</span>
+    <span>{{ getPriceMsgError(form) }}</span>
+  </div>
+</ng-container>

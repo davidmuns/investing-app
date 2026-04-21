@@ -4,4 +4,5 @@ export interface PortfolioResponse {
   id: number;
   name: string;
   type: PortfolioType;
+  displayOrder: number;
 }

@@ -1,67 +1,107 @@
 package com.davidmuns.investing.service;
 
-import com.davidmuns.investing.dto.CreatePortfolioRequest;
+import com.davidmuns.investing.dto.PortfolioRequest;
 import com.davidmuns.investing.dto.PortfolioResponse;
 import com.davidmuns.investing.dto.SearchResponse;
 import com.davidmuns.investing.entity.Portfolio;
+import com.davidmuns.investing.entity.PortfolioType;
 import com.davidmuns.investing.exception.DuplicatePortfolioException;
 import com.davidmuns.investing.exception.NotFoundException;
 import com.davidmuns.investing.repo.InstrumentRepository;
 import com.davidmuns.investing.repo.PortfolioRepository;
+import com.davidmuns.investing.repo.PositionCloseRepository;
+import com.davidmuns.investing.repo.PositionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PortfolioService {
 
-    private final PortfolioRepository repository;
+    private final PortfolioRepository portfolioRepository;
     private final InstrumentRepository instrumentRepository;
+    private final PositionRepository positionRepository;
+    private final PositionCloseRepository positionCloseRepository;
 
-    public PortfolioService(PortfolioRepository repository, InstrumentRepository instrumentRepository) {
-        this.repository = repository;
+    public PortfolioService(PortfolioRepository portfolioRepository, InstrumentRepository instrumentRepository, PositionRepository positionRepository, PositionCloseRepository positionCloseRepository) {
+        this.portfolioRepository = portfolioRepository;
         this.instrumentRepository = instrumentRepository;
+        this.positionRepository = positionRepository;
+        this.positionCloseRepository = positionCloseRepository;
     }
 
-    public SearchResponse<PortfolioResponse> findAll() {
-        List<PortfolioResponse> dtoList = repository.findAll()
+    public SearchResponse<PortfolioResponse> findAllByUsername(String username) {
+        createDefaultPortfolio(username);
+        List<PortfolioResponse> dtoList = portfolioRepository
+                .findAllByUsernameOrderByDisplayOrderAsc(username)
                 .stream()
-                .map(pr -> new PortfolioResponse(
-                        pr.getId(),
-                        pr.getName(),
-                        pr.getType()
-                )).collect(Collectors.toList());
-        return new SearchResponse<PortfolioResponse>(dtoList, dtoList.size());
+                .map(this::toResponse)
+                .toList();
+        return new SearchResponse<>(dtoList, dtoList.size());
+    }
+
+    public PortfolioResponse findById(Long portfolioId) {
+        Portfolio portfolio = getPortfolio(portfolioId);
+        return toResponse(portfolio);
     }
 
     @Transactional
-    public Portfolio create(CreatePortfolioRequest req) {
-        String name = req.getName().trim();
-
-        if (repository.existsByNameIgnoreCaseAndType(name, req.getType())) {
-            throw new DuplicatePortfolioException("Ya existe una cartera '" + name + "' de tipo " + req.getType());
+    public PortfolioResponse create(PortfolioRequest req) {
+        String name = req.name().trim();
+        if (portfolioRepository.existsByNameIgnoreCaseAndTypeAndUsername(name, req.type(), req.username())) {
+            throw new DuplicatePortfolioException("Ya existe una cartera '" + name + "' de tipo " + req.type());
         }
-
-        return repository.save(new Portfolio(name, req.getType()));
+        return toResponse(portfolioRepository.save(new Portfolio(name, req.type(), req.username())));
     }
 
     @Transactional
     public void delete(Long id) {
         String msg = "No existe portfolio con id:";
-        if (!repository.existsById(id)) {
+        if (!portfolioRepository.existsById(id)) {
             throw new NotFoundException(id, msg);
         }
+        String username = portfolioRepository.findById(id).get().getUsername();
         instrumentRepository.deleteByPortfolioId(id);
-        repository.deleteById(id);
+        positionRepository.deleteByPortfolioId(id);
+        positionCloseRepository.deleteByPortfolioId(id);
+        portfolioRepository.deleteById(id);
+        createDefaultPortfolio(username);
     }
 
-    public Portfolio rename(Long id, String newName) {
+    public PortfolioResponse rename(Long id, String newName) {
         String msg = "No existe portfolio con id:";
-        Portfolio portfolio = repository.findById(id)
+        Portfolio portfolio = portfolioRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(id, msg));
         portfolio.setName(newName.trim());
-        return repository.save(portfolio);
+        return toResponse(portfolioRepository.save(portfolio));
     }
+
+    @Transactional
+    public SearchResponse<PortfolioResponse> reorder(List<PortfolioRequest> request) {
+        String username = request.get(0).username().trim();
+        request.forEach(req -> {
+            Portfolio portfolio = getPortfolio(req.id());
+            portfolio.setDisplayOrder(req.displayOrder());
+            portfolioRepository.save(portfolio);
+        });
+        return findAllByUsername(username);
+    }
+
+    private PortfolioResponse toResponse(Portfolio p) {
+        return new PortfolioResponse(p.getId(), p.getName(), p.getType(), p.getDisplayOrder());
+    }
+
+    private Portfolio getPortfolio(Long portfolioId) {
+        return portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> new NotFoundException(portfolioId, "Portfolio not found with id: "));
+    }
+
+    private void createDefaultPortfolio(String username) {
+        int size = portfolioRepository.findByUsername(username).size();
+        if (size == 0) {
+            Portfolio defaultPortfolio = new Portfolio("Mi cartera", PortfolioType.POSITIONS, username);
+            portfolioRepository.save(defaultPortfolio);
+        }
+    }
+
 }

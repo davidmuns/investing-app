@@ -1,11 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PortfoliosComponent } from './components/portfolios/portfolios.component';
+import { HomeComponent } from './components/home/home.component';
+import { LogsGuard } from './core/guards/logs.guard';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'portfolios', pathMatch: 'full' },
-  { path: 'portfolios', component: PortfoliosComponent },
-  { path: '**', redirectTo: 'portfolios' },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'home', component: HomeComponent },
+  { path: 'portfolios', component: PortfoliosComponent, canActivate: [LogsGuard] },
+  { path: '**', redirectTo: 'home' },
 ];
 
 @NgModule({

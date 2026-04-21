@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,7 @@ public class InstrumentService {
     private final InstrumentRepository instrumentRepository;
     private final PortfolioRepository portfolioRepository;
     private final TwelveDataClient twelveDataClient;
+    private static final String PORTFOLIO_NOT_FOUND_MESSAGE = "Portfolio not found with id: ";
 
     public InstrumentService(InstrumentRepository instrumentRepository, PortfolioRepository portfolioRepository, TwelveDataClient twelveDataClient) {
         this.instrumentRepository = instrumentRepository;
@@ -31,13 +33,12 @@ public class InstrumentService {
 
     @Transactional
     public InstrumentResponse create(InstrumentRequest req, Long portfolioId) {
-        Portfolio portfolio = portfolioRepository.findById(portfolioId)
-                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
-        String name = normalize(req.getName());
-        String symbol = normalize(req.getSymbol().toUpperCase());
-        String type = normalize(req.getType());
-        String exchange = normalize(req.getExchange().toUpperCase());
-        return instrumentRepository.findBySymbolIgnoreCaseAndExchangeIgnoreCase(symbol, exchange)
+        Portfolio portfolio = checkIfPortfolioExistsOrElseThrowNotFoundException(portfolioId);
+        String name = normalize(req.name());
+        String symbol = normalize(req.symbol().toUpperCase());
+        String type = normalize(req.type());
+        String exchange = normalize(req.exchange().toUpperCase());
+        return instrumentRepository.findByPortfolioAndSymbolIgnoreCaseAndExchangeIgnoreCase(portfolio, symbol, exchange)
                 .map(this::toResponse)
                 .orElseGet(() -> {
                     Instrument instrument = buildInstrument(name, symbol, type, exchange, portfolio);
@@ -45,6 +46,7 @@ public class InstrumentService {
                 });
     }
 
+    @Transactional
     public void delete(Long id) {
         Instrument instrument = instrumentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(id, "Instrument not found with id: "));
@@ -56,7 +58,18 @@ public class InstrumentService {
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
-        return new SearchResponse<InstrumentResponse>(dtoList, dtoList.size());
+        return new SearchResponse<>(dtoList, dtoList.size());
+    }
+
+    public SearchResponse<InstrumentResponse> findAllByPortfolioId(Long portfolioId) {
+        Portfolio portfolio = checkIfPortfolioExistsOrElseThrowNotFoundException(portfolioId);
+        List<Instrument> instruments = instrumentRepository.findByPortfolio(portfolio)
+                .orElse(Collections.emptyList());
+        List<InstrumentResponse> resp = instruments
+                .stream()
+                .map(this::toResponse)
+                .toList();
+        return new SearchResponse<>(resp, instruments.size());
     }
 
     public SearchResponse<InstrumentResponse> search(String query) {
@@ -81,6 +94,14 @@ public class InstrumentService {
         return new SearchResponse<>(dtoList, dtoList.size());
     }
 
+    private Portfolio checkIfPortfolioExistsOrElseThrowNotFoundException(Long portfolioId) {
+        return portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> {
+                    log.error("{}{}", PORTFOLIO_NOT_FOUND_MESSAGE, portfolioId);
+                    return new NotFoundException(portfolioId, PORTFOLIO_NOT_FOUND_MESSAGE);
+                });
+    }
+
     private String normalize(String value) {
         return value == null ? "" : value.trim();
     }
@@ -96,7 +117,6 @@ public class InstrumentService {
     }
 
     private InstrumentResponse toResponse(Instrument instrument) {
-        InstrumentResponse response = new InstrumentResponse();
         TwelveDataQuoteResponse quote = null;
 
         try {
@@ -105,20 +125,19 @@ public class InstrumentService {
             log.error(e.getMessage());
         }
 
-        response.setId(instrument.getId());
-        response.setName(instrument.getName());
-        response.setSymbol(instrument.getSymbol());
-        response.setType(instrument.getType());
-        response.setExchange(instrument.getExchange());
-        response.setPortfolioId(instrument.getPortfolio().getId());
-
-        response.setOpen(quote != null ? quote.getOpen() : null);
-        response.setClose(quote != null ? quote.getClose() : null);
-        response.setHigh(quote != null ? quote.getHigh() : null);
-        response.setLow(quote != null ? quote.getLow() : null);
-        response.setChange(quote != null ? quote.getChange() : null);
-        response.setPercentChange(quote != null ? quote.getPercentChange() : null);
-
-        return response;
+        return new InstrumentResponse(
+                instrument.getId(),
+                instrument.getName(),
+                instrument.getSymbol(),
+                instrument.getType(),
+                instrument.getExchange(),
+                instrument.getPortfolio().getId(),
+                quote != null ? quote.open() : null,
+                quote != null ? quote.close() : null,
+                quote != null ? quote.high() : null,
+                quote != null ? quote.low() : null,
+                quote != null ? quote.change() : null,
+                quote != null ? quote.percentChange() : null
+        );
     }
 }

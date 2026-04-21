@@ -1,0 +1,30 @@
+<div class="positionSummary">
+  <div class="summaryItem">
+    <label>Val. mercado:</label>
+    <span>{{ marketValue | number: '1.1-2' }} $</span>
+  </div>
+
+  <div class="summaryItem">
+    <label>B/P posic. abiertas:</label>
+    <span [ngStyle]="getValueStyle(totalProfitLossValue)">
+      {{ totalProfitLossValue | number: '1.1-2' }} $ / {{ totalProfitLossPercentage | number: '1.1-2' }}%
+    </span>
+  </div>
+
+  <div class="summaryItem" *ngIf="transactionTab === 'closed'">
+    <label>B/P posic. cerradas:</label>
+    <span [ngStyle]="getValueStyle(closedPositionsSum)">{{ closedPositionsSum | number: '1.1-2' }} $</span>
+  </div>
+
+  <div class="summaryItem" *ngIf="transactionTab === 'open'">
+    <label>B/P diario:</label>
+    <span [ngStyle]="getValueStyle(dailyProfitLossValue)">
+      {{ dailyProfitLossValue | number: '1.1-2' }} $ / {{ dailyProfitLossPercentage | number: '1.1-2' }}%
+    </span>
+  </div>
+
+  <div class="summaryItem" *ngIf="transactionTab === 'closed'">
+    <label>B/P total:</label>
+    <span [ngStyle]="getValueStyle(openClosedPositionsSum)">{{ openClosedPositionsSum | number: '1.1-2' }} $</span>
+  </div>
+</div>

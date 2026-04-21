@@ -2,13 +2,22 @@
     position: sticky;
     top: 0;
     z-index: 1000;
+    --tw-bg-opacity: 1;
+    background-color: rgb(34 34 34 / var(--tw-bg-opacity, 1));
 }
 
 .spacer {
     flex: 1 1 auto;
 }
 
-.logo {
+/* .logo {
     font-weight: 600;
     letter-spacing: 0.5px;
+} */
+
+.logo {
+  height: 34px;
+  width: auto;
+  display: block;
+  object-fit: contain;
 }

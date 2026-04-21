@@ -33,3 +33,60 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-mdc-option .mdc-list-item__primary-text {
   width: 100%;
 }
+
+/* TABLE *****************************************/
+.table-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+table {
+  width: 100%;
+}
+
+th.mat-header-cell,
+.mat-header-cell {
+  color: black;
+  font-weight: bold;
+}
+
+th.mat-sort-header-sorted {
+  color: black;
+}
+
+.data-row:hover{
+  cursor: pointer;
+  background-color: rgb(232, 253, 253);
+}
+
+.detail-row {
+  height: 0;
+}
+
+.link-cell {
+  color: #1256a0;
+  font-weight: 450;
+}
+
+.actions-cell .delete-icon {
+  opacity: 0;
+  visibility: hidden;
+  cursor: pointer;
+  transition: opacity 0.9s ease;
+}
+
+.data-row:hover .actions-cell .delete-icon {
+  cursor: pointer;
+  opacity: 0.5;
+  visibility: visible;
+  font-size: 20px;
+}
+
+.actions-cell {
+  width: 10px;
+  text-align: center;
+}
+/******************************************/

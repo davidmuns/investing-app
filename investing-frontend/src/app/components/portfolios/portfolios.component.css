@@ -1,6 +1,21 @@
+.banner{
+    width: 100%;
+}
+
 .page {
-    padding: 16px;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.portfolio-shell {
+  width: 100%;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  box-sizing: border-box;
 }
 
 .header {
@@ -41,6 +56,12 @@
     vertical-align: middle !important;
 }
 
+.tabBar,
+.panel,
+app-position-summary-panel,
+app-add-position-form {
+  box-sizing: border-box;
+}
 
 .tabBar {
     display: flex;
@@ -144,6 +165,13 @@
 .panelTop {
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.panelTop2 {
+    display: flex;
+    /* justify-content: space-between; */
     align-items: flex-start;
     gap: 16px;
 }
@@ -367,4 +395,63 @@
 
 .addSymbolBtn:hover {
     opacity: 1;
+}
+
+.positionSummary {
+    padding: 22px 9px 31px;
+    margin: 0 3px;
+    font: inherit;
+    position: relative;
+    border-bottom: 1px solid #dadada;
+}
+
+.positionSummary .summaryItem {
+  height: 43px;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-left: 23px;
+  border-left: 1px solid #dadada;
+  margin-left: 21px;
+  vertical-align: top;
+}
+
+.positionSummary .summaryItem span {
+  font-weight: bold;
+  font-size: large;
+}
+
+.positionSummary .summaryItem:first-child {
+  padding: 10px;
+  border: none;
+  margin: 0;
+}
+
+.transaction-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  margin: 24px 0 18px 25px;
+}
+
+.transaction-selector__item {
+  border: none;
+  background: transparent;
+  padding: 10px 18px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #8b8b8b;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.transaction-selector__item.active {
+  background: #eef1f5;
+  color: #1f1f1f;
+  font-weight: 600;
+}
+
+.transaction-selector__item:hover:not(.active) {
+  color: #4f4f4f;
 }

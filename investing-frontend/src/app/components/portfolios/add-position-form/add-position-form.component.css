@@ -1,0 +1,257 @@
+.add-position {
+  background: #f3f3f3;
+  border-top: 1px solid #d8d8d8;
+  padding: 18px 24px 22px;
+  font-family: Arial, sans-serif;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.add-position *,
+.add-position *::before,
+.add-position *::after {
+  box-sizing: border-box;
+}
+
+.add-position .position-details {
+  width: 100%;
+}
+
+.add-position .add-position-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: nowrap;
+}
+
+.add-position .field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.add-position .field > label {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: #333;
+}
+
+.add-position .new-input,
+.add-position .input-text-box,
+.add-position .select-box,
+.add-position .form-control {
+  height: 32px;
+  border: 1px solid #9d9d9d;
+  background: #fff;
+  padding: 0 10px;
+  font-size: 14px;
+  color: #222;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+}
+
+.add-position .select-box {
+  width: 142px;
+  cursor: pointer;
+}
+
+.add-position .field-date {
+  width: 170px;
+  min-width: 170px;
+}
+
+.add-position .calendar-date-picker {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 32px;
+  border: 1px solid #9d9d9d;
+  background: #fff;
+  overflow: hidden;
+}
+
+/* ocultamos solo la estructura antigua de texto */
+.add-position .dates-input-wrapper,
+.add-position .date-field,
+.add-position .date-range {
+  display: none;
+}
+
+/* icono visual a la derecha */
+.add-position .date-picker-icon-wrap {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 32px;
+  height: 100%;
+  border-left: 1px solid #9d9d9d;
+  background: #f7f7f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.add-position .date-picker-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+}
+
+.add-position .date-picker-icon::before {
+  content: "📅";
+  font-size: 13px;
+  line-height: 1;
+}
+
+.add-position .native-date-input {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+  color: #222;
+  font-size: 14px;
+  padding: 0 36px 0 8px;
+  outline: none;
+  box-shadow: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* el icono nativo sigue activo pero invisible */
+.add-position .native-date-input::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 32px;
+  height: 100%;
+  cursor: pointer;
+}
+
+.add-position .native-date-input::-webkit-datetime-edit {
+  padding: 0;
+}
+
+.add-position .native-date-input::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}
+
+.add-position .field-amount .input-text-box,
+.add-position .field-price .input-text-box {
+  width: 140px;
+}
+
+.add-position .field-commission {
+  width: 140px;
+}
+
+.add-position .input-group {
+  display: flex;
+  align-items: stretch;
+  height: 32px;
+  border: 1px solid #9d9d9d;
+  background: #fff;
+}
+
+.add-position .input-group .form-control {
+  height: 100%;
+  flex: 1;
+  min-width: 0;
+  border: 0;
+}
+
+.add-position .cur-container {
+  width: 32px;
+  min-width: 32px;
+  border-left: 1px solid #9d9d9d;
+  background: #f7f7f7;
+  color: #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-style: normal;
+}
+
+.add-position .add-position-btn {
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-end;
+  margin-left: 10px;
+  padding: 0 0 0 8px;
+  background: transparent;
+  border: 0;
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b6b6b;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.add-position .add-position-btn::before {
+  content: "↪";
+  margin-right: 8px;
+  font-size: 18px;
+  line-height: 1;
+  color: inherit;
+}
+/* estado deshabilitado real */
+.add-position .add-position-btn:disabled {
+  color: #b7b7b7;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.add-position.is-disabled .add-position-form {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.add-position.is-disabled .add-position-form input,
+.add-position.is-disabled .add-position-form select,
+.add-position.is-disabled .add-position-form button {
+  cursor: not-allowed;
+}
+
+
+.error-message {
+  margin-top: 2px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 20px;
+  color: #333232;
+  font-size: 13px;
+  background-color: #f6d2d2;
+}
+
+.input-error {
+  border: 1px solid #d32f2f !important;
+  outline: none;
+}
+
+.error-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fc0505;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  flex-shrink: 0;
+  margin-right: 8px;
+}

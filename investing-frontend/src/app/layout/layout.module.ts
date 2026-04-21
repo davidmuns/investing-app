@@ -5,19 +5,11 @@ import { LayoutRoutingModule } from './layout-routing.module';
 import { HeaderComponent } from './header/header.component';
 import { MaterialModule } from '@app/shared/material/material.module';
 import { SharedModule } from '@app/shared/shared.module';
-
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
-  declarations: [
-    HeaderComponent
-  ],
-  imports: [
-    CommonModule,
-    LayoutRoutingModule,
-    SharedModule
-  ],
-  exports: [
-    HeaderComponent
-  ]
+  declarations: [HeaderComponent, FooterComponent],
+  imports: [CommonModule, LayoutRoutingModule, SharedModule],
+  exports: [HeaderComponent, FooterComponent],
 })
-export class LayoutModule { }
+export class LayoutModule {}

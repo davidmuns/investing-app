@@ -1,0 +1,53 @@
+<div class="table-container">
+  <table mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)">
+    <ng-container *ngFor="let column of instrumentColumns" [matColumnDef]="column.def">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ column.label }}
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <p [ngStyle]="getValueStyle(column.def, element)" [ngClass]="getCellClass(column.def)">
+          <ng-container [ngSwitch]="column.def">
+            <!-- Precios -->
+            <span *ngSwitchCase="'close'">
+              {{ element[column.def] | number: '1.1-1' }}
+            </span>
+
+            <span *ngSwitchCase="'open'">
+              {{ element[column.def] | number: '1.1-1' }}
+            </span>
+
+            <span *ngSwitchCase="'high'">
+              {{ element[column.def] | number: '1.1-1' }}
+            </span>
+
+            <span *ngSwitchCase="'low'">
+              {{ element[column.def] | number: '1.1-1' }}
+            </span>
+
+            <!-- Variación absoluta -->
+            <span *ngSwitchCase="'change'">
+              {{ element[column.def] | number: '1.2-2' }}
+            </span>
+
+            <!-- Variación porcentual -->
+            <span *ngSwitchCase="'percentChange'">{{ element[column.def] | number: '1.2-2' }}%</span>
+
+            <!-- Texto -->
+            <span *ngSwitchDefault>
+              {{ element[column.def] }}
+            </span>
+          </ng-container>
+        </p>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element" class="actions-cell">
+        <mat-icon class="delete-icon" matTooltip="Eliminar" (click)="onDeleteClicked(element)">clear</mat-icon>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr class="data-row" mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+</div>

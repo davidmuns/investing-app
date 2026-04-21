@@ -8,18 +8,26 @@ import { SearchResponse } from '@app/shared/models/search-response';
 
 @Injectable({ providedIn: 'root' })
 export class PortfolioService {
+  private apiUrl = environment.BACKEND_BASE_URL + 'api/portfolios';
   constructor(private http: HttpClient) {}
 
   list(): Observable<SearchResponse<PortfolioResponse>> {
-    return this.http.get<SearchResponse<PortfolioResponse>>(environment.BACKEND_BASE_URL + 'api/portfolios');
+    return this.http.get<SearchResponse<PortfolioResponse>>(this.apiUrl);
+  }
+
+  listByUsername(username: string | null): Observable<SearchResponse<PortfolioResponse>> {
+    return this.http.get<SearchResponse<PortfolioResponse>>(`${this.apiUrl}/user/${username}`);
   }
   create(req: PortfolioRequest): Observable<PortfolioResponse> {
-    return this.http.post<PortfolioResponse>(environment.BACKEND_BASE_URL + 'api/portfolios', req);
+    return this.http.post<PortfolioResponse>(this.apiUrl, req);
   }
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(environment.BACKEND_BASE_URL + `api/portfolios/${id}`);
+    return this.http.delete<void>(this.apiUrl + `/${id}`);
   }
   rename(id: number, name: string) {
-    return this.http.patch<PortfolioResponse>(environment.BACKEND_BASE_URL + `api/portfolios/${id}/name`, { name });
+    return this.http.patch<PortfolioResponse>(this.apiUrl + `/${id}/name`, { name });
+  }
+  reorder(req: PortfolioRequest[]): Observable<SearchResponse<PortfolioResponse>> {
+    return this.http.put<SearchResponse<PortfolioResponse>>(this.apiUrl + '/reorder', req);
   }
 }

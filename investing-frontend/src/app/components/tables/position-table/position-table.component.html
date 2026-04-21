@@ -1,0 +1,57 @@
+<div class="table-container">
+  <table mat-table [dataSource]="dataSource" matSort multiTemplateDataRows (matSortChange)="announceSortChange($event)">
+    <ng-container *ngFor="let column of positionSummaryColumns" [matColumnDef]="column.def">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ column.label }}
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <p [ngStyle]="getValueStyle(column.def, element)" [ngClass]="getCellClass(column.def)">
+          <ng-container [ngSwitch]="column.def">
+            <span *ngSwitchCase="'totalQuantity'">
+              {{ element[column.def] | number: '1.0-4' }}
+            </span>
+
+            <span *ngSwitchCase="'averagePrice'">
+              {{ element[column.def] | number: '1.2-2' }}
+            </span>
+
+            <span *ngSwitchCase="'currentPrice'">
+              {{ element[column.def] | number: '1.2-2' }}
+            </span>
+
+            <span *ngSwitchCase="'marketValue'">
+              {{ element[column.def] | number: '1.2-2' }}
+            </span>
+
+            <span *ngSwitchCase="'dailyProfitLoss'">
+              {{ element[column.def] | number: '1.2-2' }}
+            </span>
+
+            <span *ngSwitchCase="'netProfitLoss'">
+              {{ element[column.def] | number: '1.2-2' }}
+            </span>
+
+            <span *ngSwitchCase="'netProfitLossPercentage'">{{ element[column.def] | number: '1.2-2' }}%</span>
+
+            <span *ngSwitchDefault>
+              {{ element[column.def] }}
+            </span>
+          </ng-container>
+        </p>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="expandedDetail">
+      <td mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns.length">
+        <app-position-edit-form
+          *ngIf="positionSelected?.symbol === row.symbol"
+          [positions]="filteredPositions"
+          (closePosition)="onClosePosition($event)"
+          (updatePosition)="onUpdatePosition($event)"
+        ></app-position-edit-form>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr class="data-row" mat-row *matRowDef="let row; columns: displayedColumns" (click)="onRowClick(row)"></tr>
+    <tr class="detail-row" mat-row *matRowDef="let row; columns: ['expandedDetail']"></tr>
+  </table>
+</div>

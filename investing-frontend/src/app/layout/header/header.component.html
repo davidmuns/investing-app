@@ -1,21 +1,25 @@
 <mat-toolbar color="primary" class="toolbar">
-  <span class="logo">Investing</span>
+  <a href="https://es.investing.com/" target="_blank">
+    <img class="logo" src="assets/img/investing-logo.png" alt="Investing" />
+  </a>
 
   <span class="spacer"></span>
 
   <button mat-icon-button [matMenuTriggerFor]="user">
-    <mat-icon>account_circle</mat-icon>
+    {{ this.tokenService.isLogged() ? tokenService.getUsername() : 'iniciar sesión' }}
   </button>
 
-  <button mat-button routerLink="/portfolios">Portfolios</button>
+  <button mat-button routerLink="/portfolios">
+    <!-- Portfolios -->
+  </button>
 
   <button mat-icon-button>
-    <mat-icon>notifications</mat-icon>
+    <!-- <mat-icon>notifications</mat-icon> -->
   </button>
 
   <!-- <button mat-icon-button [matMenuTriggerFor]="language">
-        <mat-icon>language</mat-icon>
-    </button> -->
+    <mat-icon>language</mat-icon>
+  </button> -->
 </mat-toolbar>
 
 <mat-menu #user="matMenu">

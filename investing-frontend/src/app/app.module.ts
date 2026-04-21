@@ -14,10 +14,13 @@ import { PortfoliosModule } from './components/portfolios/portfolios.module';
 import { LOCALE_ID } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
+import { HomeComponent } from './components/home/home.component';
+import { TableModule } from './components/tables/table.module';
+
 registerLocaleData(localeEs);
 
 @NgModule({
-  declarations: [AppComponent, AuthComponent],
+  declarations: [AppComponent, AuthComponent, HomeComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -28,6 +31,7 @@ registerLocaleData(localeEs);
     SharedModule,
     AuthModule,
     PortfoliosModule,
+    TableModule,
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'es' }],
   bootstrap: [AppComponent],

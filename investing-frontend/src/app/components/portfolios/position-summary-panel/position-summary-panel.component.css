@@ -1,0 +1,29 @@
+.positionSummary {
+    padding: 22px 9px 31px;
+    margin: 0 3px;
+    font: inherit;
+    position: relative;
+    border-bottom: 1px solid #dadada;
+}
+
+.positionSummary .summaryItem {
+  height: 43px;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-left: 23px;
+  border-left: 1px solid #dadada;
+  margin-left: 21px;
+  vertical-align: top;
+}
+
+.positionSummary .summaryItem span {
+  font-weight: bold;
+  font-size: large;
+}
+
+.positionSummary .summaryItem:first-child {
+  padding: 10px;
+  border: none;
+  margin: 0;
+}
