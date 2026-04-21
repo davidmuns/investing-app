@@ -2,7 +2,8 @@
   position: relative;
   display: flex;
   align-items: center;
-  width: 460px;
+  width: min(460px, 100%);
+  max-width: 100%;
   height: 42px;
   border: 1px solid #cfcfcf;
   border-radius: 3px;
@@ -48,6 +49,10 @@
   min-height: 44px;
 }
 
+.autocomplete-option-mobile {
+  display: none;
+}
+
 .option-left {
   width: 80px;
   flex-shrink: 0;
@@ -82,4 +87,58 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.exchange-mobile {
+  color: #7a7a7a;
+}
+
+@media (max-width: 768px) {
+  .instrument-search-box {
+    width: 100%;
+  }
+
+  .autocomplete-option {
+    gap: 10px;
+  }
+
+  .option-right {
+    width: 120px;
+  }
+}
+
+@media (max-width: 540px) {
+  .autocomplete-option--desktop {
+    display: none;
+  }
+
+  .autocomplete-option-mobile {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    width: 100%;
+    padding: 2px 0;
+  }
+
+  .autocomplete-option-mobile .symbol {
+    font-size: 14px;
+    line-height: 1.25;
+  }
+
+  .autocomplete-option-mobile .name,
+  .autocomplete-option-mobile .exchange-mobile {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    line-height: 1.35;
+  }
+
+  .autocomplete-option-mobile .name {
+    font-size: 12px;
+  }
+
+  .autocomplete-option-mobile .exchange-mobile {
+    font-size: 12px;
+  }
 }

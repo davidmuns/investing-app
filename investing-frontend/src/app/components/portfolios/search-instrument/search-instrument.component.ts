@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { InstrumentService } from '@app/services/instrument.service';
 import { SearchResponse } from '@app/shared/models/search-response';
@@ -18,6 +18,7 @@ export class SearchInstrumentComponent implements OnInit {
   @Output() searchFocused = new EventEmitter<void>();
   instruments: InstrumentRequest[] = [];
   filteredOptions!: Observable<InstrumentRequest[]>;
+  autocompletePanelWidth = this.getAutocompletePanelWidth();
   displayInstrument = (instrument: InstrumentRequest | null): string => {
     return instrument ? instrument.symbol : '';
   };
@@ -37,6 +38,11 @@ export class SearchInstrumentComponent implements OnInit {
 
   focusInput(): void {
     this.searchInput?.nativeElement.focus();
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this.autocompletePanelWidth = this.getAutocompletePanelWidth();
   }
 
   onInstrumentClicked(event: MatAutocompleteSelectedEvent): void {
@@ -80,5 +86,11 @@ export class SearchInstrumentComponent implements OnInit {
   private handleSearchResults(response: SearchResponse<InstrumentRequest>): InstrumentRequest[] {
     this.instruments = response.data;
     return response.data.map((response) => response);
+  }
+
+  private getAutocompletePanelWidth(): string {
+    const viewportWidth = window.innerWidth || 720;
+    const panelWidth = viewportWidth <= 540 ? Math.max(280, viewportWidth - 32) : 720;
+    return `${panelWidth}px`;
   }
 }

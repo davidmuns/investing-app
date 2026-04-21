@@ -21,3 +21,20 @@
   display: block;
   object-fit: contain;
 }
+
+@media (max-width: 768px) {
+  .toolbar {
+    gap: 8px;
+    padding: 0 8px;
+  }
+
+  .logo {
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .toolbar {
+    min-height: 56px;
+  }
+}
