@@ -1,4 +1,7 @@
 .positionSummary {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
     padding: 22px 9px 31px;
     margin: 0 3px;
     font: inherit;
@@ -23,36 +26,23 @@
 }
 
 .positionSummary .summaryItem:first-child {
-  padding: 10px;
+  padding: 0 10px 0 0;
   border: none;
   margin: 0;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 600px) {
   .positionSummary {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: 12px;
-    padding: 18px 12px 24px;
+    flex-wrap: initial;
   }
 
   .positionSummary .summaryItem {
     height: auto;
     margin: 0;
-    padding: 0 0 0 12px;
-  }
-
-  .positionSummary .summaryItem:first-child {
-    padding: 0;
-  }
-}
-
-@media (max-width: 600px) {
-  .positionSummary {
-    grid-template-columns: 1fr;
-  }
-
-  .positionSummary .summaryItem {
+    flex: initial;
     border-left: none;
     border-top: 1px solid #dadada;
     padding: 10px 0 0;
