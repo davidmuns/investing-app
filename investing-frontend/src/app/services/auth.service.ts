@@ -16,6 +16,7 @@ export class AuthService {
     user.nombreUsuario = user.nombreUsuario?.trim();
     user.password = user.password.trim();
     return this.httpClient.post<any>(environment.BACKEND_BASE_URL + 'auth/nuevo', user);
+    // return this.httpClient.post<any>(environment.LOGIN_BASE_URL + 'auth/nuevo', user);
   }
 
   public loginUser(login: Login): Observable<any> {
@@ -25,5 +26,6 @@ export class AuthService {
     login.nombreUsuario = login.nombreUsuario.trim();
     login.password = login.password.trim();
     return this.httpClient.post<any>(environment.BACKEND_BASE_URL + 'auth/login', login);
+    // return this.httpClient.post<any>(environment.LOGIN_BASE_URL + 'auth/login', login);
   }
 }

@@ -8,6 +8,8 @@ import com.davidmuns.investing.service.ExternalInstrumentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/external/instruments")
 @CrossOrigin
@@ -30,6 +32,13 @@ public class ExternalInstrumentController {
     @GetMapping("/search-quote")
     public TwelveDataQuoteResponse searchQuote(@RequestParam String q) {
         TwelveDataQuoteResponse response = externalInstrumentService.getQuote(q);
+        log.debug(response.toString());
+        return response;
+    }
+
+    @GetMapping("/search-quotes")
+    public List<TwelveDataQuoteResponse> searchQuotes(@RequestParam List<String> q) {
+        List<TwelveDataQuoteResponse> response = externalInstrumentService.getQuotes(q);
         log.debug(response.toString());
         return response;
     }

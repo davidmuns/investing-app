@@ -1,4 +1,7 @@
 .positionSummary {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
     padding: 22px 9px 31px;
     margin: 0 3px;
     font: inherit;
@@ -23,7 +26,30 @@
 }
 
 .positionSummary .summaryItem:first-child {
-  padding: 10px;
+  padding: 0 10px 0 0;
   border: none;
   margin: 0;
+}
+
+@media (max-width: 600px) {
+  .positionSummary {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    flex-wrap: initial;
+  }
+
+  .positionSummary .summaryItem {
+    height: auto;
+    margin: 0;
+    flex: initial;
+    border-left: none;
+    border-top: 1px solid #dadada;
+    padding: 10px 0 0;
+  }
+
+  .positionSummary .summaryItem:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
 }

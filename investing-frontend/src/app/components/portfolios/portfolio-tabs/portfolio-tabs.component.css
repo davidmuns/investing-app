@@ -10,6 +10,8 @@
   display: flex;
   flex-direction: row;
   gap: 1px;
+  min-width: 0;
+  flex: 1 1 auto;
   overflow-x: auto;
   scrollbar-width: thin;
 }
@@ -62,4 +64,14 @@
   opacity: 0;
   transform: translateX(4px);
   transition: opacity 150ms ease, transform 150ms ease;
+}
+
+@media (max-width: 768px) {
+  .tabBar {
+    align-items: center;
+  }
+
+  .tabLabelContainer {
+    min-width: 96px;
+  }
 }

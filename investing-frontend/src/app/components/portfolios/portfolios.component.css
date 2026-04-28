@@ -22,13 +22,15 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 120px;
+    gap: 24px;
+    flex-wrap: wrap;
 }
 
 .headerActions {
     display: flex;
     gap: 10px;
     align-items: center;
+    margin-left: auto;
 }
 
 .panelHeader {
@@ -36,6 +38,7 @@
     justify-content: space-between;
     align-items: start;
     gap: 20px;
+    flex-wrap: wrap;
 }
 
 .error {
@@ -76,9 +79,9 @@ app-add-position-form {
     display: flex;
     flex-direction: row;
     gap: 1px;
-    /* flex: 1; */
+    min-width: 0;
+    flex: 1 1 auto;
     overflow-x: auto;
-    /* scroll horizontal si hay muchas */
     scrollbar-width: thin;
 }
 
@@ -167,13 +170,14 @@ app-add-position-form {
     justify-content: space-between;
     align-items: flex-start;
     gap: 16px;
+    flex-wrap: wrap;
 }
 
 .panelTop2 {
     display: flex;
-    /* justify-content: space-between; */
     align-items: flex-start;
     gap: 16px;
+    flex-wrap: wrap;
 }
 
 .actions {
@@ -353,6 +357,9 @@ app-add-position-form {
     align-items: center;
     gap: 14px;
     margin-bottom: 14px;
+    flex: 1 1 520px;
+    min-width: 0;
+    flex-wrap: wrap;
 }
 
 .addSymbolLabel {
@@ -364,10 +371,11 @@ app-add-position-form {
     position: relative;
     width: 420px;
     max-width: 100%;
+    flex: 1 1 320px;
 }
 
 .addSymbolInput {
-    width: 70%;
+    width: 100%;
     height: 34px;
     padding: 0 38px 0 10px;
     border: 1px solid rgba(0, 0, 0, 0.25);
@@ -382,7 +390,7 @@ app-add-position-form {
 
 .addSymbolBtn {
     position: absolute;
-    right: 86px;
+    right: 8px;
     top: 50%;
     transform: translateY(-50%);
     width: 28px;
@@ -454,4 +462,97 @@ app-add-position-form {
 
 .transaction-selector__item:hover:not(.active) {
   color: #4f4f4f;
+}
+
+@media (max-width: 900px) {
+  .page {
+    padding: 12px;
+  }
+
+  .panel {
+    padding: 12px;
+  }
+
+  .positionSummary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding: 18px 12px 24px;
+  }
+
+  .positionSummary .summaryItem {
+    height: auto;
+    margin: 0;
+    padding: 0 0 0 12px;
+  }
+
+  .positionSummary .summaryItem:first-child {
+    padding: 0;
+  }
+
+  .transaction-selector {
+    margin: 16px 0 12px;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    align-items: flex-start;
+  }
+
+  .headerActions {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-end;
+  }
+
+  .panelTop,
+  .panelTop2 {
+    align-items: stretch;
+  }
+
+  .addSymbol {
+    margin-bottom: 0;
+  }
+
+  .addSymbolLabel {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .transaction-selector__item {
+    padding: 8px 14px;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 10px;
+  }
+
+  .panel,
+  .main-container {
+    padding: 10px;
+  }
+
+  .positionSummary {
+    grid-template-columns: 1fr;
+  }
+
+  .positionSummary .summaryItem {
+    border-left: none;
+    border-top: 1px solid #dadada;
+    padding: 10px 0 0;
+  }
+
+  .positionSummary .summaryItem:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .menu {
+    width: min(220px, calc(100vw - 24px));
+    right: -6px;
+  }
 }

@@ -21,3 +21,31 @@
   display: block;
   object-fit: contain;
 }
+
+:host-context(body.home-dark-mode) .toolbar {
+  background: linear-gradient(90deg, #0f1319 0%, #141b24 100%);
+  color: #eef3f8;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+:host-context(body.home-dark-mode) .toolbar button,
+:host-context(body.home-dark-mode) .toolbar a {
+  color: inherit;
+}
+
+@media (max-width: 768px) {
+  .toolbar {
+    gap: 8px;
+    padding: 0 8px;
+  }
+
+  .logo {
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .toolbar {
+    min-height: 56px;
+  }
+}

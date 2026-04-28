@@ -23,6 +23,11 @@
 </mat-toolbar>
 
 <mat-menu #user="matMenu">
+  <button mat-menu-item *ngIf="isHomeRoute" (click)="toggleDarkMode()">
+    <mat-icon>{{ isDarkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    <span>{{ isDarkMode ? 'Light mode' : 'Dark mode' }}</span>
+  </button>
+  <mat-divider *ngIf="isHomeRoute"></mat-divider>
   <button mat-menu-item>
     <mat-icon>settings</mat-icon>
     <span>Settings</span>

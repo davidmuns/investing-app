@@ -17,12 +17,13 @@
 
   <mat-autocomplete
     #auto="matAutocomplete"
+    class="instrument-autocomplete-panel"
     [displayWith]="displayInstrument"
+    [panelWidth]="autocompletePanelWidth"
     (optionSelected)="onInstrumentClicked($event)"
-    panelWidth="720px"
   >
     <mat-option *ngFor="let instrument of filteredOptions | async" [value]="instrument">
-      <div class="autocomplete-option">
+      <div class="autocomplete-option autocomplete-option--desktop">
         <div class="option-left">
           <div class="symbol">{{ instrument.symbol }}</div>
         </div>
@@ -34,6 +35,12 @@
         <div class="option-right">
           <div class="meta">{{ instrument.type }} · {{ instrument.exchange }}</div>
         </div>
+      </div>
+
+      <div class="autocomplete-option-mobile">
+        <div class="symbol">{{ instrument.symbol }}</div>
+        <div class="name">{{ instrument.name }}</div>
+        <div class="exchange-mobile">{{ instrument.exchange }}</div>
       </div>
     </mat-option>
   </mat-autocomplete>

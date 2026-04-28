@@ -1,7 +1,20 @@
 /* You can add global styles to this file, and also import other style files */
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  overflow-x: hidden;
+  background: #fff;
+  color: #111;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 :root {
     --primary: #3F51B5; 
     --accent: #607D8B; 
@@ -32,19 +45,23 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .mat-mdc-option .mdc-list-item__primary-text {
   width: 100%;
+  display: block;
+  line-height: normal;
 }
 
 /* TABLE *****************************************/
 .table-container {
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   margin: 0;
   box-sizing: border-box;
 }
 
 table {
   width: 100%;
+  min-width: 720px;
 }
 
 th.mat-header-cell,
@@ -90,3 +107,75 @@ th.mat-sort-header-sorted {
   text-align: center;
 }
 /******************************************/
+
+body.home-dark-mode {
+  background: #0d1117;
+  color: #eef3f8;
+}
+
+body.home-dark-mode .mat-mdc-menu-panel,
+body.home-dark-mode .mat-menu-panel {
+  background: #151b24;
+}
+
+body.home-dark-mode .mat-mdc-menu-item,
+body.home-dark-mode .mat-menu-item {
+  color: #eef3f8;
+}
+
+body.home-dark-mode .mat-mdc-menu-item .mat-icon,
+body.home-dark-mode .mat-menu-item .mat-icon {
+  color: #c8d4e0;
+}
+
+body.home-dark-mode .mat-divider {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 768px) {
+  .mat-mdc-autocomplete-panel .mat-mdc-option {
+    min-height: 56px !important;
+    height: auto !important;
+    align-items: flex-start !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    overflow: visible !important;
+  }
+
+  .mat-mdc-autocomplete-panel .mat-mdc-option .mdc-list-item__primary-text {
+    display: block;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    line-height: 1.35;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  table {
+    min-width: 640px;
+  }
+
+  th.mat-header-cell,
+  .mat-header-cell,
+  td.mat-cell,
+  .mat-cell {
+    padding-left: 12px;
+    padding-right: 12px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 540px) {
+  .instrument-autocomplete-panel {
+    max-width: calc(100vw - 32px) !important;
+  }
+
+  .instrument-autocomplete-panel .mat-mdc-option {
+    min-height: 92px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+}
