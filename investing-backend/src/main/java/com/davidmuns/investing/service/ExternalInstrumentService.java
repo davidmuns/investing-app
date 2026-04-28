@@ -30,6 +30,10 @@ public class ExternalInstrumentService {
         return twelveDataClient.getQuote(query);
     }
 
+    public List<TwelveDataQuoteResponse> getQuotes(List<String> symbols) {
+        return twelveDataClient.getQuotes(symbols);
+    }
+
     private InstrumentResponse toResponse(TwelveDataSymbolSearchResponse.Item item) {
         return new InstrumentResponse(
                 null,

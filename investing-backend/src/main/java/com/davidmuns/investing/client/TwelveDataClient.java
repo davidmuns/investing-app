@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class TwelveDataClient {
 
@@ -52,5 +55,11 @@ public class TwelveDataClient {
                 .retrieve()
                 .bodyToMono(TwelveDataQuoteResponse.class)
                 .block();
+    }
+
+    public List<TwelveDataQuoteResponse> getQuotes(List<String> symbols) {
+        return symbols.stream()
+                .map(this::getQuote)
+                .collect(Collectors.toList());
     }
 }
