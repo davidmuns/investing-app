@@ -15,8 +15,8 @@ export class AuthService {
     user.email = user.email?.trim();
     user.nombreUsuario = user.nombreUsuario?.trim();
     user.password = user.password.trim();
-    return this.httpClient.post<any>(environment.BACKEND_BASE_URL + 'auth/nuevo', user);
-    // return this.httpClient.post<any>(environment.LOGIN_BASE_URL + 'auth/nuevo', user);
+    // return this.httpClient.post<any>(environment.BACKEND_BASE_URL + 'auth/nuevo', user);
+    return this.httpClient.post<any>(environment.LOGIN_BASE_URL + 'auth/nuevo', user);
   }
 
   public loginUser(login: Login): Observable<any> {
@@ -25,7 +25,7 @@ export class AuthService {
     // console.log(CryptoJS.AES.encrypt(login.password, 'pass').toString());
     login.nombreUsuario = login.nombreUsuario.trim();
     login.password = login.password.trim();
-    return this.httpClient.post<any>(environment.BACKEND_BASE_URL + 'auth/login', login);
-    // return this.httpClient.post<any>(environment.LOGIN_BASE_URL + 'auth/login', login);
+    // return this.httpClient.post<any>(environment.BACKEND_BASE_URL + 'auth/login', login);
+    return this.httpClient.post<any>(environment.LOGIN_BASE_URL + 'auth/login', login);
   }
 }

@@ -8,7 +8,7 @@ export const environment = {
   FRONT_BASE_URL: 'http://localhost:4200/',
   BACKEND_BASE_URL: 'http://localhost:8080/',
   // BACKEND_BASE_URL: 'https://blogexapp-7d861950990b.herokuapp.com/',
-  // LOGIN_BASE_URL: 'https://blogexapp-7d861950990b.herokuapp.com/',
+  LOGIN_BASE_URL: 'https://blogexapp-7d861950990b.herokuapp.com/',
   AUTHORIZATION: 'Authorization',
   BEARER: 'Bearer ',
   POSITION_PORTFOLIO: 'POSITIONS',
